@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>Dalgalar — Mekanik ve Elektromanyetik Dalgalar</title>
+  <meta name="description" content="Dalganın nasıl oluştuğunu, mekanik ve elektromanyetik dalgaların kaynaklarını ve farklı ortamlardaki yayılımını etkileşimli olarak öğrenin.">
+  <style>
+    :root{
+      --bg:#f6f8fc; --surface:#ffffff; --surface-2:#eef3fb; --text:#142033;
+      --muted:#5f6f85; --line:#dbe3ef; --nav:#0f1f3d; --nav2:#15305d;
+      --mech:#0f7b6c; --mech-soft:#ddf4ef; --em:#6d4bd1; --em-soft:#eee8ff;
+      --accent:#d97706; --good:#18794e; --shadow:0 18px 45px rgba(20,32,51,.09);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.65}
+    button,input{font:inherit}
+    a{color:inherit}
+    .topbar{position:sticky;top:0;z-index:50;background:linear-gradient(120deg,var(--nav),var(--nav2));color:#fff;box-shadow:0 8px 24px rgba(15,31,61,.18)}
+    .topbar-inner{max-width:1180px;margin:auto;display:flex;gap:18px;align-items:center;padding:12px 20px}
+    .brand{font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+    .brand span{opacity:.72;font-weight:600}
+    .nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none;padding:2px 0}
+    .nav::-webkit-scrollbar{display:none}
+    .nav a{text-decoration:none;font-size:.9rem;padding:8px 11px;border-radius:999px;color:#dce7fb;white-space:nowrap}
+    .nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff;outline:none}
+    main{max-width:1180px;margin:auto;padding:34px 20px 72px}
+    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:stretch;margin:10px 0 34px}
+    .hero-copy,.hero-card,.card,.lab,.compare,.quiz{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-copy{padding:42px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#36527d;background:#edf3fc;border-radius:999px;padding:6px 10px}
+    h1{font-size:clamp(2.35rem,5vw,4.8rem);line-height:.98;letter-spacing:-.055em;margin:18px 0 20px;max-width:760px}
+    h2{font-size:clamp(1.7rem,3vw,2.55rem);line-height:1.12;letter-spacing:-.035em;margin:0 0 14px}
+    h3{font-size:1.18rem;line-height:1.3;margin:0 0 10px}
+    p{margin:0 0 14px}
+    .lead{font-size:1.12rem;color:var(--muted);max-width:720px}
+    .hero-card{padding:24px;background:linear-gradient(150deg,#f8fbff,#eef3fb);display:flex;flex-direction:column;justify-content:center}
+    .equation{font-family:"SFMono-Regular",Consolas,monospace;background:#13213e;color:#eff6ff;border-radius:18px;padding:22px;font-size:clamp(1rem,2vw,1.24rem)}
+    .equation strong{color:#ffd38a}
+    .tiny{font-size:.84rem;color:var(--muted)}
+    .section{scroll-margin-top:88px;margin:66px 0}
+    .section-head{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px;align-items:end;margin-bottom:22px}
+    .section-head p{color:var(--muted);font-size:1.02rem}
+    .tag{font-size:.76rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .tag.mech{color:var(--mech)} .tag.em{color:var(--em)}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .card{padding:24px;box-shadow:none}
+    .card p,.card li{color:var(--muted)}
+    .card.mechanical{border-top:4px solid var(--mech)}
+    .card.electromagnetic{border-top:4px solid var(--em)}
+    .icon{width:44px;height:44px;display:grid;place-items:center;border-radius:14px;font-size:1.45rem;margin-bottom:15px;background:var(--surface-2)}
+    .note{border-left:4px solid var(--accent);padding:14px 16px;background:#fff8e9;border-radius:0 14px 14px 0;color:#70420b;margin-top:18px}
+    .key{display:inline-block;padding:2px 7px;border-radius:7px;background:#eef2f7;border:1px solid var(--line);font:600 .87em "SFMono-Regular",Consolas,monospace}
+    .lab{overflow:hidden}
+    .lab-head{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
+    .lab-head p{margin:0;color:var(--muted);font-size:.9rem}
+    .canvas-wrap{position:relative;background:#071427;min-height:330px}
+    canvas{display:block;width:100%;height:330px}
+    .controls{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:18px 22px;background:#fbfcfe;border-top:1px solid var(--line)}
+    .control label{display:flex;justify-content:space-between;gap:12px;font-size:.86rem;font-weight:700;margin-bottom:8px}
+    .control output{color:#49617f}
+    input[type="range"]{width:100%;accent-color:#315f95}
+    .concept-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-top:18px}
+    .concept-strip div{background:var(--surface);padding:17px}
+    .concept-strip strong{display:block;font-size:.91rem}
+    .concept-strip span{display:block;color:var(--muted);font-size:.84rem;margin-top:4px}
+    .fork-stage{position:relative;height:260px;overflow:hidden;border-radius:18px;background:linear-gradient(180deg,#edf8f6,#fbfefd);border:1px solid #cde8e2}
+    .fork{position:absolute;left:50%;top:48%;width:100px;height:150px;transform:translate(-50%,-50%)}
+    .fork .stem{position:absolute;left:44px;top:77px;width:12px;height:70px;border-radius:8px;background:#6d7a87}
+    .fork .base{position:absolute;left:24px;top:138px;width:52px;height:15px;border-radius:10px;background:#4d5964}
+    .fork .prong{position:absolute;top:10px;width:14px;height:92px;border-radius:10px;background:linear-gradient(90deg,#9eabb6,#d7dde2,#8997a2);transform-origin:50% 90%}
+    .fork .left{left:25px}.fork .right{right:25px}
+    .fork-stage.playing .left{animation:forkL .14s ease-in-out infinite alternate}
+    .fork-stage.playing .right{animation:forkR .14s ease-in-out infinite alternate}
+    @keyframes forkL{to{transform:rotate(2.2deg)}} @keyframes forkR{to{transform:rotate(-2.2deg)}}
+    .sound-ring{position:absolute;left:50%;top:40%;width:34px;height:34px;border:2px solid rgba(15,123,108,.42);border-radius:50%;transform:translate(-50%,-50%);opacity:0}
+    .playing .sound-ring{animation:ring 2s ease-out infinite}
+    .playing .r2{animation-delay:.5s}.playing .r3{animation-delay:1s}.playing .r4{animation-delay:1.5s}
+    @keyframes ring{0%{width:34px;height:34px;opacity:.8}100%{width:300px;height:300px;opacity:0}}
+    .btn{border:0;border-radius:12px;padding:10px 14px;background:#17355e;color:#fff;font-weight:750;cursor:pointer}
+    .btn:hover{filter:brightness(1.08)}
+    .medium-card{position:relative;overflow:hidden;min-height:230px}
+    .particles{height:88px;position:relative;margin:14px 0}
+    .particle{position:absolute;width:11px;height:11px;border-radius:50%;background:#4e769f;transform:translate(-50%,-50%)}
+    .medium-card .speed{font-size:1.65rem;font-weight:850;letter-spacing:-.04em}
+    .medium-card .speed small{font-size:.78rem;font-weight:700;color:var(--muted)}
+    .meter{height:7px;background:#e8edf3;border-radius:999px;overflow:hidden;margin:10px 0 15px}
+    .meter span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2c7b70,#5aa79c)}
+    table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+    th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+    th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#52657e;background:#f4f7fb}
+    td{color:#42536a}
+    tr:last-child td{border-bottom:0}
+    .spectrum{display:grid;grid-template-columns:repeat(7,1fr);border-radius:18px;overflow:hidden;border:1px solid var(--line);margin:18px 0}
+    .spectrum div{min-height:120px;padding:14px 10px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;font-size:.76rem;font-weight:800}
+    .spectrum small{font-weight:600;opacity:.86;margin-top:3px}
+    .radio{background:#425ba8}.micro{background:#536fd0}.infra{background:#a84072}.visible{background:linear-gradient(135deg,#8837b7,#385fd2,#21a178,#e2b632,#d55b38)}.uv{background:#7144a8}.xray{background:#4c3c7c}.gamma{background:#2d244f}
+    .antenna-diagram{height:320px;position:relative;overflow:hidden;border-radius:18px;background:#071427;border:1px solid #182a45}
+    .antenna{position:absolute;left:50%;top:50%;height:170px;width:4px;background:#dbeafe;transform:translate(-50%,-50%)}
+    .antenna:before,.antenna:after{content:"";position:absolute;left:50%;width:24px;height:24px;border-radius:50%;transform:translateX(-50%);background:#f6c453;box-shadow:0 0 24px rgba(246,196,83,.7)}
+    .antenna:before{top:-5px;animation:chargeTop 1.2s ease-in-out infinite}
+    .antenna:after{bottom:-5px;animation:chargeBottom 1.2s ease-in-out infinite}
+    @keyframes chargeTop{50%{top:125px}} @keyframes chargeBottom{50%{bottom:125px}}
+    .antenna-wave{position:absolute;left:50%;top:50%;border:1.5px solid rgba(137,176,255,.45);border-radius:50%;transform:translate(-50%,-50%);animation:antennaWave 2.4s linear infinite}
+    .aw2{animation-delay:.6s}.aw3{animation-delay:1.2s}.aw4{animation-delay:1.8s}
+    @keyframes antennaWave{0%{width:30px;height:30px;opacity:.95}100%{width:620px;height:620px;opacity:0}}
+    .medium-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+    .tab{border:1px solid var(--line);background:#fff;color:#42536a;border-radius:999px;padding:8px 12px;font-weight:750;cursor:pointer}
+    .tab.active{background:#192f53;color:#fff;border-color:#192f53}
+    .medium-panel{padding:22px;border-radius:18px;background:#f8fafc;border:1px solid var(--line)}
+    .medium-panel .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+    .stat{padding:12px;background:white;border:1px solid var(--line);border-radius:12px}
+    .stat strong{display:block;font-size:1.16rem}
+    .stat span{font-size:.78rem;color:var(--muted)}
+    .compare{overflow:hidden;box-shadow:none}
+    .compare-grid{display:grid;grid-template-columns:180px 1fr 1fr}
+    .compare-grid > div{padding:15px 17px;border-bottom:1px solid var(--line)}
+    .compare-grid > div:nth-last-child(-n+3){border-bottom:0}
+    .compare-grid .head{font-weight:850;background:#f4f7fb}
+    .compare-grid .mech-col{background:#f5fbf9}.compare-grid .em-col{background:#faf8ff}
+    .quiz{padding:24px;box-shadow:none}
+    .question{padding:18px 0;border-bottom:1px solid var(--line)}
+    .question:last-child{border-bottom:0}
+    .answers{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .answer{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;cursor:pointer}
+    .answer.good{border-color:#67ad8b;background:#ebf8f1;color:#12633f}.answer.bad{border-color:#d58b8b;background:#fff0f0;color:#8d2828}
+    .footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+    .pill{display:inline-block;font-size:.78rem;font-weight:800;border-radius:999px;padding:5px 9px;background:#eef2f7;color:#4b607b}
+    .callout{padding:20px;border-radius:18px;background:linear-gradient(135deg,#142849,#203d6d);color:#e9f2ff;margin:18px 0}
+    .callout strong{color:#fff}
+    ul{padding-left:20px}
+    @media(max-width:900px){
+      .hero,.section-head,.grid-2{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr 1fr}.grid-4{grid-template-columns:1fr 1fr}
+      .hero-copy{padding:28px}.concept-strip{grid-template-columns:1fr 1fr}
+      .spectrum{grid-template-columns:repeat(4,1fr)}.compare-grid{grid-template-columns:130px 1fr 1fr}
+      .controls{grid-template-columns:1fr}.medium-panel .stats{grid-template-columns:1fr}
+    }
+    @media(max-width:600px){
+      .topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}
+      main{padding-inline:14px}.hero-copy{padding:22px}.grid-3,.grid-4{grid-template-columns:1fr}
+      .spectrum{grid-template-columns:1fr 1fr}.compare{overflow:auto}.compare-grid{min-width:650px}
+      .concept-strip{grid-template-columns:1fr}.lab-head{align-items:flex-start;flex-direction:column}
+      canvas{height:290px}.canvas-wrap{min-height:290px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}.fork-stage.playing .prong,.playing .sound-ring,.antenna:before,.antenna:after,.antenna-wave{animation:none!important}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">dalgalar <span>/ etkileşimli fizik</span></div>
+      <nav class="nav" aria-label="Bölümler">
+        <a href="#olusum">Dalga nasıl oluşur?</a>
+        <a href="#mekanik">Mekanik dalgalar</a>
+        <a href="#ortam">Gaz • sıvı • katı</a>
+        <a href="#em">Elektromanyetik</a>
+        <a href="#anten">Antenler</a>
+        <a href="#emyayilim">EM yayılım</a>
+        <a href="#karsilastir">Karşılaştır</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Dalgaları sezgisel olarak öğren</span>
+        <h1>Bir dalga, maddenin yolculuğu değil; <em>enerjinin düzenli aktarımıdır.</em></h1>
+        <p class="lead">Bu sayfada önce dalganın nasıl doğduğunu görecek, sonra mekanik dalgaları ve diyapazonu inceleyecek, en sonunda elektromanyetik dalgaların kaynaklardan ve antenlerden çıkıp boşlukta ve maddede nasıl ilerlediğini karşılaştıracaksın.</p>
+      </div>
+      <aside class="hero-card">
+        <div class="equation"><strong>v = f · λ</strong><br><br>hız = frekans × dalga boyu</div>
+        <p class="tiny" style="margin-top:14px">Aynı temel ilişki hem mekanik hem elektromanyetik dalgalar için kullanılır. Fakat dalga hızını belirleyen fizik farklıdır.</p>
+      </aside>
+    </section>
+
+    <section class="section" id="olusum">
+      <div class="section-head">
+        <div><span class="tag">01 · Temel fikir</span><h2>Dalga nasıl oluşur?</h2></div>
+        <p>Bir kaynak denge durumunu bozar. Bu bozuntu komşu bölgelere aktarılır. Kaynak düzenli titreşiyorsa, ortamda veya alanlarda düzenli bir dalga deseni oluşur.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card"><div class="icon">1</div><h3>Kaynak titreşir</h3><p>Tel, hoparlör zarı, su yüzeyi veya elektrik yükleri denge durumunun etrafında değişir.</p></article>
+        <article class="card"><div class="icon">2</div><h3>Etkileşim komşuya geçer</h3><p>Mekanik dalgada parçacıklar birbirini iter/çeker; elektromanyetik dalgada değişen elektrik ve manyetik alanlar birlikte ilerler.</p></article>
+        <article class="card"><div class="icon">3</div><h3>Enerji taşınır</h3><p>Ortamın parçacıkları çoğunlukla yerel olarak salınır. Dalganın taşıdığı enerji ise çok daha uzağa ulaşabilir.</p></article>
+      </div>
+
+      <div class="lab" style="margin-top:18px">
+        <div class="lab-head">
+          <div><strong>Dalga laboratuvarı</strong><p>Genlik ve frekansı değiştir; parçacıkların yerinde salınırken dalga biçiminin ilerlediğini izle.</p></div>
+          <span class="pill">etkileşimli</span>
+        </div>
+        <div class="canvas-wrap"><canvas id="waveCanvas" aria-label="İlerleyen dalga animasyonu"></canvas></div>
+        <div class="controls">
+          <div class="control"><label>Genlik <output id="ampOut">36</output></label><input id="amp" type="range" min="10" max="62" value="36"></div>
+          <div class="control"><label>Frekans <output id="freqOut">1.2×</output></label><input id="freq" type="range" min="5" max="25" value="12"></div>
+          <div class="control"><label>Dalga boyu <output id="lambdaOut">180 px</output></label><input id="lambda" type="range" min="100" max="280" value="180"></div>
+        </div>
+      </div>
+
+      <div class="concept-strip">
+        <div><strong>Genlik (A)</strong><span>Denge noktasından maksimum sapma. Genellikle taşınan enerjiyle ilişkilidir.</span></div>
+        <div><strong>Frekans (f)</strong><span>Bir saniyedeki titreşim sayısı. Birimi hertz (Hz).</span></div>
+        <div><strong>Periyot (T)</strong><span>Bir tam titreşimin süresi. T = 1/f.</span></div>
+        <div><strong>Dalga boyu (λ)</strong><span>Aynı fazdaki iki komşu nokta arasındaki mesafe.</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="mekanik">
+      <div class="section-head">
+        <div><span class="tag mech">02 · Mekanik</span><h2>Fiziksel (mekanik) dalgalar ve kaynakları</h2></div>
+        <p>Mekanik dalgalar yayılmak için bir madde ortamına ihtiyaç duyar. Ses, ipteki dalga, su yüzeyi dalgaları ve deprem dalgaları bu ailenin örnekleridir.</p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card mechanical">
+          <h3>Boyuna dalga</h3>
+          <p>Ortam parçacıkları dalganın ilerleme yönüne <strong>paralel</strong> salınır. Havada ses bunun klasik örneğidir: sıkışma ve seyrekleşme bölgeleri ilerler.</p>
+          <div class="note">Ses havada ilerlerken hava molekülleri kaynaktan kulağa kadar uçmaz; ortalama konumları çevresinde salınır.</div>
+        </article>
+        <article class="card mechanical">
+          <h3>Enine dalga</h3>
+          <p>Parçacıkların salınım yönü, dalganın ilerleme yönüne <strong>dik</strong> olabilir. Gerilmiş bir ip üzerindeki dalga buna iyi bir örnektir.</p>
+          <p class="tiny">Katılarda hem boyuna hem enine elastik dalgalar görülebilir. Akışkanların hacmi içinde kalıcı kayma gerilmesi desteklenmediği için enine ses dalgası oluşmaz.</p>
+        </article>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px">
+        <article class="card">
+          <span class="tag mech">Kaynak örnekleri</span>
+          <h3 style="margin-top:8px">Bir mekanik dalgayı ne başlatır?</h3>
+          <ul>
+            <li><strong>Hoparlör zarı:</strong> havayı ardışık olarak sıkıştırır ve gevşetir.</li>
+            <li><strong>Gitar teli:</strong> teldeki titreşim köprü ve gövde üzerinden havaya aktarılır.</li>
+            <li><strong>Suya düşen damla:</strong> yüzeyde yerçekimi ve yüzey gerilimi etkileriyle dalga oluşturur.</li>
+            <li><strong>Deprem odağı:</strong> kayaçlarda gerilim boşalması P ve S dalgalarını üretir.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <span class="tag mech">Diyapazon</span>
+          <h3 style="margin-top:8px">Saf tona yakın bir mekanik kaynak</h3>
+          <div class="fork-stage" id="forkStage">
+            <div class="sound-ring"></div><div class="sound-ring r2"></div><div class="sound-ring r3"></div><div class="sound-ring r4"></div>
+            <div class="fork" aria-hidden="true"><div class="prong left"></div><div class="prong right"></div><div class="stem"></div><div class="base"></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px">
+            <p class="tiny" style="margin:0">Diyapazon kolları titreşirken çevredeki havada periyodik basınç değişimleri oluşturur.</p>
+            <button class="btn" id="forkBtn" type="button">Titreştir</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="ortam">
+      <div class="section-head">
+        <div><span class="tag mech">03 · Ortam</span><h2>Mekanik dalga gazda, sıvıda ve katıda nasıl ilerler?</h2></div>
+        <p>Ses hızını yalnızca “tanecikler birbirine yakın mı?” sorusu belirlemez. Ortamın <strong>esnekliği</strong> ile <strong>yoğunluğu</strong> birlikte önemlidir. Genel olarak daha rijit ortamlar bozuntuyu daha hızlı iletebilir.</p>
+      </div>
+
+      <div class="grid-3" id="mechanicalMedia">
+        <article class="card medium-card">
+          <span class="pill">Gaz · hava, 20 °C</span>
+          <div class="particles" data-medium="gas"></div>
+          <div class="speed">≈ 343 <small>m/s</small></div>
+          <div class="meter"><span style="width:12%"></span></div>
+          <p>Moleküller birbirinden görece uzaktır. Ses, basınç sıkışma-seyrekleşmeleri şeklinde ilerler.</p>
+        </article>
+        <article class="card medium-card">
+          <span class="pill">Sıvı · su</span>
+          <div class="particles" data-medium="liquid"></div>
+          <div class="speed">≈ 1480 <small>m/s</small></div>
+          <div class="meter"><span style="width:52%"></span></div>
+          <p>Su havadan çok daha az sıkıştırılabilir olduğu için basınç bozuntusu daha hızlı iletilir.</p>
+        </article>
+        <article class="card medium-card">
+          <span class="pill">Katı · çelik</span>
+          <div class="particles" data-medium="solid"></div>
+          <div class="speed">≈ 5900 <small>m/s</small></div>
+          <div class="meter"><span style="width:100%"></span></div>
+          <p>Atomlar güçlü bağlarla bağlı ve yapı oldukça rijittir. Hem boyuna hem de enine elastik dalgalar taşınabilir.</p>
+        </article>
+      </div>
+
+      <div class="note">Bu sayılar yaklaşık değerlerdir ve sıcaklık, basınç, bileşim ve dalga türüne göre değişir. Örneğin “katıda ses her zaman 5900 m/s” değildir.</div>
+    </section>
+
+    <section class="section" id="em">
+      <div class="section-head">
+        <div><span class="tag em">04 · Elektromanyetik</span><h2>Elektromanyetik dalga nasıl oluşur?</h2></div>
+        <p>İvmelenen elektrik yükleri elektromanyetik ışıma üretebilir. Değişen elektrik alanı ve değişen manyetik alan, uzayda birbirine bağlı şekilde ilerleyen bir dalga oluşturur.</p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card electromagnetic">
+          <h3>Elektrik alan + manyetik alan</h3>
+          <p>Düzlemsel bir elektromanyetik dalgada elektrik alan <span class="key">E</span>, manyetik alan <span class="key">B</span> ve yayılma yönü birbirine diktir.</p>
+          <p>Boşlukta dalga hızı <strong>c ≈ 299 792 458 m/s</strong>’dir. Mekanik dalgadan temel farkı, yayılmak için atom veya molekül ortamına ihtiyaç duymamasıdır.</p>
+        </article>
+        <article class="card electromagnetic">
+          <h3>Kaynaklar</h3>
+          <p>Elektromanyetik dalgalar çok farklı fiziksel süreçlerden doğabilir:</p>
+          <ul>
+            <li>Anten içindeki salınan/ivmelenen yükler → radyo ve mikrodalga</li>
+            <li>Atom ve molekül enerji geçişleri → IR, görünür, UV çizgileri</li>
+            <li>Sıcak cisimlerin termal ışıması → geniş spektrum</li>
+            <li>Hızlanan yüksek enerjili elektronlar → X-ışınları</li>
+            <li>Nükleer süreçler → gama ışınları</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="lab" style="margin-top:18px">
+        <div class="lab-head"><div><strong>E ve B alanlarının birlikte ilerlemesi</strong><p>İki alan aynı fazda salınır; burada anlaşılır olması için 2B izdüşümle gösteriliyor.</p></div><span class="pill">etkileşimli</span></div>
+        <div class="canvas-wrap"><canvas id="emCanvas" aria-label="Elektromanyetik dalga animasyonu"></canvas></div>
+        <div class="controls">
+          <div class="control"><label>Frekans <output id="emFreqOut">1.0×</output></label><input id="emFreq" type="range" min="5" max="28" value="10"></div>
+          <div class="control"><label>Alan genliği <output id="emAmpOut">52</output></label><input id="emAmp" type="range" min="20" max="80" value="52"></div>
+          <div class="control"><label>Ortam <output id="emMediumOut">boşluk</output></label><input id="emMedium" type="range" min="0" max="3" step="1" value="0"></div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:28px">Elektromanyetik spektrum</h3>
+      <div class="spectrum" aria-label="Elektromanyetik spektrum">
+        <div class="radio">Radyo<small>kHz–MHz</small></div>
+        <div class="micro">Mikrodalga<small>MHz–GHz</small></div>
+        <div class="infra">Kızılötesi<small>ısı algılama</small></div>
+        <div class="visible">Görünür<small>≈ 400–700 nm</small></div>
+        <div class="uv">Morötesi<small>daha yüksek f</small></div>
+        <div class="xray">X-ışını<small>çok kısa λ</small></div>
+        <div class="gamma">Gama<small>en yüksek f</small></div>
+      </div>
+      <p class="tiny">Spektrum kesintisizdir; kutular öğretici sınıflandırmadır. Sınırlar kaynağa göre küçük farklılıklarla verilebilir.</p>
+    </section>
+
+    <section class="section" id="anten">
+      <div class="section-head">
+        <div><span class="tag em">05 · Antenler</span><h2>Anten elektromanyetik dalgayı nasıl üretir?</h2></div>
+        <p>Bir vericide alternatif gerilim ve akım, anten iletkenindeki yükleri hızlandırır. Yakın alandaki elektrik ve manyetik alan yapısı, yeterince uzakta yayılan elektromanyetik dalga davranışına dönüşür.</p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <div class="antenna-diagram" aria-label="Dipol anten yayılım şeması">
+            <div class="antenna"></div>
+            <div class="antenna-wave"></div><div class="antenna-wave aw2"></div><div class="antenna-wave aw3"></div><div class="antenna-wave aw4"></div>
+          </div>
+          <p class="tiny" style="margin-top:12px">Bu animasyon kavramsaldır; gerçek yarım dalga dipolün ışıma deseni küresel değildir ve anten ekseni boyunca minimuma sahiptir.</p>
+        </article>
+        <article class="card electromagnetic">
+          <h3>Dipol anteni adım adım düşün</h3>
+          <ol>
+            <li>RF verici anten uçları arasında değişken gerilim oluşturur.</li>
+            <li>İletkendeki serbest elektronlar ileri-geri hızlanır.</li>
+            <li>Zamana göre değişen elektrik ve manyetik alan oluşur.</li>
+            <li>Alan değişiminin bir bölümü anten yakınında enerji depolar; bir bölümü uzaya yayılarak radyasyon alanını oluşturur.</li>
+            <li>Alıcı antene ulaşan alan, iletkendeki yükleri harekete geçirip ölçülebilir RF gerilimi üretir.</li>
+          </ol>
+          <div class="callout"><strong>Anten “havayı titreştirmez”.</strong> Anten elektromanyetik alan üretir; bu nedenle radyo sinyali boşlukta da ilerleyebilir.</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="emyayilim">
+      <div class="section-head">
+        <div><span class="tag em">06 · Yayılım</span><h2>EM dalga boşlukta, havada, sıvıda ve katıda nasıl ilerler?</h2></div>
+        <p>Maddede elektromanyetik alan, atomların ve moleküllerin yük dağılımlarıyla etkileşir. Bu etkileşim faz hızını, soğurmayı, saçılmayı, kırılmayı ve yansımayı değiştirebilir. Sonuç ayrıca frekansa güçlü biçimde bağlıdır.</p>
+      </div>
+
+      <div class="medium-tabs" role="tablist" aria-label="Elektromanyetik ortamlar">
+        <button class="tab active" data-emtab="vacuum" type="button">Boşluk</button>
+        <button class="tab" data-emtab="air" type="button">Hava</button>
+        <button class="tab" data-emtab="water" type="button">Su</button>
+        <button class="tab" data-emtab="solid" type="button">Katı</button>
+      </div>
+      <div class="medium-panel" id="mediumPanel"></div>
+
+      <div style="overflow:auto;margin-top:18px">
+        <table>
+          <thead><tr><th>Ortam</th><th>Ne olur?</th><th>Hız / kırılma</th><th>Önemli not</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Boşluk</strong></td><td>Maddeyle etkileşim yoktur; alan kendi başına yayılır.</td><td>c</td><td>EM dalganın doğal referans hızıdır.</td></tr>
+            <tr><td><strong>Hava</strong></td><td>Gaz molekülleriyle zayıf etkileşim vardır.</td><td>Görünür ışıkta c’ye çok yakın</td><td>Nem ve belirli gazlar bazı frekans bantlarını soğurabilir.</td></tr>
+            <tr><td><strong>Su</strong></td><td>Polar moleküller alanla güçlü etkileşebilir.</td><td>Optik frekanslarda faz hızı c/n</td><td>Mikrodalgalar suda güçlü soğurulabilir; görünür ışığın bazı dalga boyları çok daha iyi geçer.</td></tr>
+            <tr><td><strong>Katı</strong></td><td>Elektronik ve örgü tepkileri kırılma/soğurma oluşturur.</td><td>Malzeme ve frekansa bağlı</td><td>Cam görünür ışığa geçirgenken metal birçok frekansta güçlü yansıtıcıdır.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note"><strong>“EM dalga katıda yavaşlar” tek başına eksik bir cümledir.</strong> Hangi katı ve hangi frekans olduğu söylenmelidir. Aynı malzeme bir frekans bölgesinde saydam, başka bir bölgede güçlü soğurucu veya yansıtıcı olabilir.</div>
+    </section>
+
+    <section class="section" id="karsilastir">
+      <div class="section-head">
+        <div><span class="tag">07 · Büyük resim</span><h2>Mekanik ve elektromanyetik dalgaları yan yana koy</h2></div>
+        <p>İki dalga ailesi aynı frekans, periyot, dalga boyu, girişim ve kırınım kavramlarını paylaşır; fakat “neyin salındığı” ve yayılma mekanizması farklıdır.</p>
+      </div>
+
+      <div class="compare">
+        <div class="compare-grid">
+          <div class="head">Özellik</div><div class="head mech-col">Mekanik</div><div class="head em-col">Elektromanyetik</div>
+          <div>Ne salınır?</div><div class="mech-col">Madde parçacıklarının konumu/basıncı/gerilimi</div><div class="em-col">Elektrik ve manyetik alanlar</div>
+          <div>Ortam gerekli mi?</div><div class="mech-col">Evet</div><div class="em-col">Hayır</div>
+          <div>Boşlukta yayılır mı?</div><div class="mech-col">Hayır</div><div class="em-col">Evet</div>
+          <div>Kaynak</div><div class="mech-col">Titreşen mekanik sistem</div><div class="em-col">İvmelenen yükler, atomik/nükleer süreçler</div>
+          <div>Örnek</div><div class="mech-col">Ses, ip, su yüzeyi, deprem</div><div class="em-col">Radyo, mikrodalga, ışık, X-ışını</div>
+          <div>Temel bağıntı</div><div class="mech-col">v = fλ</div><div class="em-col">v = fλ; boşlukta v = c</div>
+        </div>
+      </div>
+
+      <div class="quiz" style="margin-top:18px">
+        <h3>Kendini kontrol et</h3>
+        <p class="tiny">Yanıtı seç; anında geri bildirim al.</p>
+        <div class="question" data-answer="b">
+          <strong>1. Ses neden boşlukta ilerleyemez?</strong>
+          <div class="answers"><button class="answer" data-choice="a">Frekansı çok düşüktür</button><button class="answer" data-choice="b">Mekanik etkileşimi aktaracak ortam yoktur</button><button class="answer" data-choice="c">Işık daha hızlıdır</button></div>
+        </div>
+        <div class="question" data-answer="c">
+          <strong>2. Bir radyo anteninde ışımanın temel kaynağı nedir?</strong>
+          <div class="answers"><button class="answer" data-choice="a">Hava moleküllerinin dönmesi</button><button class="answer" data-choice="b">Anten metalinin ısınması</button><button class="answer" data-choice="c">İvmelenen elektrik yükleri</button></div>
+        </div>
+        <div class="question" data-answer="a">
+          <strong>3. Bir dalga için frekans artar, hız sabit kalırsa dalga boyu ne olur?</strong>
+          <div class="answers"><button class="answer" data-choice="a">Azalır</button><button class="answer" data-choice="b">Artar</button><button class="answer" data-choice="c">Değişmez</button></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <strong>Dalgalar</strong> · Tek dosyalı etkileşimli fizik eğitim sayfası.<br>
+      Sayısal değerler öğretim amacıyla yaklaşık verilmiştir; gerçek yayılım malzeme, sıcaklık, basınç ve frekansa bağlıdır.
+    </footer>
+  </main>
+
+  <script>
+    (function(){
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function fitCanvas(canvas){
+        const rect = canvas.getBoundingClientRect();
+        const h = parseFloat(getComputedStyle(canvas).height);
+        canvas.width = Math.max(1, Math.floor(rect.width*dpr));
+        canvas.height = Math.max(1, Math.floor(h*dpr));
+        const ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        return {ctx:ctx,w:rect.width,h:h};
+      }
+
+      const waveCanvas = document.getElementById('waveCanvas');
+      const amp = document.getElementById('amp');
+      const freq = document.getElementById('freq');
+      const lambda = document.getElementById('lambda');
+      let wt = 0;
+
+      function drawWave(){
+        const m = fitCanvas(waveCanvas), ctx=m.ctx, w=m.w, h=m.h;
+        const A=+amp.value, f=+freq.value/10, L=+lambda.value;
+        document.getElementById('ampOut').value=A;
+        document.getElementById('freqOut').value=f.toFixed(1)+'×';
+        document.getElementById('lambdaOut').value=L+' px';
+        ctx.clearRect(0,0,w,h);
+        ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
+        const mid=h/2;
+        ctx.strokeStyle='rgba(150,176,211,.16)';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(w,mid);ctx.stroke();
+        ctx.strokeStyle='#73d7c7';ctx.lineWidth=2.5;ctx.beginPath();
+        for(let x=0;x<=w;x+=3){
+          const y=mid + Math.sin((x/L)*Math.PI*2-wt*f)*A;
+          if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }ctx.stroke();
+        const count=Math.max(14,Math.floor(w/42));
+        for(let i=0;i<count;i++){
+          const x=24+i*(w-48)/(count-1);
+          const y=mid + Math.sin((x/L)*Math.PI*2-wt*f)*A;
+          ctx.strokeStyle='rgba(115,215,199,.22)';ctx.beginPath();ctx.moveTo(x,mid);ctx.lineTo(x,y);ctx.stroke();
+          ctx.fillStyle='#e6fff9';ctx.beginPath();ctx.arc(x,y,5.2,0,Math.PI*2);ctx.fill();
+          ctx.strokeStyle='#73d7c7';ctx.stroke();
+        }
+        ctx.fillStyle='rgba(255,255,255,.72)';ctx.font='13px system-ui';
+        ctx.fillText('Dalga sağa ilerler →',18,26);
+        ctx.fillStyle='rgba(255,255,255,.48)';ctx.fillText('Parçacıklar ise yerel olarak salınır.',18,47);
+        if(!reduceMotion) wt+=0.045;
+        requestAnimationFrame(drawWave);
+      }
+
+      const emCanvas=document.getElementById('emCanvas');
+      const emFreq=document.getElementById('emFreq');
+      const emAmp=document.getElementById('emAmp');
+      const emMedium=document.getElementById('emMedium');
+      const mediumNames=['boşluk','hava','su','katı'];
+      const speedFactors=[1,.9997,.75,.60];
+      let et=0;
+
+      function drawEM(){
+        const m=fitCanvas(emCanvas),ctx=m.ctx,w=m.w,h=m.h;
+        const f=+emFreq.value/10,A=+emAmp.value,medium=+emMedium.value;
+        document.getElementById('emFreqOut').value=f.toFixed(1)+'×';
+        document.getElementById('emAmpOut').value=A;
+        document.getElementById('emMediumOut').value=mediumNames[medium];
+        ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
+        const mid=h/2,L=190*speedFactors[medium]/Math.max(.6,f*.65);
+        ctx.strokeStyle='rgba(255,255,255,.12)';ctx.beginPath();ctx.moveTo(0,mid);ctx.lineTo(w,mid);ctx.stroke();
+        function curve(color,phase,scale){
+          ctx.strokeStyle=color;ctx.lineWidth=2.6;ctx.beginPath();
+          for(let x=0;x<=w;x+=3){
+            const y=mid+Math.sin((x/L)*Math.PI*2-et*f+phase)*A*scale;
+            if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+          }ctx.stroke();
+        }
+        curve('#c184ff',0,1);
+        curve('#61d9ff',0,.55);
+        ctx.fillStyle='#c184ff';ctx.font='700 13px system-ui';ctx.fillText('E alanı',18,28);
+        ctx.fillStyle='#61d9ff';ctx.fillText('B alanı (2B izdüşüm)',18,48);
+        ctx.fillStyle='rgba(255,255,255,.62)';ctx.font='12px system-ui';ctx.fillText('yayılma →',Math.max(18,w-92),28);
+        if(!reduceMotion) et+=0.04*speedFactors[medium];
+        requestAnimationFrame(drawEM);
+      }
+
+      function makeParticles(){
+        document.querySelectorAll('.particles').forEach(function(box){
+          const type=box.dataset.medium;
+          const count=type==='gas'?14:type==='liquid'?30:36;
+          for(let i=0;i<count;i++){
+            const p=document.createElement('i');p.className='particle';
+            let x,y;
+            if(type==='solid'){
+              const cols=9, row=Math.floor(i/cols), col=i%cols;
+              x=8+col*10.6;y=18+row*22;
+            }else{
+              x=6+Math.random()*88;y=12+Math.random()*72;
+            }
+            p.style.left=x+'%';p.style.top=y+'%';
+            p.style.opacity=type==='gas'?'.72':'.88';
+            box.appendChild(p);
+          }
+        });
+      }
+
+      const forkStage=document.getElementById('forkStage');
+      const forkBtn=document.getElementById('forkBtn');
+      forkBtn.addEventListener('click',function(){
+        const playing=forkStage.classList.toggle('playing');
+        forkBtn.textContent=playing?'Durdur':'Titreştir';
+      });
+
+      const panels={
+        vacuum:{
+          title:'Boşluk: madde olmadan yayılım',
+          text:'Elektrik ve manyetik alanlar madde desteği olmadan ilerler. Boşlukta bütün elektromanyetik frekanslar için temel hız c’dir.',
+          stats:[['c','yaklaşık 3×10⁸ m/s'],['n = 1','kırılma indisi referansı'],['Düşük','madde kaynaklı soğurma']]
+        },
+        air:{
+          title:'Hava: boşluğa çok yakın, ama tamamen aynı değil',
+          text:'Görünür ışık ve birçok radyo bandında hava oldukça geçirgendir. Moleküller alanla zayıf etkileşir; su buharı ve oksijen bazı mikrodalga bantlarında belirgin soğurma oluşturabilir.',
+          stats:[['≈ c','görünür ışıkta'],['n ≈ 1.0003','optik, yaklaşık'],['Bant bağımlı','soğurma']]
+        },
+        water:{
+          title:'Su: frekansa göre çok farklı davranır',
+          text:'Suyun polar molekülleri elektromanyetik alanla güçlü etkileşebilir. Mikrodalga enerjisi su tarafından iyi soğurulurken görünür bölgenin bir kısmı çok daha derine ilerleyebilir.',
+          stats:[['c / n','faz hızı'],['n ≈ 1.33','görünür, yaklaşık'],['Yüksek olabilir','özellikle mikrodalga']]
+        },
+        solid:{
+          title:'Katılar: malzemenin elektron yapısı belirleyici',
+          text:'Cam, kristal, plastik, yarıiletken ve metal aynı davranmaz. Polarizasyon, serbest taşıyıcılar ve enerji bantları dalganın kırılması, soğurulması veya yansıtılmasını belirler.',
+          stats:[['Malzemeye bağlı','hız'],['n(f)','frekans bağımlı'],['Çok değişken','geçirgenlik']]
+        }
+      };
+      const mediumPanel=document.getElementById('mediumPanel');
+      function showPanel(key){
+        const p=panels[key];
+        mediumPanel.innerHTML='<h3>'+p.title+'</h3><p>'+p.text+'</p><div class="stats">'+p.stats.map(function(s){return '<div class="stat"><strong>'+s[0]+'</strong><span>'+s[1]+'</span></div>';}).join('')+'</div>';
+      }
+      document.querySelectorAll('[data-emtab]').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          document.querySelectorAll('[data-emtab]').forEach(function(b){b.classList.remove('active')});
+          btn.classList.add('active');showPanel(btn.dataset.emtab);
+        });
+      });
+
+      document.querySelectorAll('.question').forEach(function(q){
+        q.querySelectorAll('.answer').forEach(function(a){
+          a.addEventListener('click',function(){
+            q.querySelectorAll('.answer').forEach(function(b){b.classList.remove('good','bad')});
+            a.classList.add(a.dataset.choice===q.dataset.answer?'good':'bad');
+            if(a.dataset.choice!==q.dataset.answer){
+              const correct=q.querySelector('[data-choice="'+q.dataset.answer+'"]');
+              if(correct)correct.classList.add('good');
+            }
+          });
+        });
+      });
+
+      makeParticles();showPanel('vacuum');drawWave();drawEM();
+    })();
+  </script>
+</body>
+</html>
