@@ -1,6 +1,6 @@
 # dalgalar
 
-Tek dosyalı, etkileşimli fizik eğitim sayfası.
+Teknoloji bağımsız, etkileşimli fizik eğitim sayfaları.
 
 ## İçerik
 
@@ -17,4 +17,10 @@ Tek dosyalı, etkileşimli fizik eğitim sayfası.
 - Mekanik / elektromanyetik dalga karşılaştırması
 - Etkileşimli mini test
 
-Uygulama yalnızca `index.html` dosyasından oluşur; harici kütüphane gerektirmez.
+## Sayfalar
+
+- `index.html` — ana eğitim sayfası
+- `2d.html` — iki koherent kaynağın 2B girişim, bileşke genlik ve göreli şiddet simülasyonu
+- `3d.html` — iki koherent küresel kaynağın 3B hacim girişim simülasyonu
+
+Tüm sayfalar vanilla HTML/CSS/JavaScript ile çalışır ve harici kütüphane gerektirmez.
