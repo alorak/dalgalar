@@ -67,6 +67,21 @@
     .dimension-rule div{background:#fff;padding:17px}
     .dimension-rule strong{display:block;margin-bottom:4px}
     .dimension-rule span{display:block;color:var(--muted);font-size:.86rem}
+    .energy-lab{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+    .formula-card{background:#0b1930;color:#eaf2ff;border-radius:18px;padding:20px;border:1px solid #1d3152}
+    .formula-card .formula{font:700 1.05rem "SFMono-Regular",Consolas,monospace;color:#ffd38a;margin:8px 0 10px;line-height:1.7}
+    .formula-card p{color:#b9c8dd}
+    .energy-bars{display:grid;gap:12px;margin-top:14px}
+    .energy-row{display:grid;grid-template-columns:115px 1fr 72px;gap:10px;align-items:center}
+    .energy-row span{font-size:.82rem;color:var(--muted)}
+    .energy-track{height:12px;background:#e8edf4;border-radius:999px;overflow:hidden}
+    .energy-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#315f95,#8b6bd6);transition:width .18s ease}
+    .energy-value{text-align:right;font-weight:800;font-size:.86rem}
+    .energy-output{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+    .energy-box{padding:13px;background:#f7f9fc;border:1px solid var(--line);border-radius:14px}
+    .energy-box strong{display:block;font-size:1.2rem;letter-spacing:-.03em}
+    .energy-box span{font-size:.78rem;color:var(--muted)}
+    .formula-table td:first-child{font-family:"SFMono-Regular",Consolas,monospace;font-weight:700;color:#253c5f;white-space:nowrap}
     .lab-head{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
     .lab-head p{margin:0;color:var(--muted);font-size:.9rem}
     .canvas-wrap{position:relative;background:#071427;min-height:330px}
@@ -145,7 +160,7 @@
     .callout strong{color:#fff}
     ul{padding-left:20px}
     @media(max-width:900px){
-      .hero,.section-head,.grid-2{grid-template-columns:1fr}
+      .hero,.section-head,.grid-2,.energy-lab{grid-template-columns:1fr}
       .dimension-grid{grid-template-columns:1fr}
       .grid-3{grid-template-columns:1fr 1fr}.grid-4{grid-template-columns:1fr 1fr}
       .hero-copy{padding:28px}.concept-strip{grid-template-columns:1fr 1fr}
@@ -156,7 +171,8 @@
       .topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}
       main{padding-inline:14px}.hero-copy{padding:22px}.grid-3,.grid-4{grid-template-columns:1fr}
       .spectrum{grid-template-columns:1fr 1fr}.compare{overflow:auto}.compare-grid{min-width:650px}
-      .concept-strip,.dimension-rule{grid-template-columns:1fr}.lab-head{align-items:flex-start;flex-direction:column}
+      .concept-strip,.dimension-rule,.energy-output{grid-template-columns:1fr}.lab-head{align-items:flex-start;flex-direction:column}
+      .energy-row{grid-template-columns:92px 1fr 58px}
       canvas{height:290px}.canvas-wrap{min-height:290px} canvas.dim-canvas{height:220px}
     }
     @media(prefers-reduced-motion:reduce){
@@ -171,6 +187,7 @@
       <nav class="nav" aria-label="Bölümler">
         <a href="#olusum">Dalga nasıl oluşur?</a>
         <a href="#boyut">1B • 2B • 3B</a>
+        <a href="#enerji">Enerji</a>
         <a href="#mekanik">Mekanik dalgalar</a>
         <a href="#ortam">Gaz • sıvı • katı</a>
         <a href="#em">Elektromanyetik</a>
@@ -298,9 +315,146 @@
       </div>
     </section>
 
+
+    <section class="section" id="enerji">
+      <div class="section-head">
+        <div><span class="tag">03 · Enerji</span><h2>Bir dalganın taşıdığı enerji neye bağlıdır?</h2></div>
+        <p>Dalga enerjisi tek bir sayıya bağlı değildir. <strong>Genlik</strong>, <strong>frekans</strong>, ortamın fiziksel özellikleri, kaynağın gücü, yayılma geometrisi ve kayıplar birlikte belirleyicidir. “Enerji”, “güç” ve “şiddet” kavramlarını ayırmak bu konuyu çok daha anlaşılır hale getirir.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card">
+          <div class="icon">E</div>
+          <h3>Enerji</h3>
+          <p>Dalganın toplam taşıdığı enerji miktarıdır. Birimi <strong>joule (J)</strong>.</p>
+          <p class="tiny">Kaynak daha uzun süre çalışırsa, aynı güçte bile toplam aktarılan enerji artar.</p>
+        </article>
+        <article class="card">
+          <div class="icon">P</div>
+          <h3>Güç</h3>
+          <p>Birim zamanda aktarılan enerjidir: <span class="key">P = E/t</span>. Birimi <strong>watt (W)</strong>.</p>
+          <p class="tiny">Bir hoparlörün veya vericinin “kaç watt” olduğu doğrudan enerji aktarım hızını anlatır.</p>
+        </article>
+        <article class="card">
+          <div class="icon">I</div>
+          <h3>Şiddet / intensity</h3>
+          <p>Birim alandan geçen ortalama güçtür: <span class="key">I = P/A</span>. Birimi <strong>W/m²</strong>.</p>
+          <p class="tiny">Uzaklaştıkça toplam güç kaybolmasa bile daha büyük alana dağıldığı için şiddet azalabilir.</p>
+        </article>
+      </div>
+
+      <div class="energy-lab" style="margin-top:18px">
+        <div class="lab">
+          <div class="lab-head">
+            <div><strong>Genlik, frekans ve uzaklık laboratuvarı</strong><p>İdeal harmonik bir mekanik dalga için göreli güç ve geometrik yayılmayı birlikte incele.</p></div>
+            <span class="pill">etkileşimli</span>
+          </div>
+          <div style="padding:20px 22px">
+            <div class="control">
+              <label>Genlik A <output id="energyAmpOut">1.0×</output></label>
+              <input id="energyAmp" type="range" min="5" max="30" value="10">
+            </div>
+            <div class="control" style="margin-top:15px">
+              <label>Frekans f <output id="energyFreqOut">1.0×</output></label>
+              <input id="energyFreq" type="range" min="5" max="30" value="10">
+            </div>
+            <div class="control" style="margin-top:15px">
+              <label>Kaynağa uzaklık r <output id="energyDistOut">1.0×</output></label>
+              <input id="energyDist" type="range" min="10" max="50" value="10">
+            </div>
+
+            <div class="energy-output">
+              <div class="energy-box"><strong id="relativePower">1.00×</strong><span>göreli dalga gücü ∝ A²f²</span></div>
+              <div class="energy-box"><strong id="intensity2d">1.00×</strong><span>2B şiddet ∝ P/r</span></div>
+              <div class="energy-box"><strong id="intensity3d">1.00×</strong><span>3B şiddet ∝ P/r²</span></div>
+            </div>
+
+            <div class="energy-bars">
+              <div class="energy-row"><span>1B yayılım</span><div class="energy-track"><div class="energy-fill" id="bar1d"></div></div><div class="energy-value" id="bar1dVal">1.00</div></div>
+              <div class="energy-row"><span>2B yayılım</span><div class="energy-track"><div class="energy-fill" id="bar2d"></div></div><div class="energy-value" id="bar2dVal">1.00</div></div>
+              <div class="energy-row"><span>3B yayılım</span><div class="energy-track"><div class="energy-fill" id="bar3d"></div></div><div class="energy-value" id="bar3dVal">1.00</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="formula-card">
+          <span class="tag" style="color:#9fc6ff">İdeal ip dalgası örneği</span>
+          <div class="formula">P̄ = ½ μ ω² A² v</div>
+          <p>Burada <strong>A</strong> genlik, <strong>ω = 2πf</strong> açısal frekans, <strong>μ</strong> ipin birim uzunluk başına kütlesi ve <strong>v</strong> dalga hızıdır.</p>
+          <p>Ortam ve dalga hızı sabitse:</p>
+          <div class="formula">P̄ ∝ A² f²</div>
+          <p><strong>Genliği 2 katına çıkarmak → gücü 4 katına</strong>; frekansı 2 katına çıkarmak da aynı koşullarda gücü 4 katına çıkarır.</p>
+          <p class="tiny">Bu bağıntı belirli bir harmonik mekanik dalga modeli içindir; bütün dalgalar için evrensel “enerji = A²f²” kuralı değildir.</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px">
+        <article class="card mechanical">
+          <span class="tag mech">Mekanik dalga</span>
+          <h3 style="margin-top:8px">Enerji nerede bulunur?</h3>
+          <p>Bir mekanik dalgada enerji genellikle iki biçim arasında gidip gelir:</p>
+          <ul>
+            <li><strong>Kinetik enerji:</strong> ortam parçacıklarının hareketinden gelir.</li>
+            <li><strong>Potansiyel / elastik enerji:</strong> ortamın sıkışması, gerilmesi veya şekil değiştirmesinde depolanır.</li>
+          </ul>
+          <p>İdeal harmonik dalgada ortalama enerji yoğunluğu çoğu durumda <strong>genliğin karesiyle</strong> ölçeklenir. Bu yüzden küçük bir genlik artışı bile taşınan enerjiyi belirgin artırabilir.</p>
+        </article>
+
+        <article class="card electromagnetic">
+          <span class="tag em">Elektromanyetik dalga</span>
+          <h3 style="margin-top:8px">Enerji alanlarda taşınır</h3>
+          <p>EM dalgada enerji elektrik ve manyetik alanlarda depolanır. Vakumda enerji yoğunluğu:</p>
+          <div class="equation" style="font-size:.94rem;margin:12px 0">u = ½ε₀E² + B²/(2μ₀)</div>
+          <p>Sinüzoidal düzlemsel dalgada ortalama şiddet:</p>
+          <div class="equation" style="font-size:.94rem;margin:12px 0">Ī = ½ c ε₀ E₀²</div>
+          <p>Yani klasik EM dalgada da alan genliği 2 kat olursa ideal koşullarda ortalama şiddet 4 katına çıkar.</p>
+        </article>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px">
+        <article class="card">
+          <h3>Frekans enerjiye nasıl etki eder?</h3>
+          <p>Bu sorunun cevabı hangi fiziksel modeli kullandığımıza bağlıdır:</p>
+          <ul>
+            <li><strong>Mekanik harmonik dalga:</strong> sabit genlik ve sabit ortam koşullarında ortalama güç çoğu basit modelde frekans arttıkça büyür.</li>
+            <li><strong>Klasik elektromanyetik dalga:</strong> toplam enerji akısını doğrudan alan genliği belirler; yalnız frekansı bilmek şiddeti belirlemeye yetmez.</li>
+            <li><strong>Foton resmi:</strong> tek bir fotonun enerjisi <span class="key">E = hf</span> olduğundan frekans arttıkça foton başına enerji artar.</li>
+          </ul>
+          <div class="note">Aynı frekansta çok sayıda düşük yoğunluklu foton veya az sayıda yüksek enerjili foton olabilir. Bu yüzden “yüksek frekans = her zaman daha güçlü dalga” demek doğru değildir.</div>
+        </article>
+
+        <article class="card">
+          <h3>Uzaklık arttıkça ne olur?</h3>
+          <p>Kaynak gücü sabit olsa bile enerji daha geniş bir bölgeye yayılır:</p>
+          <ul>
+            <li><strong>1B ideal:</strong> geometrik yayılma kaybı yok → <span class="key">I ≈ sabit</span></li>
+            <li><strong>2B dairesel:</strong> çevre ∝ r → <span class="key">I ∝ 1/r</span></li>
+            <li><strong>3B küresel:</strong> alan ∝ r² → <span class="key">I ∝ 1/r²</span></li>
+          </ul>
+          <p>Bu yalnızca <strong>geometrik yayılma</strong> etkisidir. Soğurma veya saçılma varsa şiddet bundan daha hızlı düşebilir.</p>
+        </article>
+      </div>
+
+      <div style="overflow:auto;margin-top:18px">
+        <table class="formula-table">
+          <thead><tr><th>Bağıntı</th><th>Ne anlatır?</th><th>Sonuç</th></tr></thead>
+          <tbody>
+            <tr><td>E = Pt</td><td>Sabit güçte kaynağın toplam aktardığı enerji</td><td>Süre 2 kat → enerji 2 kat</td></tr>
+            <tr><td>I = P/A</td><td>Gücün bir alana yayılması</td><td>Aynı güç daha geniş alana dağılırsa şiddet azalır</td></tr>
+            <tr><td>P̄ ∝ A²</td><td>Birçok lineer harmonik dalgada genlik etkisi</td><td>A → 2A ise güç/şiddet yaklaşık 4 kat</td></tr>
+            <tr><td>I₃ᴅ ∝ 1/r²</td><td>İdeal küresel geometrik yayılma</td><td>r → 2r ise şiddet 1/4</td></tr>
+            <tr><td>I(x)=I₀e<sup>−βx</sup></td><td>Ortam içindeki soğurma için basit model</td><td>β büyüdükçe enerji daha hızlı kaybolur</td></tr>
+            <tr><td>E<sub>foton</sub>=hf</td><td>Tek fotonun kuantum enerjisi</td><td>Frekans arttıkça foton başına enerji artar</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout"><strong>Enerji kayboluyor mu?</strong> İdeal kayıpsız yayılımda enerji korunur; yalnızca daha geniş bir alana dağıldığı için yerel şiddet azalır. Gerçek ortamda soğurulan dalga enerjisi çoğunlukla ısı, titreşim veya başka iç enerji biçimlerine dönüşür.</div>
+    </section>
+
     <section class="section" id="mekanik">
       <div class="section-head">
-        <div><span class="tag mech">03 · Mekanik</span><h2>Fiziksel (mekanik) dalgalar ve kaynakları</h2></div>
+        <div><span class="tag mech">04 · Mekanik</span><h2>Fiziksel (mekanik) dalgalar ve kaynakları</h2></div>
         <p>Mekanik dalgalar yayılmak için bir madde ortamına ihtiyaç duyar. Ses, ipteki dalga, su yüzeyi dalgaları ve deprem dalgaları bu ailenin örnekleridir.</p>
       </div>
 
@@ -345,7 +499,7 @@
 
     <section class="section" id="ortam">
       <div class="section-head">
-        <div><span class="tag mech">04 · Ortam</span><h2>Mekanik dalga gazda, sıvıda ve katıda nasıl ilerler?</h2></div>
+        <div><span class="tag mech">05 · Ortam</span><h2>Mekanik dalga gazda, sıvıda ve katıda nasıl ilerler?</h2></div>
         <p>Ses hızını yalnızca “tanecikler birbirine yakın mı?” sorusu belirlemez. Ortamın <strong>esnekliği</strong> ile <strong>yoğunluğu</strong> birlikte önemlidir. Genel olarak daha rijit ortamlar bozuntuyu daha hızlı iletebilir.</p>
       </div>
 
@@ -378,7 +532,7 @@
 
     <section class="section" id="em">
       <div class="section-head">
-        <div><span class="tag em">05 · Elektromanyetik</span><h2>Elektromanyetik dalga nasıl oluşur?</h2></div>
+        <div><span class="tag em">06 · Elektromanyetik</span><h2>Elektromanyetik dalga nasıl oluşur?</h2></div>
         <p>İvmelenen elektrik yükleri elektromanyetik ışıma üretebilir. Değişen elektrik alanı ve değişen manyetik alan, uzayda birbirine bağlı şekilde ilerleyen bir dalga oluşturur.</p>
       </div>
 
@@ -426,7 +580,7 @@
 
     <section class="section" id="anten">
       <div class="section-head">
-        <div><span class="tag em">06 · Antenler</span><h2>Anten elektromanyetik dalgayı nasıl üretir?</h2></div>
+        <div><span class="tag em">07 · Antenler</span><h2>Anten elektromanyetik dalgayı nasıl üretir?</h2></div>
         <p>Bir vericide alternatif gerilim ve akım, anten iletkenindeki yükleri hızlandırır. Yakın alandaki elektrik ve manyetik alan yapısı, yeterince uzakta yayılan elektromanyetik dalga davranışına dönüşür.</p>
       </div>
 
@@ -454,7 +608,7 @@
 
     <section class="section" id="emyayilim">
       <div class="section-head">
-        <div><span class="tag em">07 · Yayılım</span><h2>EM dalga boşlukta, havada, sıvıda ve katıda nasıl ilerler?</h2></div>
+        <div><span class="tag em">08 · Yayılım</span><h2>EM dalga boşlukta, havada, sıvıda ve katıda nasıl ilerler?</h2></div>
         <p>Maddede elektromanyetik alan, atomların ve moleküllerin yük dağılımlarıyla etkileşir. Bu etkileşim faz hızını, soğurmayı, saçılmayı, kırılmayı ve yansımayı değiştirebilir. Sonuç ayrıca frekansa güçlü biçimde bağlıdır.</p>
       </div>
 
@@ -483,7 +637,7 @@
 
     <section class="section" id="karsilastir">
       <div class="section-head">
-        <div><span class="tag">08 · Büyük resim</span><h2>Mekanik ve elektromanyetik dalgaları yan yana koy</h2></div>
+        <div><span class="tag">09 · Büyük resim</span><h2>Mekanik ve elektromanyetik dalgaları yan yana koy</h2></div>
         <p>İki dalga ailesi aynı frekans, periyot, dalga boyu, girişim ve kırınım kavramlarını paylaşır; fakat “neyin salındığı” ve yayılma mekanizması farklıdır.</p>
       </div>
 
@@ -538,6 +692,36 @@
         return {ctx:ctx,w:rect.width,h:h};
       }
 
+
+
+      const energyAmp=document.getElementById('energyAmp');
+      const energyFreq=document.getElementById('energyFreq');
+      const energyDist=document.getElementById('energyDist');
+
+      function updateEnergyLab(){
+        const a=+energyAmp.value/10;
+        const f=+energyFreq.value/10;
+        const r=+energyDist.value/10;
+        const power=a*a*f*f;
+        const i1=power;
+        const i2=power/r;
+        const i3=power/(r*r);
+        const max=Math.max(i1,i2,i3,1);
+
+        document.getElementById('energyAmpOut').value=a.toFixed(1)+'×';
+        document.getElementById('energyFreqOut').value=f.toFixed(1)+'×';
+        document.getElementById('energyDistOut').value=r.toFixed(1)+'×';
+        document.getElementById('relativePower').textContent=power.toFixed(2)+'×';
+        document.getElementById('intensity2d').textContent=i2.toFixed(2)+'×';
+        document.getElementById('intensity3d').textContent=i3.toFixed(2)+'×';
+
+        [['bar1d',i1],['bar2d',i2],['bar3d',i3]].forEach(function(item){
+          const pct=Math.max(2,Math.min(100,item[1]/max*100));
+          document.getElementById(item[0]).style.width=pct+'%';
+          document.getElementById(item[0]+'Val').textContent=item[1].toFixed(2);
+        });
+      }
+      [energyAmp,energyFreq,energyDist].forEach(function(el){el.addEventListener('input',updateEnergyLab)});
 
       const dim1Canvas=document.getElementById('dim1Canvas');
       const dim2Canvas=document.getElementById('dim2Canvas');
@@ -742,7 +926,7 @@
         });
       });
 
-      makeParticles();showPanel('vacuum');drawDimensions();drawWave();drawEM();
+      makeParticles();showPanel('vacuum');updateEnergyLab();drawDimensions();drawWave();drawEM();
     })();
   </script>
 </body>
