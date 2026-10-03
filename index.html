@@ -27,6 +27,7 @@
     .nav::-webkit-scrollbar{display:none}
     .nav a{text-decoration:none;font-size:.9rem;padding:8px 11px;border-radius:999px;color:#dce7fb;white-space:nowrap}
     .nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff;outline:none}
+    .nav a[aria-current="page"]{background:rgba(255,255,255,.18);color:#fff}
     main{max-width:1180px;margin:auto;padding:34px 20px 72px}
     .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:stretch;margin:10px 0 34px}
     .hero-copy,.hero-card,.card,.lab,.compare,.quiz{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
@@ -184,16 +185,10 @@
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">dalgalar <span>/ etkileşimli fizik</span></div>
-      <nav class="nav" aria-label="Bölümler">
-        <a href="#olusum">Dalga nasıl oluşur?</a>
-        <a href="#boyut">1B • 2B • 3B</a>
-        <a href="#enerji">Enerji</a>
-        <a href="#mekanik">Mekanik dalgalar</a>
-        <a href="#ortam">Gaz • sıvı • katı</a>
-        <a href="#em">Elektromanyetik</a>
-        <a href="#anten">Antenler</a>
-        <a href="#emyayilim">EM yayılım</a>
-        <a href="#karsilastir">Karşılaştır</a>
+      <nav class="nav" aria-label="Sayfalar">
+        <a href="index.html" aria-current="page">Ana Sayfa</a>
+        <a href="2d.html">2B Girişim</a>
+        <a href="3d.html">3B Girişim</a>
       </nav>
     </div>
   </header>
