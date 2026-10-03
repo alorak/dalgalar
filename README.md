@@ -5,6 +5,7 @@ Tek dosyalı, etkileşimli fizik eğitim sayfası.
 ## İçerik
 
 - Dalga nasıl oluşur?
+- 1B, 2B ve 3B dalga yayılımı ve dalga cepheleri
 - Mekanik dalgalar ve kaynakları
 - Diyapazon
 - Sesin gaz, sıvı ve katıda yayılması

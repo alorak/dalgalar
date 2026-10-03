@@ -57,6 +57,16 @@
     .note{border-left:4px solid var(--accent);padding:14px 16px;background:#fff8e9;border-radius:0 14px 14px 0;color:#70420b;margin-top:18px}
     .key{display:inline-block;padding:2px 7px;border-radius:7px;background:#eef2f7;border:1px solid var(--line);font:600 .87em "SFMono-Regular",Consolas,monospace}
     .lab{overflow:hidden}
+    .dimension-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .dimension-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .dimension-card .dim-copy{padding:20px 21px 22px}
+    .dimension-card .dim-number{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:30px;padding:0 10px;border-radius:999px;background:#eaf0f8;color:#2f4e77;font-weight:850;font-size:.82rem;margin-bottom:11px}
+    .dim-visual{background:#071427;border-bottom:1px solid #1a2a42}
+    canvas.dim-canvas{height:240px}
+    .dimension-rule{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-top:18px}
+    .dimension-rule div{background:#fff;padding:17px}
+    .dimension-rule strong{display:block;margin-bottom:4px}
+    .dimension-rule span{display:block;color:var(--muted);font-size:.86rem}
     .lab-head{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
     .lab-head p{margin:0;color:var(--muted);font-size:.9rem}
     .canvas-wrap{position:relative;background:#071427;min-height:330px}
@@ -136,6 +146,7 @@
     ul{padding-left:20px}
     @media(max-width:900px){
       .hero,.section-head,.grid-2{grid-template-columns:1fr}
+      .dimension-grid{grid-template-columns:1fr}
       .grid-3{grid-template-columns:1fr 1fr}.grid-4{grid-template-columns:1fr 1fr}
       .hero-copy{padding:28px}.concept-strip{grid-template-columns:1fr 1fr}
       .spectrum{grid-template-columns:repeat(4,1fr)}.compare-grid{grid-template-columns:130px 1fr 1fr}
@@ -145,8 +156,8 @@
       .topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}
       main{padding-inline:14px}.hero-copy{padding:22px}.grid-3,.grid-4{grid-template-columns:1fr}
       .spectrum{grid-template-columns:1fr 1fr}.compare{overflow:auto}.compare-grid{min-width:650px}
-      .concept-strip{grid-template-columns:1fr}.lab-head{align-items:flex-start;flex-direction:column}
-      canvas{height:290px}.canvas-wrap{min-height:290px}
+      .concept-strip,.dimension-rule{grid-template-columns:1fr}.lab-head{align-items:flex-start;flex-direction:column}
+      canvas{height:290px}.canvas-wrap{min-height:290px} canvas.dim-canvas{height:220px}
     }
     @media(prefers-reduced-motion:reduce){
       html{scroll-behavior:auto}.fork-stage.playing .prong,.playing .sound-ring,.antenna:before,.antenna:after,.antenna-wave{animation:none!important}
@@ -159,6 +170,7 @@
       <div class="brand">dalgalar <span>/ etkileşimli fizik</span></div>
       <nav class="nav" aria-label="Bölümler">
         <a href="#olusum">Dalga nasıl oluşur?</a>
+        <a href="#boyut">1B • 2B • 3B</a>
         <a href="#mekanik">Mekanik dalgalar</a>
         <a href="#ortam">Gaz • sıvı • katı</a>
         <a href="#em">Elektromanyetik</a>
@@ -215,9 +227,80 @@
       </div>
     </section>
 
+
+    <section class="section" id="boyut">
+      <div class="section-head">
+        <div><span class="tag">02 · Uzaysal boyut</span><h2>1, 2 ve 3 boyutlu dalga ne demek?</h2></div>
+        <p>Buradaki “boyut”, dalganın enerjisinin kaç bağımsız uzaysal yönde yayılabildiğini anlatır. Bu sınıflandırma, dalganın <strong>enine</strong> veya <strong>boyuna</strong> olmasından farklıdır.</p>
+      </div>
+
+      <div class="callout"><strong>En kısa fikir:</strong> 1B’de dalga bir çizgi boyunca, 2B’de bir yüzey üzerinde, 3B’de ise hacim içine doğru yayılır. Dalga cephesi de buna göre 1B’de noktalar, 2B’de çizgiler, 3B’de yüzeyler olarak düşünülebilir.</div>
+
+      <div class="dimension-grid">
+        <article class="dimension-card">
+          <div class="dim-visual"><canvas class="dim-canvas" id="dim1Canvas" aria-label="Bir boyutlu dalga görseli"></canvas></div>
+          <div class="dim-copy">
+            <span class="dim-number">1 boyut</span>
+            <h3>Bir çizgi boyunca yayılım</h3>
+            <p>Gerilmiş bir ipteki ideal dalga en iyi örnektir. Dalga esas olarak <strong>x doğrultusunda</strong> sağa veya sola ilerler.</p>
+            <p class="tiny">İpin kendisi yukarı-aşağı hareket edebilir; buna rağmen enerji aktarımının geometrisi tek boyutlu kabul edilir.</p>
+          </div>
+        </article>
+
+        <article class="dimension-card">
+          <div class="dim-visual"><canvas class="dim-canvas" id="dim2Canvas" aria-label="İki boyutlu dairesel dalga görseli"></canvas></div>
+          <div class="dim-copy">
+            <span class="dim-number">2 boyut</span>
+            <h3>Bir yüzey üzerinde yayılım</h3>
+            <p><strong>Evet, 2B dalga örneği vardır.</strong> Su yüzeyine düşen bir damlanın oluşturduğu dairesel halkalar, yaklaşık 2B yayılımın en sezgisel örneğidir.</p>
+            <p>Bir davul zarı veya gergin membran üzerindeki dalgalar da 2B dalga denklemiyle çok iyi modellenir.</p>
+            <p class="tiny">Su gerçek hayatta 3B bir ortamdır; “2B” denmesi, dalganın esas yayılımının yüzey düzlemi üzerinde incelenmesindendir.</p>
+          </div>
+        </article>
+
+        <article class="dimension-card">
+          <div class="dim-visual"><canvas class="dim-canvas" id="dim3Canvas" aria-label="Üç boyutlu küresel dalga görseli"></canvas></div>
+          <div class="dim-copy">
+            <span class="dim-number">3 boyut</span>
+            <h3>Hacim içinde yayılım</h3>
+            <p>Havadaki noktasal bir ses kaynağından çıkan dalgalar ideal durumda <strong>küresel dalga cepheleri</strong> halinde her yöne yayılır.</p>
+            <p>Bir noktasal ışık/EM kaynağının uzak alandaki yayılımı da uygun koşullarda 3B geometrinin bir örneğidir.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="dimension-rule">
+        <div><strong>1B dalga cephesi</strong><span>İlerleme doğrultusunu kesen tekil noktalar gibi düşünülebilir.</span></div>
+        <div><strong>2B dalga cephesi</strong><span>Noktasal kaynaktan çıkan dalgada çember gibi bir çizgidir.</span></div>
+        <div><strong>3B dalga cephesi</strong><span>Noktasal kaynaktan çıkan dalgada küre gibi bir yüzeydir.</span></div>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px">
+        <article class="card">
+          <h3>2B dalgaya başka örnekler</h3>
+          <ul>
+            <li><strong>Davul zarı:</strong> titreşim, zarın iki yüzey koordinatı boyunca yayılır.</li>
+            <li><strong>İnce elastik plaka:</strong> eğilme dalgaları yüzey boyunca ilerler.</li>
+            <li><strong>Su yüzeyi:</strong> özellikle sığ/sınırlı koşullarda yüzeydeki yayılım 2B modelle açıklanabilir.</li>
+            <li><strong>Yüzey akustik dalgaları:</strong> katı bir yüzey yakınında ilerleyen dalgalar yaklaşık 2B geometri gösterebilir.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Boyut arttıkça enerji neden zayıflar?</h3>
+          <p>Aynı enerji daha büyük bir geometrik bölgeye dağılır. İdeal kayıpsız durumda:</p>
+          <ul>
+            <li>1B’de geometrik yayılma nedeniyle genlik zorunlu olarak hızla düşmez.</li>
+            <li>2B dairesel yayılımda enerji giderek büyüyen bir çevreye dağılır.</li>
+            <li>3B küresel yayılımda enerji büyüyen bir küre yüzeyine dağılır; şiddet ideal olarak yaklaşık <span class="key">1/r²</span> azalır.</li>
+          </ul>
+          <div class="note">Bu geometrik zayıflamadır. Gerçek ortamda buna ek olarak soğurma, saçılma ve sınır kayıpları da olabilir.</div>
+        </article>
+      </div>
+    </section>
+
     <section class="section" id="mekanik">
       <div class="section-head">
-        <div><span class="tag mech">02 · Mekanik</span><h2>Fiziksel (mekanik) dalgalar ve kaynakları</h2></div>
+        <div><span class="tag mech">03 · Mekanik</span><h2>Fiziksel (mekanik) dalgalar ve kaynakları</h2></div>
         <p>Mekanik dalgalar yayılmak için bir madde ortamına ihtiyaç duyar. Ses, ipteki dalga, su yüzeyi dalgaları ve deprem dalgaları bu ailenin örnekleridir.</p>
       </div>
 
@@ -262,7 +345,7 @@
 
     <section class="section" id="ortam">
       <div class="section-head">
-        <div><span class="tag mech">03 · Ortam</span><h2>Mekanik dalga gazda, sıvıda ve katıda nasıl ilerler?</h2></div>
+        <div><span class="tag mech">04 · Ortam</span><h2>Mekanik dalga gazda, sıvıda ve katıda nasıl ilerler?</h2></div>
         <p>Ses hızını yalnızca “tanecikler birbirine yakın mı?” sorusu belirlemez. Ortamın <strong>esnekliği</strong> ile <strong>yoğunluğu</strong> birlikte önemlidir. Genel olarak daha rijit ortamlar bozuntuyu daha hızlı iletebilir.</p>
       </div>
 
@@ -295,7 +378,7 @@
 
     <section class="section" id="em">
       <div class="section-head">
-        <div><span class="tag em">04 · Elektromanyetik</span><h2>Elektromanyetik dalga nasıl oluşur?</h2></div>
+        <div><span class="tag em">05 · Elektromanyetik</span><h2>Elektromanyetik dalga nasıl oluşur?</h2></div>
         <p>İvmelenen elektrik yükleri elektromanyetik ışıma üretebilir. Değişen elektrik alanı ve değişen manyetik alan, uzayda birbirine bağlı şekilde ilerleyen bir dalga oluşturur.</p>
       </div>
 
@@ -343,7 +426,7 @@
 
     <section class="section" id="anten">
       <div class="section-head">
-        <div><span class="tag em">05 · Antenler</span><h2>Anten elektromanyetik dalgayı nasıl üretir?</h2></div>
+        <div><span class="tag em">06 · Antenler</span><h2>Anten elektromanyetik dalgayı nasıl üretir?</h2></div>
         <p>Bir vericide alternatif gerilim ve akım, anten iletkenindeki yükleri hızlandırır. Yakın alandaki elektrik ve manyetik alan yapısı, yeterince uzakta yayılan elektromanyetik dalga davranışına dönüşür.</p>
       </div>
 
@@ -371,7 +454,7 @@
 
     <section class="section" id="emyayilim">
       <div class="section-head">
-        <div><span class="tag em">06 · Yayılım</span><h2>EM dalga boşlukta, havada, sıvıda ve katıda nasıl ilerler?</h2></div>
+        <div><span class="tag em">07 · Yayılım</span><h2>EM dalga boşlukta, havada, sıvıda ve katıda nasıl ilerler?</h2></div>
         <p>Maddede elektromanyetik alan, atomların ve moleküllerin yük dağılımlarıyla etkileşir. Bu etkileşim faz hızını, soğurmayı, saçılmayı, kırılmayı ve yansımayı değiştirebilir. Sonuç ayrıca frekansa güçlü biçimde bağlıdır.</p>
       </div>
 
@@ -400,7 +483,7 @@
 
     <section class="section" id="karsilastir">
       <div class="section-head">
-        <div><span class="tag">07 · Büyük resim</span><h2>Mekanik ve elektromanyetik dalgaları yan yana koy</h2></div>
+        <div><span class="tag">08 · Büyük resim</span><h2>Mekanik ve elektromanyetik dalgaları yan yana koy</h2></div>
         <p>İki dalga ailesi aynı frekans, periyot, dalga boyu, girişim ve kırınım kavramlarını paylaşır; fakat “neyin salındığı” ve yayılma mekanizması farklıdır.</p>
       </div>
 
@@ -453,6 +536,66 @@
         const ctx = canvas.getContext('2d');
         ctx.setTransform(dpr,0,0,dpr,0,0);
         return {ctx:ctx,w:rect.width,h:h};
+      }
+
+
+      const dim1Canvas=document.getElementById('dim1Canvas');
+      const dim2Canvas=document.getElementById('dim2Canvas');
+      const dim3Canvas=document.getElementById('dim3Canvas');
+      let dt=0;
+
+      function dimBase(canvas){
+        const m=fitCanvas(canvas),ctx=m.ctx,w=m.w,h=m.h;
+        ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
+        return {ctx:ctx,w:w,h:h};
+      }
+
+      function drawDim1(){
+        const m=dimBase(dim1Canvas),ctx=m.ctx,w=m.w,h=m.h,mid=h/2;
+        ctx.strokeStyle='rgba(152,177,210,.16)';ctx.beginPath();ctx.moveTo(22,mid);ctx.lineTo(w-22,mid);ctx.stroke();
+        ctx.strokeStyle='#73d7c7';ctx.lineWidth=2.6;ctx.beginPath();
+        for(let x=22;x<=w-22;x+=3){
+          const y=mid+Math.sin(x/34-dt*2.1)*42;
+          if(x===22)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+        }ctx.stroke();
+        ctx.fillStyle='rgba(255,255,255,.72)';ctx.font='12px system-ui';ctx.fillText('yalnızca x boyunca yayılım →',18,24);
+        ctx.fillStyle='#ffd38a';ctx.beginPath();ctx.arc(w*.18,mid+Math.sin((w*.18)/34-dt*2.1)*42,5,0,Math.PI*2);ctx.fill();
+      }
+
+      function drawDim2(){
+        const m=dimBase(dim2Canvas),ctx=m.ctx,w=m.w,h=m.h,cx=w/2,cy=h/2;
+        ctx.strokeStyle='rgba(135,161,196,.15)';ctx.lineWidth=1;
+        for(let x=0;x<w;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+        for(let y=0;y<h;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+        const maxR=Math.hypot(w,h)*.62;
+        for(let i=0;i<6;i++){
+          const r=((dt*42+i*52)%maxR);
+          ctx.strokeStyle='rgba(115,215,199,'+(1-r/maxR)*.82+')';ctx.lineWidth=2;
+          ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+        }
+        ctx.fillStyle='#ffd38a';ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,.72)';ctx.font='12px system-ui';ctx.fillText('x–y yüzeyi üzerinde dairesel cepheler',18,24);
+      }
+
+      function drawDim3(){
+        const m=dimBase(dim3Canvas),ctx=m.ctx,w=m.w,h=m.h,cx=w/2,cy=h/2;
+        const maxR=Math.min(w,h)*.78;
+        for(let i=0;i<5;i++){
+          const r=((dt*34+i*45)%maxR)+10;
+          const alpha=(1-r/(maxR+20))*.78;
+          ctx.strokeStyle='rgba(193,132,255,'+Math.max(.08,alpha)+')';ctx.lineWidth=1.8;
+          ctx.beginPath();ctx.ellipse(cx,cy,r,r*.42,0,0,Math.PI*2);ctx.stroke();
+          ctx.beginPath();ctx.ellipse(cx,cy,r*.42,r,0,0,Math.PI*2);ctx.stroke();
+          ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.stroke();
+        }
+        ctx.fillStyle='#ffd38a';ctx.beginPath();ctx.arc(cx,cy,6,0,Math.PI*2);ctx.fill();
+        ctx.fillStyle='rgba(255,255,255,.72)';ctx.font='12px system-ui';ctx.fillText('x–y–z içinde küresel dalga cephesi',18,24);
+      }
+
+      function drawDimensions(){
+        drawDim1();drawDim2();drawDim3();
+        if(!reduceMotion)dt+=0.018;
+        requestAnimationFrame(drawDimensions);
       }
 
       const waveCanvas = document.getElementById('waveCanvas');
@@ -599,7 +742,7 @@
         });
       });
 
-      makeParticles();showPanel('vacuum');drawWave();drawEM();
+      makeParticles();showPanel('vacuum');drawDimensions();drawWave();drawEM();
     })();
   </script>
 </body>
