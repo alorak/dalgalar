@@ -18,3 +18,4 @@ Tek dosyalı, etkileşimli fizik eğitim sayfası.
 - Etkileşimli mini test
 
 Uygulama yalnızca `index.html` dosyasından oluşur; harici kütüphane gerektirmez.
+\n## Sayfalar\n\n- `index.html` — ana eğitim sayfası\n- `2d.html` — iki koherent kaynağın 2B girişim, bileşke genlik ve göreli şiddet simülasyonu\n- `3d.html` — iki koherent küresel kaynağın 3B hacim girişim simülasyonu\n
