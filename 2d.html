@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>2B Dalga Girişimi — Dalgalar</title>
+  <meta name="description" content="İki koherent noktasal kaynağın iki boyutlu girişimini, bileşke genliği ve göreli enerji/şiddeti etkileşimli olarak inceleyin.">
+  <style>
+    :root{--bg:#f6f8fc;--surface:#fff;--text:#142033;--muted:#607087;--line:#dbe3ef;--nav:#0f1f3d;--nav2:#15305d;--shadow:0 18px 45px rgba(20,32,51,.09);--radius:20px}
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+    button,input,select{font:inherit} button{cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:20;background:linear-gradient(120deg,var(--nav),var(--nav2));color:#fff;box-shadow:0 8px 24px rgba(15,31,61,.18)}
+    .topbar-inner{max-width:1280px;margin:auto;display:flex;gap:18px;align-items:center;padding:12px 20px}
+    .brand{font-weight:800;letter-spacing:-.03em;white-space:nowrap}.brand span{opacity:.7;font-weight:600}
+    .nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+    .nav a{text-decoration:none;font-size:.9rem;padding:8px 11px;border-radius:999px;color:#dce7fb;white-space:nowrap}.nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff}.nav a[aria-current="page"]{background:rgba(255,255,255,.18);color:#fff}
+    main{max-width:1280px;margin:auto;padding:26px 20px 54px}
+    .intro{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:18px}.intro h1{font-size:clamp(2rem,4vw,3.5rem);line-height:1;letter-spacing:-.045em;margin:0 0 8px}.intro p{margin:0;color:var(--muted);max-width:760px}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eaf0f8;color:#355477;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:18px;align-items:start}
+    .panel,.canvas-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .canvas-card{overflow:hidden}
+    .canvas-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+    .mode-tabs{display:flex;gap:7px;flex-wrap:wrap}.mode-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-weight:750;color:#4c607a}.mode-btn.active{background:#17365f;color:#fff;border-color:#17365f}
+    .sim-wrap{position:relative;background:#06111f}.sim-wrap canvas{display:block;width:100%;height:620px;touch-action:none}
+    .legend{position:absolute;left:14px;bottom:14px;display:flex;align-items:center;gap:8px;background:rgba(6,17,31,.78);color:#e7eef9;padding:7px 10px;border-radius:10px;font-size:.78rem;backdrop-filter:blur(6px)}.gradient{width:120px;height:9px;border-radius:99px;background:linear-gradient(90deg,#2946a3,#07111f,#ef9743)}
+    .panel{padding:18px;box-shadow:none}
+    .panel h2{font-size:1rem;margin:0 0 14px}
+    .control{margin-bottom:15px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.84rem;font-weight:750;margin-bottom:7px}.control output{color:#4e6480}.control input[type=range]{width:100%;accent-color:#315f95}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 18px}.btn{border:0;border-radius:11px;background:#17365f;color:#fff;padding:9px 12px;font-weight:800}.btn.alt{background:#eef2f7;color:#36506f;border:1px solid var(--line)}
+    .probe{border-top:1px solid var(--line);padding-top:16px}.probe-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.metric{padding:11px;background:#f7f9fc;border:1px solid var(--line);border-radius:12px}.metric strong{display:block;font-size:1.08rem}.metric span{font-size:.73rem;color:var(--muted)}
+    .term{display:grid;grid-template-columns:88px 1fr 58px;gap:8px;align-items:center;margin-top:9px;font-size:.78rem}.track{height:9px;background:#edf1f6;border-radius:999px;overflow:hidden;position:relative}.fill{height:100%;border-radius:999px;background:#5579a8}.fill.interf.pos{background:#2b9a72}.fill.interf.neg{background:#c65f63}.term b{text-align:right;font-size:.78rem}
+    .status{margin-top:13px;padding:11px 12px;border-radius:12px;background:#eef5ff;border:1px solid #ccddf2;color:#254b73;font-size:.82rem}
+    .formula{margin-top:16px;padding:13px;border-radius:12px;background:#0d1b30;color:#dce8f8;font:600 .77rem "SFMono-Regular",Consolas,monospace;line-height:1.7}
+    .tiny{font-size:.76rem;color:var(--muted);margin:10px 0 0}
+    @media(max-width:900px){.layout{grid-template-columns:1fr}.panel{order:-1}.sim-wrap canvas{height:520px}.intro{align-items:flex-start;flex-direction:column}}
+    @media(max-width:600px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.sim-wrap canvas{height:420px}.canvas-head{align-items:flex-start;flex-direction:column}.probe-grid{grid-template-columns:1fr}.legend{font-size:.7rem}.gradient{width:80px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">dalgalar <span>/ girişim simülasyonları</span></div>
+      <nav class="nav" aria-label="Sayfalar">
+        <a href="index.html">Ana Sayfa</a>
+        <a href="2d.html" aria-current="page">2B Girişim</a>
+        <a href="3d.html">3B Girişim</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div><span class="badge">2 boyutlu simülasyon</span><h1>İki dalga aynı düzlemde karşılaşınca ne olur?</h1><p>İki koherent noktasal kaynağın faz farkını değiştir; bileşke genliğin ve göreli zaman-ortalamalı şiddetin uzayda nasıl yeniden dağıldığını gör. Haritaya tıklayarak herhangi bir noktayı ölçebilirsin.</p></div>
+    </section>
+
+    <div class="layout">
+      <section class="canvas-card">
+        <div class="canvas-head">
+          <strong>2B girişim alanı</strong>
+          <div class="mode-tabs" role="group" aria-label="Görünüm modu">
+            <button class="mode-btn" data-mode="instant" type="button">Anlık alan</button>
+            <button class="mode-btn active" data-mode="amplitude" type="button">Bileşke genlik</button>
+            <button class="mode-btn" data-mode="energy" type="button">Göreli şiddet</button>
+          </div>
+        </div>
+        <div class="sim-wrap">
+          <canvas id="fieldCanvas" aria-label="İki boyutlu dalga girişimi simülasyonu"></canvas>
+          <div class="legend"><span id="legendLeft">düşük</span><div class="gradient" id="legendGradient"></div><span id="legendRight">yüksek</span></div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Kaynaklar</h2>
+        <div class="control"><label>Dalga boyu λ <output id="lambdaOut">1.60</output></label><input id="lambda" type="range" min="70" max="300" value="160"></div>
+        <div class="control"><label>Kaynak aralığı d <output id="sepOut">4.0</output></label><input id="sep" type="range" min="100" max="800" value="400"></div>
+        <div class="control"><label>Kaynak 1 genliği A₁ <output id="a1Out">1.00</output></label><input id="a1" type="range" min="10" max="200" value="100"></div>
+        <div class="control"><label>Kaynak 2 genliği A₂ <output id="a2Out">1.00</output></label><input id="a2" type="range" min="10" max="200" value="100"></div>
+        <div class="control"><label>Başlangıç faz farkı φ <output id="phaseOut">0°</output></label><input id="phase" type="range" min="0" max="360" value="0"></div>
+        <div class="actions"><button class="btn" id="pauseBtn" type="button">Duraklat</button><button class="btn alt" id="resetBtn" type="button">Sıfırla</button></div>
+
+        <div class="probe">
+          <h2>Seçili nokta</h2>
+          <div class="probe-grid">
+            <div class="metric"><strong id="probeAmp">2.00</strong><span>bileşke genlik R</span></div>
+            <div class="metric"><strong id="probeEnergy">4.00</strong><span>göreli şiddet ∝ R²</span></div>
+            <div class="metric"><strong id="probePhase">0°</strong><span>yerel faz farkı Δφ</span></div>
+            <div class="metric"><strong id="probePos">0.0, 1.5</strong><span>x, y konumu</span></div>
+          </div>
+
+          <div class="term"><span>I₁ = A₁²</span><div class="track"><div class="fill" id="term1"></div></div><b id="term1Val">1.00</b></div>
+          <div class="term"><span>I₂ = A₂²</span><div class="track"><div class="fill" id="term2"></div></div><b id="term2Val">1.00</b></div>
+          <div class="term"><span>Girişim</span><div class="track"><div class="fill interf pos" id="termInt"></div></div><b id="termIntVal">+2.00</b></div>
+          <div class="term"><span>Toplam</span><div class="track"><div class="fill" id="termTotal"></div></div><b id="termTotalVal">4.00</b></div>
+
+          <div class="status" id="probeStatus">Yapıcı girişim: iki dalga bu noktada büyük ölçüde aynı fazda.</div>
+          <div class="formula">R² = A₁² + A₂² + 2A₁A₂ cos(Δφ)<br>Δφ = k(r₂ − r₁) + φ</div>
+          <p class="tiny">Bu simülasyon girişim desenini öne çıkarmak için geometrik genlik azalmasını normalize eder. Yerel şiddet artıp azalabilir; girişim toplam enerjiyi yoktan üretmez, uzayda yeniden dağıtır.</p>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    (function(){
+      const root=document;
+      const canvas=root.getElementById('fieldCanvas');
+      const ctx=canvas.getContext('2d');
+      const off=document.createElement('canvas');
+      const octx=off.getContext('2d');
+      const dpr=Math.min(window.devicePixelRatio||1,2);
+      const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const controls={
+        lambda:root.getElementById('lambda'),sep:root.getElementById('sep'),a1:root.getElementById('a1'),a2:root.getElementById('a2'),phase:root.getElementById('phase')
+      };
+      let mode='amplitude',running=!reduce,time=0,last=0,dirty=true;
+      let probe={x:0,y:1.5};
+      const worldW=12,worldH=9;
+
+      function values(){
+        return {lambda:+controls.lambda.value/100,sep:+controls.sep.value/100,a1:+controls.a1.value/100,a2:+controls.a2.value/100,phase:+controls.phase.value*Math.PI/180};
+      }
+      function resize(){
+        const r=canvas.getBoundingClientRect();
+        canvas.width=Math.max(1,Math.floor(r.width*dpr));
+        canvas.height=Math.max(1,Math.floor(r.height*dpr));
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        off.width=Math.max(120,Math.floor(r.width/4));
+        off.height=Math.max(90,Math.floor(r.height/4));
+        dirty=true;
+      }
+      function colorSigned(v){
+        v=Math.max(-1,Math.min(1,v));
+        if(v<0){const t=-v;return [Math.round(7+34*t),Math.round(17+53*t),Math.round(31+150*t)];}
+        return [Math.round(7+232*v),Math.round(17+134*v),Math.round(31+36*v)];
+      }
+      function colorPositive(v,energy){
+        v=Math.max(0,Math.min(1,v));
+        if(energy)return [Math.round(7+240*v),Math.round(17+170*v),Math.round(31+20*v)];
+        return [Math.round(7+70*v),Math.round(17+190*v),Math.round(31+185*v)];
+      }
+      function sample(x,y,t){
+        const s=values(),k=2*Math.PI/s.lambda;
+        const x1=-s.sep/2,x2=s.sep/2;
+        const r1=Math.hypot(x-x1,y),r2=Math.hypot(x-x2,y);
+        const delta=k*(r2-r1)+s.phase;
+        const r2amp=Math.max(0,s.a1*s.a1+s.a2*s.a2+2*s.a1*s.a2*Math.cos(delta));
+        const R=Math.sqrt(r2amp);
+        const instant=s.a1*Math.cos(k*r1-t*2.4)+s.a2*Math.cos(k*r2-t*2.4+s.phase);
+        return {delta:delta,R:R,I:r2amp,instant:instant,r1:r1,r2:r2,s:s};
+      }
+      function renderField(){
+        const s=values(),maxR=Math.max(.001,s.a1+s.a2),maxI=maxR*maxR;
+        const img=octx.createImageData(off.width,off.height),data=img.data;
+        let p=0;
+        for(let j=0;j<off.height;j++){
+          const y=(.5-j/(off.height-1))*worldH;
+          for(let i=0;i<off.width;i++){
+            const x=(i/(off.width-1)-.5)*worldW;
+            const q=sample(x,y,time);
+            let rgb;
+            if(mode==='instant')rgb=colorSigned(q.instant/maxR);
+            else if(mode==='energy')rgb=colorPositive(q.I/maxI,true);
+            else rgb=colorPositive(q.R/maxR,false);
+            data[p++]=rgb[0];data[p++]=rgb[1];data[p++]=rgb[2];data[p++]=255;
+          }
+        }
+        octx.putImageData(img,0,0);
+      }
+      function worldToScreen(x,y,w,h){return {x:(x/worldW+.5)*w,y:(.5-y/worldH)*h};}
+      function drawOverlay(){
+        const r=canvas.getBoundingClientRect(),w=r.width,h=r.height,s=values();
+        ctx.drawImage(off,0,0,w,h);
+        ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;
+        for(let x=-5;x<=5;x++){const a=worldToScreen(x,-worldH/2,w,h),b=worldToScreen(x,worldH/2,w,h);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+        for(let y=-4;y<=4;y++){const a=worldToScreen(-worldW/2,y,w,h),b=worldToScreen(worldW/2,y,w,h);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}
+        [{x:-s.sep/2,label:'S₁',c:'#65d6c5'},{x:s.sep/2,label:'S₂',c:'#d29cff'}].forEach(function(src){
+          const p=worldToScreen(src.x,0,w,h);
+          ctx.fillStyle=src.c;ctx.beginPath();ctx.arc(p.x,p.y,8,0,Math.PI*2);ctx.fill();
+          ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2;ctx.stroke();
+          ctx.fillStyle='#fff';ctx.font='700 13px system-ui';ctx.fillText(src.label,p.x+11,p.y-10);
+        });
+        const pp=worldToScreen(probe.x,probe.y,w,h);
+        ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(pp.x,pp.y,8,0,Math.PI*2);ctx.moveTo(pp.x-13,pp.y);ctx.lineTo(pp.x+13,pp.y);ctx.moveTo(pp.x,pp.y-13);ctx.lineTo(pp.x,pp.y+13);ctx.stroke();
+      }
+      function updateOutputs(){
+        const s=values();
+        root.getElementById('lambdaOut').value=s.lambda.toFixed(2);
+        root.getElementById('sepOut').value=s.sep.toFixed(1);
+        root.getElementById('a1Out').value=s.a1.toFixed(2);
+        root.getElementById('a2Out').value=s.a2.toFixed(2);
+        root.getElementById('phaseOut').value=Math.round(+controls.phase.value)+'°';
+
+        const q=sample(probe.x,probe.y,time);
+        const deg=((q.delta*180/Math.PI)%360+360)%360;
+        const i1=s.a1*s.a1,i2=s.a2*s.a2,intTerm=2*s.a1*s.a2*Math.cos(q.delta),total=Math.max(0,i1+i2+intTerm);
+        const max=(s.a1+s.a2)*(s.a1+s.a2);
+        root.getElementById('probeAmp').textContent=q.R.toFixed(2);
+        root.getElementById('probeEnergy').textContent=total.toFixed(2);
+        root.getElementById('probePhase').textContent=deg.toFixed(0)+'°';
+        root.getElementById('probePos').textContent=probe.x.toFixed(1)+', '+probe.y.toFixed(1);
+        root.getElementById('term1Val').textContent=i1.toFixed(2);
+        root.getElementById('term2Val').textContent=i2.toFixed(2);
+        root.getElementById('termIntVal').textContent=(intTerm>=0?'+':'')+intTerm.toFixed(2);
+        root.getElementById('termTotalVal').textContent=total.toFixed(2);
+        root.getElementById('term1').style.width=Math.min(100,i1/max*100)+'%';
+        root.getElementById('term2').style.width=Math.min(100,i2/max*100)+'%';
+        const intEl=root.getElementById('termInt');intEl.classList.toggle('pos',intTerm>=0);intEl.classList.toggle('neg',intTerm<0);intEl.style.width=Math.min(100,Math.abs(intTerm)/max*100)+'%';
+        root.getElementById('termTotal').style.width=Math.min(100,total/max*100)+'%';
+        const cos=Math.cos(q.delta),status=root.getElementById('probeStatus');
+        if(cos>.55)status.textContent='Yapıcı girişim: iki dalga bu noktada büyük ölçüde aynı fazda; bileşke genlik ve yerel şiddet büyüyor.';
+        else if(cos<-.55)status.textContent='Yıkıcı girişim: dalgalar büyük ölçüde zıt fazda; bileşke genlik ve yerel şiddet azalıyor.';
+        else status.textContent='Ara faz: girişim ne tam yapıcı ne tam yıkıcı; enerji komşu bölgelere göre yeniden dağılıyor.';
+      }
+      function updateLegend(){
+        const g=root.getElementById('legendGradient');
+        if(mode==='instant'){root.getElementById('legendLeft').textContent='−';root.getElementById('legendRight').textContent='+';g.style.background='linear-gradient(90deg,#2946a3,#07111f,#ef9743)';}
+        else if(mode==='energy'){root.getElementById('legendLeft').textContent='düşük';root.getElementById('legendRight').textContent='yüksek';g.style.background='linear-gradient(90deg,#07111f,#f7bb33)';}
+        else{root.getElementById('legendLeft').textContent='0';root.getElementById('legendRight').textContent='A₁+A₂';g.style.background='linear-gradient(90deg,#07111f,#4fd8ca)';}
+      }
+      function frame(ts){
+        if(!last)last=ts;
+        const dt=Math.min(.05,(ts-last)/1000);last=ts;
+        if(running){time+=dt; if(mode==='instant')dirty=true;}
+        if(dirty){renderField();dirty=false;}
+        drawOverlay();updateOutputs();
+        requestAnimationFrame(frame);
+      }
+
+      Object.values(controls).forEach(function(el){el.addEventListener('input',function(){dirty=true;updateOutputs();});});
+      root.querySelectorAll('[data-mode]').forEach(function(btn){btn.addEventListener('click',function(){
+        mode=btn.dataset.mode;root.querySelectorAll('[data-mode]').forEach(function(b){b.classList.toggle('active',b===btn)});updateLegend();dirty=true;
+      });});
+      root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et';});
+      root.getElementById('resetBtn').addEventListener('click',function(){
+        controls.lambda.value=160;controls.sep.value=400;controls.a1.value=100;controls.a2.value=100;controls.phase.value=0;probe={x:0,y:1.5};time=0;dirty=true;updateOutputs();
+      });
+      canvas.addEventListener('pointerdown',function(e){
+        const r=canvas.getBoundingClientRect();
+        probe.x=((e.clientX-r.left)/r.width-.5)*worldW;
+        probe.y=(.5-(e.clientY-r.top)/r.height)*worldH;
+        updateOutputs();
+      });
+      window.addEventListener('resize',resize);
+      resize();updateLegend();updateOutputs();requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
