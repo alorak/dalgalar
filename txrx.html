@@ -47,7 +47,7 @@
     .switch{display:flex;align-items:center;gap:8px;font-size:.77rem;font-weight:750;margin:8px 0}.switch input{width:17px;height:17px;accent-color:var(--accent)}
     .status{padding:11px 12px;border-radius:12px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.78rem;margin-top:11px}
     .chain{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.step b{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:#152d52;color:#fff;font-size:.75rem;margin-bottom:8px}.step h3{font-size:.92rem;margin:0 0 6px}.step p{font-size:.8rem;color:#586b82;margin:0}.formula{margin-top:9px;padding:8px 9px;border-radius:9px;background:#101f37;color:#dce7f5;font:600 .7rem "SFMono-Regular",Consolas,monospace}
-    .compare{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.info h3{font-size:.9rem;margin:0 0 7px}.info p{font-size:.8rem;color:#586b82;margin:0}.info ul{padding-left:18px;margin:8px 0 0;color:#586b82;font-size:.78rem}
+    .compare{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.info h3{font-size:.9rem;margin:0 0 7px}.info p{font-size:.8rem;color:#586b82;margin:0}.info ul{padding-left:18px;margin:8px 0 0;color:#586b82;font-size:.78rem}
     .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.82rem}
     @media(max-width:1030px){.intro,.layout{grid-template-columns:1fr}.preset-row{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr}.chain{grid-template-columns:1fr 1fr}}
     @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.preset-row{grid-template-columns:1fr}.canvas-wrap canvas{height:470px}.metrics,.chain,.compare{grid-template-columns:1fr}.legend{left:12px;right:12px;top:12px}.visual-head{align-items:flex-start;flex-direction:column}}
@@ -113,18 +113,18 @@
 
       <div class="group">
         <h3>TX · verici anten</h3>
-        <div class="control"><label for="txType">Anten tipi</label><select id="txType"><option value="patch">Patch</option><option value="directional">Yönlü</option></select></div>
+        <div class="control"><label for="txType">Anten tipi</label><select id="txType"><option value="patch">Patch</option><option value="directional">Yönlü</option><option value="omni">Çubuk / dipol (omni)</option></select></div>
         <div class="control"><label>TX güç <output id="txPowerOut">20 dBm · 100 mW</output></label><input id="txPower" type="range" min="-10" max="30" step="1" value="20"></div>
         <div class="control"><label>Azimut <output id="txAzOut">0°</output></label><input id="txAz" type="range" min="-180" max="180" step="1" value="0"></div>
-        <div class="control"><label>Elevasyon <output id="txElOut">0°</output></label><input id="txEl" type="range" min="-60" max="60" step="1" value="0"></div>
+        <div class="control"><label>Elevasyon <output id="txElOut">0°</output></label><input id="txEl" type="range" min="-90" max="90" step="1" value="0"></div>
         <div class="control-hint" id="txSpec">Patch · 8 dBi · HPBW ≈ 70° · broadside</div>
       </div>
 
       <div class="group">
         <h3>RX · alıcı anten</h3>
-        <div class="control"><label for="rxType">Anten tipi</label><select id="rxType"><option value="patch">Patch</option><option value="directional">Yönlü</option></select></div>
+        <div class="control"><label for="rxType">Anten tipi</label><select id="rxType"><option value="patch">Patch</option><option value="directional">Yönlü</option><option value="omni">Çubuk / dipol (omni)</option></select></div>
         <div class="control"><label>Azimut <output id="rxAzOut">180°</output></label><input id="rxAz" type="range" min="-180" max="180" step="1" value="180"></div>
-        <div class="control"><label>Elevasyon <output id="rxElOut">0°</output></label><input id="rxEl" type="range" min="-60" max="60" step="1" value="0"></div>
+        <div class="control"><label>Elevasyon <output id="rxElOut">0°</output></label><input id="rxEl" type="range" min="-90" max="90" step="1" value="0"></div>
         <div class="control"><label>Polarizasyon farkı <output id="polOut">0°</output></label><input id="polMismatch" type="range" min="0" max="90" step="1" value="0"></div>
         <div class="control-hint" id="rxSpec">Patch · 8 dBi · HPBW ≈ 70° · broadside</div>
       </div>
@@ -153,11 +153,12 @@
   </section>
 
   <section class="compare">
+    <article class="info"><h3>Çubuk / dipol (omni)</h3><p>“Yönsüz” yalnız azimut düzleminde geçerlidir. İdeal yarım-dalga dipolün 3B deseni donut biçimindedir; çubuk ekseninde null oluşur.</p><ul><li>Model: 2.15 dBi tepe kazanç</li><li>Azimutta 360° simetri</li><li>Elevasyon HPBW ≈ 78°</li><li>Fiziksel uzunluk ≈ 0.5λ</li></ul></article>
     <article class="info"><h3>Patch anten değişince ne değişiyor?</h3><p>Tek patch tipik olarak broadside, orta kazançlı ve görece geniş huzmelidir.</p><ul><li>Model: 8 dBi tepe kazanç</li><li>HPBW ≈ 70°</li><li>Boyut ölçeği ≈ 0.5λ</li><li>Daha geniş hizalama toleransı</li></ul></article>
     <article class="info"><h3>Yönlü anten değişince ne değişiyor?</h3><p>Daha büyük elektriksel açıklık daha dar ana lob ve daha yüksek tepe kazanç üretir.</p><ul><li>Model: 14 dBi tepe kazanç</li><li>HPBW ≈ 32°</li><li>Boyut ölçeği ≈ 2.0λ</li><li>Hizalama hatasına daha hassas</li></ul></article>
   </section>
 
-  <div class="note"><strong>Model sınırı:</strong> Simülasyon serbest uzay, tek-yol ve far-field Friis modelidir. Anten desenleri gerçek bir üretici datasheet’i değil; patch ve dar-huzmeli yönlü anten fiziğini karşılaştırmak için normalize edilmiş öğretici 3B modellerdir. Dalga cepheleri çok sayıda gerçek dalga boyunu ekranda gösterebilmek için uzaysal olarak sıkıştırılmış temsilî faz yüzeyleridir. Yakın alan, çoklu yol, zemin yansıması, empedans/S11 ve gerçek anten verimi bu sürümde ayrı modellenmez.</div>
+  <div class="note"><strong>Model sınırı:</strong> Simülasyon serbest uzay, tek-yol ve far-field Friis modelidir. Anten desenleri gerçek bir üretici datasheet’i değil; yarım-dalga dipol/çubuk, patch ve dar-huzmeli yönlü anten fiziğini karşılaştırmak için normalize edilmiş öğretici 3B modellerdir. Dalga cepheleri çok sayıda gerçek dalga boyunu ekranda gösterebilmek için uzaysal olarak sıkıştırılmış temsilî faz yüzeyleridir. Yakın alan, çoklu yol, zemin yansıması, empedans/S11 ve gerçek anten verimi bu sürümde ayrı modellenmez.</div>
 </main>
 
 <script>
@@ -168,7 +169,8 @@
 
   const ANT={
     patch:{label:'Patch',gain:8,hpbw:70,fbr:18,sizeLambda:.50,color:'#a98ee8'},
-    directional:{label:'Yönlü',gain:14,hpbw:32,fbr:22,sizeLambda:2.0,color:'#c6a7ff'}
+    directional:{label:'Yönlü',gain:14,hpbw:32,fbr:22,sizeLambda:2.0,color:'#c6a7ff'},
+    omni:{label:'Çubuk / dipol',gain:2.15,hpbw:78,fbr:0,sizeLambda:.50,color:'#e6b36a',omni:true}
   };
   const bwOptions=[1e6,5e6,20e6,40e6,80e6];
 
@@ -193,7 +195,14 @@
   function angle(a,b){return Math.acos(Math.max(-1,Math.min(1,dot(norm(a),norm(b)))))}
   function dir(az,el){const a=deg(az),e=deg(el);return norm(vec(Math.cos(e)*Math.cos(a),Math.cos(e)*Math.sin(a),Math.sin(e)))}
   function antennaPattern(type,theta){
-    const a=ANT[type],half=deg(a.hpbw/2),q=Math.log(.5)/Math.log(Math.max(.01,Math.cos(half))),rear=db2lin(-a.fbr);
+    const a=ANT[type];
+    if(a.omni){
+      const s=Math.sin(theta);
+      if(Math.abs(s)<1e-5)return 1e-8;
+      const field=Math.cos((Math.PI/2)*Math.cos(theta))/s;
+      return Math.max(1e-8,Math.min(1,field*field));
+    }
+    const half=deg(a.hpbw/2),q=Math.log(.5)/Math.log(Math.max(.01,Math.cos(half))),rear=db2lin(-a.fbr);
     if(theta<=Math.PI/2)return Math.max(rear,Math.pow(Math.max(0,Math.cos(theta)),q));
     const back=rear*(.55+.45*Math.pow(Math.abs(Math.cos(theta)),2));
     return Math.max(rear*.35,back);
@@ -228,7 +237,7 @@
   }
   function point3(P,p,r,color,alpha){const q=P(p);ctx.save();ctx.globalAlpha=alpha==null?1:alpha;ctx.fillStyle=color;ctx.beginPath();ctx.arc(q.x,q.y,r*q.pers,0,Math.PI*2);ctx.fill();ctx.restore()}
   function basisFromAxis(axis){let up=Math.abs(axis.z)<.9?vec(0,0,1):vec(0,1,0);const v=norm(cross(axis,up)),w=norm(cross(v,axis));return {v,w}}
-  function lobeRadius(type,theta){const p=antennaPattern(type,theta);return .22+1.15*Math.sqrt(p)}
+  function lobeRadius(type,theta){const p=antennaPattern(type,theta);return type==='omni'?.025+1.28*Math.sqrt(p):.22+1.15*Math.sqrt(p)}
   function drawLobe(P,pos,axis,type,scale,color,alpha){
     const b=basisFromAxis(axis),rings=18,segs=28;
     for(let i=0;i<=rings;i++){
@@ -259,7 +268,17 @@
     line3(P,add(pos,mul(axis,-boom*.4)),add(pos,mul(axis,boom)),c,3,1);
     for(let i=0;i<6;i++){const t=-.25+i*.20,center=add(pos,mul(axis,t)),half=.13*(1-i*.035);line3(P,add(center,mul(b.v,-half)),add(center,mul(b.v,half)),c,2,1)}
   }
-  function drawAntenna(P,pos,axis,type,lam,isRx){if(type==='patch')drawPatch(P,pos,axis,lam,isRx);else drawDirectional(P,pos,axis,lam,isRx)}
+  function drawRod(P,pos,axis,lam,isRx){
+    const c=isRx?'#80e3b4':'#82d5ff',half=.23;
+    line3(P,add(pos,mul(axis,-half)),add(pos,mul(axis,-.018)),c,4,1);
+    line3(P,add(pos,mul(axis,.018)),add(pos,mul(axis,half)),c,4,1);
+    point3(P,pos,3,'#f4bf6e',1);
+  }
+  function drawAntenna(P,pos,axis,type,lam,isRx){
+    if(type==='patch')drawPatch(P,pos,axis,lam,isRx);
+    else if(type==='directional')drawDirectional(P,pos,axis,lam,isRx);
+    else drawRod(P,pos,axis,lam,isRx);
+  }
   function drawGrid(P,span){
     if(!root.getElementById('showGrid').checked)return;
     for(let x=-span;x<=span;x+=.5){line3(P,vec(x,-span,0),vec(x,span,0),'#5d7594',.6,.15)}
@@ -309,13 +328,17 @@
     root.getElementById('rxAzOut').value=root.getElementById('rxAz').value+'°';root.getElementById('rxElOut').value=root.getElementById('rxEl').value+'°';
     root.getElementById('polOut').value=root.getElementById('polMismatch').value+'°';root.getElementById('distanceOut').value=s.R.toFixed(1)+' m';root.getElementById('heightOut').value=(+root.getElementById('height').value).toFixed(1)+' m';
     root.getElementById('bwOut').value=s.bw>=1e6?(s.bw/1e6).toFixed(s.bw<10e6?0:0)+' MHz':s.bw+' Hz';root.getElementById('nfOut').value=s.nf.toFixed(1)+' dB';
-    root.getElementById('txSpec').textContent=txA.label+' · '+txA.gain+' dBi tepe · HPBW ≈ '+txA.hpbw+'° · bu doğrultuda '+s.gtDb.toFixed(1)+' dBi';
-    root.getElementById('rxSpec').textContent=rxA.label+' · '+rxA.gain+' dBi tepe · HPBW ≈ '+rxA.hpbw+'° · bu doğrultuda '+s.grDb.toFixed(1)+' dBi';
+    root.getElementById('txSpec').textContent=txA.omni
+      ?txA.label+' · '+txA.gain+' dBi tepe · azimutta omni · link–çubuk ekseni '+(s.txTheta*180/Math.PI).toFixed(1)+'° · bu doğrultuda '+s.gtDb.toFixed(1)+' dBi'
+      :txA.label+' · '+txA.gain+' dBi tepe · HPBW ≈ '+txA.hpbw+'° · bu doğrultuda '+s.gtDb.toFixed(1)+' dBi';
+    root.getElementById('rxSpec').textContent=rxA.omni
+      ?rxA.label+' · '+rxA.gain+' dBi tepe · azimutta omni · link–çubuk ekseni '+(s.rxTheta*180/Math.PI).toFixed(1)+'° · bu doğrultuda '+s.grDb.toFixed(1)+' dBi'
+      :rxA.label+' · '+rxA.gain+' dBi tepe · HPBW ≈ '+rxA.hpbw+'° · bu doğrultuda '+s.grDb.toFixed(1)+' dBi';
     root.getElementById('lambdaVal').textContent=fmtLen(s.lam);root.getElementById('fsplVal').textContent=s.fspl.toFixed(1)+' dB';root.getElementById('rxPowerVal').textContent=fmtPowerDbm(s.prxDbm);root.getElementById('snrVal').textContent=s.snr.toFixed(1)+' dB';
     root.getElementById('eFieldVal').textContent=s.Erms>=1?s.Erms.toFixed(2)+' V/m':(s.Erms*1000).toFixed(2)+' mV/m';root.getElementById('delayVal').textContent=(s.R/c0*1e9).toFixed(1)+' ns';root.getElementById('aeVal').textContent=(s.Ae*1e4).toFixed(1)+' cm²';root.getElementById('ffVal').textContent=s.Rff.toFixed(2)+' m';
     root.getElementById('sceneTitle').textContent=(freq/1e9>=1?(freq/1e9).toFixed(2)+' GHz':(freq/1e6).toFixed(0)+' MHz')+' · '+txA.label+' TX → '+rxA.label+' RX';
     const far=s.R>=s.Rff,polLoss=s.polFactor>0?lin2db(s.polFactor):-99,txOff=s.txTheta*180/Math.PI,rxOff=s.rxTheta*180/Math.PI;
-    let msg='TX sapma '+txOff.toFixed(1)+'°, RX sapma '+rxOff.toFixed(1)+'°. ';
+    let msg=(txA.omni?'TX link–çubuk açısı ':'TX boresight sapma ')+txOff.toFixed(1)+'°, '+(rxA.omni?'RX link–çubuk açısı ':'RX boresight sapma ')+rxOff.toFixed(1)+'°. ';
     msg+=far?'Bağlantı far-field bölgesinde; Friis yaklaşımı uygun. ':'Mesafe TX Fraunhofer sınırından küçük; Friis sonucu yalnız yaklaşık referanstır. ';
     if(+root.getElementById('polMismatch').value>0)msg+='Polarizasyon kaybı '+(-polLoss).toFixed(1)+' dB. ';
     if(s.snr<0)msg+='Sinyal gürültü tabanının altında.'; else if(s.snr<10)msg+='SNR düşük.'; else msg+='RX analizi için kullanılabilir SNR.';
@@ -325,6 +348,14 @@
   function frame(ts){if(!last)last=ts;time+=Math.min(.05,(ts-last)/1000);last=ts;update();requestAnimationFrame(frame)}
 
   root.querySelectorAll('[data-f]').forEach(btn=>btn.addEventListener('click',()=>{freq=+btn.dataset.f;root.querySelectorAll('[data-f]').forEach(b=>b.classList.toggle('active',b===btn))}));
+  root.getElementById('txType').addEventListener('change',function(){
+    if(this.value==='omni'){root.getElementById('txAz').value=0;root.getElementById('txEl').value=90}
+    else{root.getElementById('txAz').value=0;root.getElementById('txEl').value=0}
+  });
+  root.getElementById('rxType').addEventListener('change',function(){
+    if(this.value==='omni'){root.getElementById('rxAz').value=0;root.getElementById('rxEl').value=90}
+    else{root.getElementById('rxAz').value=180;root.getElementById('rxEl').value=0}
+  });
   root.getElementById('viewIso').addEventListener('click',()=>{camYaw=-.72;camPitch=.38;camZoom=1});
   root.getElementById('viewTop').addEventListener('click',()=>{camYaw=-Math.PI/2;camPitch=1.45;camZoom=.95});
   root.getElementById('viewSide').addEventListener('click',()=>{camYaw=0;camPitch=.03;camZoom=1});
