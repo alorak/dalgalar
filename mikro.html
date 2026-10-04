@@ -376,6 +376,19 @@
         }
         ctx.restore();ctx.globalAlpha=1;
       }
+      function drawPlaneFrontsForward(x0,y0,theta,length,halfSpan,period,color,alpha,clipX0,clipX1,h){
+        if(sourceMode!=='beam'||!root.getElementById('showField').checked)return;
+        const dx=Math.cos(theta),dy=-Math.sin(theta),tx=Math.sin(theta),ty=Math.cos(theta);
+        const travel=((time*3)/(Math.PI*2)*period)%period;
+        ctx.save();
+        ctx.beginPath();ctx.rect(clipX0,0,Math.max(1,clipX1-clipX0),h);ctx.clip();
+        ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=alpha;
+        for(let s=travel;s<length;s+=period){
+          const px=x0+dx*s,py=y0+dy*s;
+          ctx.beginPath();ctx.moveTo(px-tx*halfSpan,py-ty*halfSpan);ctx.lineTo(px+tx*halfSpan,py+ty*halfSpan);ctx.stroke();
+        }
+        ctx.restore();ctx.globalAlpha=1;
+      }
       function drawFieldBundle(r,w,h,front,back,hitY,ray,outLen,theta,theta2,profile){
         if(!root.getElementById('showField').checked)return;
         const materialW=back-front;
@@ -396,6 +409,8 @@
         }
         if(sourceMode==='beam'){
           drawPlaneFronts(front,hitY,theta,ray,half+16,incidentPeriod,'#8fd6ff',.20,0,front,h);
+          const internalLength=materialW/Math.max(.08,Math.cos(theta2));
+          drawPlaneFrontsForward(front,hitY,theta2,internalLength,half+14,internalPeriod,'#9be7c0',.14,front,back,h);
           ctx.fillStyle='rgba(143,214,255,.78)';ctx.font='11px system-ui';ctx.fillText('uzak kaynak → yaklaşık düzlemsel dalga cepheleri',16,48);
         }
       }
