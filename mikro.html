@@ -431,6 +431,8 @@
           }
         }
         ctx.fillStyle='rgba(224,235,249,.78)';ctx.font='12px system-ui';ctx.fillText('hava / vakum',16,24);ctx.fillText(r.m.label,front+12,24);ctx.fillText('hava / vakum',back+10,24);
+        ctx.fillStyle='rgba(143,214,255,.9)';ctx.fillText('gelen',Math.max(14,startX+12),Math.max(42,startY-14));
+        ctx.fillStyle='rgba(245,193,106,.9)';ctx.fillText('yansıyan',Math.max(14,front-112),Math.max(42,hitY-70));
         ctx.fillStyle='rgba(155,231,192,.92)';ctx.fillText('içeride ilerleyen alan',front+14,Math.max(42,hitY-30));
         ctx.fillStyle='rgba(117,220,168,.92)';ctx.fillText('çıkan',back+10,Math.max(42,exitY-18));
       }
