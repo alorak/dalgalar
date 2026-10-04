@@ -38,3 +38,7 @@ Tüm sayfalar vanilla HTML/CSS/JavaScript ile çalışır ve harici kütüphane 
 10 keV X-ışını modu klasik sinüzoidal alan yerine azalan foton akısı ve etkileşim olayları
 olarak gösterilir. 10 keV X-ışını zayıflama değerleri NIST XCOM tabanlıdır; diğer
 presetler öğretici temsilî değerler olarak arayüzde etiketlenir.
+
+
+- `rssi.html` — RSSI, log-distance path loss, iki-yol fading ve zaman serisi simülasyonu
+- `csi.html` — OFDM CSI kompleks kanal cevabı, alt taşıyıcı genlik/fazı ve gecikme profili simülasyonu
