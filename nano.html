@@ -301,28 +301,88 @@
     for(let i=0;i<c.e;i++){const baseX=left+35+((i*83)%Math.max(80,span-70)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=68+((i*61)%Math.max(80,h-120)),drift=band==='xray'?0:-E*14*amp*env;ctx.fillStyle='rgba(117,201,255,.9)';ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.sin(time*2+i)*3,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',baseX+drift-2,baseY+3)}
     for(let i=0;i<c.h;i++){const baseX=left+58+((i*97)%Math.max(80,span-85)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=92+((i*73)%Math.max(80,h-145)),drift=band==='xray'?0:E*11*amp*env;ctx.strokeStyle='rgba(245,189,104,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.cos(time*2+i)*3,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',baseX+drift-2.5,baseY+3)}
   }
+  function drawWaveSegment(x0,y0,x1,y1,amp,period,color,alpha,phaseOffset){
+    const dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+    ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=2;ctx.beginPath();
+    for(let s=0;s<=L;s+=3){
+      const off=Math.sin(s/period*Math.PI*2-time*3+(phaseOffset||0))*amp,x=x0+ux*s+nx*off,y=y0+uy*s+ny*off;
+      if(s===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.globalAlpha=1;
+  }
+  function surfaceGeometry(w,h,left,right){
+    const o=surfaceOptics(),hitY=h*.48,ci=Math.cos(o.thetaI),si=Math.sin(o.thetaI);
+    let rayLen=230;
+    if(ci>.02)rayLen=Math.min(rayLen,(left-22)/ci);
+    if(si>.02)rayLen=Math.min(rayLen,(h-hitY-28)/si);
+    rayLen=Math.max(55,rayLen);
+    return {o:o,hitY:hitY,start:{x:left-ci*rayLen,y:hitY+si*rayLen},ref:{x:left-ci*rayLen,y:hitY-si*rayLen},rayLen:rayLen,span:right-left};
+  }
   function drawClassicalField(w,h,left,right){
     if(!root.getElementById('showField').checked)return;
-    const amp=+root.getElementById('fieldAmp').value/100,span=right-left;
-    ctx.strokeStyle='rgba(128,224,177,.88)';ctx.lineWidth=2.2;ctx.beginPath();
-    for(let x=left;x<=right;x+=3){const frac=(x-left)/span,env=fieldEnvelope(frac),y=h*.46+Math.sin(phaseAt(frac))*24*amp*env;if(x===left)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
-    for(let x=left+25;x<right;x+=70){const frac=(x-left)/span,env=fieldEnvelope(frac),e=Math.sin(phaseAt(frac));drawArrow(x,h*.46-58,0,e*30*amp*env,'#80e0b1',.25+.45*env)}
-    ctx.fillStyle='rgba(128,224,177,.85)';ctx.font='11px system-ui';ctx.fillText('iç E alanı · genlik derinlikle azalıyor',left+12,h*.46-72);
+    const g=surfaceGeometry(w,h,left,right),o=g.o,amp=+root.getElementById('fieldAmp').value/100;
+    drawWaveSegment(g.start.x,g.start.y,left,g.hitY,8,30,'#8fd6ff',1,0);
+    if(o.R>1e-6)drawWaveSegment(left,g.hitY,g.ref.x,g.ref.y,8*Math.sqrt(o.R),30,'#f4c46c',Math.max(.3,Math.sqrt(o.R)),Math.PI*.35);
+
+    ctx.save();ctx.beginPath();ctx.rect(left,0,right-left,h);ctx.clip();
+    if(o.evanescent){
+      const px=Math.max(5,Math.min((right-left)*.28,(o.evPowerDepth/Math.max(viewDepth(),1e-30))*(right-left)*5));
+      const grad=ctx.createLinearGradient(left,g.hitY,left+px,g.hitY);
+      grad.addColorStop(0,'rgba(128,224,177,'+Math.min(.95,.3+.7*Math.sqrt(o.T))+')');grad.addColorStop(1,'rgba(128,224,177,0)');
+      ctx.fillStyle=grad;ctx.fillRect(left,g.hitY-55,px,110);
+      ctx.fillStyle='rgba(128,224,177,.9)';ctx.font='11px system-ui';ctx.fillText('evanescent yüzey alanı',left+8,g.hitY-64);
+    }else{
+      const ct=Math.max(.04,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=(right-left)/ct;
+      const ux=ct,uy=-st,nx=-uy,ny=ux,period=28,baseAmp=24*amp*Math.sqrt(o.T);
+      ctx.strokeStyle='rgba(128,224,177,.9)';ctx.lineWidth=2.2;ctx.beginPath();
+      for(let s=0;s<=L;s+=3){
+        const x=left+ux*s,y0=g.hitY+uy*s,frac=(x-left)/(right-left),env=fieldEnvelope(frac),off=Math.sin(s/period*Math.PI*2-time*3)*baseAmp*env;
+        const y=y0+ny*off,xx=x+nx*off;if(s===0)ctx.moveTo(xx,y);else ctx.lineTo(xx,y);
+      }
+      ctx.stroke();
+      ctx.fillStyle='rgba(128,224,177,.86)';ctx.font='11px system-ui';ctx.fillText('iç alan · kırılır ve derinlikle zayıflar',left+12,42);
+    }
+    ctx.restore();
+
+    ctx.fillStyle='rgba(143,214,255,.9)';ctx.font='11px system-ui';ctx.fillText('gelen',Math.max(12,g.start.x+8),Math.max(42,g.start.y-10));
+    if(o.R>.001){ctx.fillStyle='rgba(244,196,108,.95)';ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,g.ref.x+8),Math.max(42,g.ref.y-10))}
   }
   function drawXrayFlux(w,h,left,right){
     if(!root.getElementById('showField').checked)return;
-    const span=right-left,count=18;
-    ctx.fillStyle='rgba(143,214,255,.85)';ctx.font='11px system-ui';ctx.fillText('10 keV foton akısı · I(z)=I₀e⁻ᶻ/ᴸᵖ',left+12,43);
+    const g=surfaceGeometry(w,h,left,right),o=g.o,count=22,ci=Math.cos(o.thetaI),si=Math.sin(o.thetaI);
+    ctx.font='11px system-ui';
     for(let i=0;i<count;i++){
-      const travel=(time*.13+i/count)%1,frac=travel,prob=powerEnvelope(frac),x=left+frac*span,y=70+(i*29)%(h-125);
-      if(((i*37)%100)/100<prob){ctx.globalAlpha=.18+.82*prob;ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(143,214,255,.32)';ctx.beginPath();ctx.moveTo(Math.max(left,x-22),y);ctx.lineTo(x,y);ctx.stroke();ctx.globalAlpha=1}
+      const q=(time*.12+i/count)%1,x=g.start.x+(left-g.start.x)*q,y=g.start.y+(g.hitY-g.start.y)*q;
+      ctx.globalAlpha=.45+.55*(1-q);ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
     }
-    ctx.strokeStyle='rgba(143,214,255,.42)';ctx.lineWidth=1.5;ctx.beginPath();
-    for(let x=left;x<=right;x+=3){const frac=(x-left)/span,y=h*.46-65*powerEnvelope(frac);if(x===left)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
-    ctx.fillStyle='rgba(143,214,255,.7)';ctx.fillText('göreli foton akısı',left+12,h*.46-72);
+    const reflected=Math.round(count*o.R);
+    for(let i=0;i<reflected;i++){
+      const q=(time*.12+i/Math.max(1,reflected))%1,x=left+(g.ref.x-left)*q,y=g.hitY+(g.ref.y-g.hitY)*q;
+      ctx.globalAlpha=.5+.5*(1-q);ctx.fillStyle='#f4c46c';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+
+    ctx.save();ctx.beginPath();ctx.rect(left,0,right-left,h);ctx.clip();
+    if(o.evanescent){
+      const frac=Math.max(.004,Math.min(.24,o.evPowerDepth/Math.max(viewDepth(),1e-30)*5)),px=(right-left)*frac;
+      const grad=ctx.createLinearGradient(left,0,left+px,0);
+      grad.addColorStop(0,'rgba(143,214,255,.48)');grad.addColorStop(1,'rgba(143,214,255,0)');
+      ctx.fillStyle=grad;ctx.fillRect(left,0,px,h);
+      ctx.fillStyle='rgba(143,214,255,.9)';ctx.fillText('total external reflection · evanescent alan',left+10,44);
+    }else{
+      const ct=Math.max(.025,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=(right-left)/ct,insideCount=Math.round(count*o.T);
+      for(let i=0;i<insideCount;i++){
+        const q=(time*.10+i/Math.max(1,insideCount))%1,s=L*q,x=left+ct*s,y=g.hitY-st*s,frac=(x-left)/(right-left),prob=powerEnvelope(frac);
+        if(((i*37)%100)/100<prob){ctx.globalAlpha=.16+.84*prob;ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3.1,0,Math.PI*2);ctx.fill()}
+      }
+      ctx.globalAlpha=1;ctx.fillStyle='rgba(143,214,255,.8)';ctx.fillText('içeri giren X-foton akısı · Beer–Lambert zayıflaması',left+10,44);
+    }
+    ctx.restore();
+    ctx.fillStyle='rgba(244,196,108,.95)';if(o.R>.002)ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,g.ref.x+8),Math.max(42,g.ref.y-10));
   }
   function eventX(i,count,left,right){
-    const u=(i+.55)/(count+.2),F=1-Math.exp(-depthFactor()),zFrac=-Math.log(Math.max(1e-8,1-u*F))/depthFactor();
+    const o=surfaceOptics(),K=o.evanescent?viewDepth()/Math.max(o.evPowerDepth,1e-30):depthFactor()*o.pathFactor;
+    const u=(i+.55)/(count+.2),F=1-Math.exp(-K),zFrac=-Math.log(Math.max(1e-8,1-u*F))/Math.max(K,1e-9);
     return left+Math.min(.98,zFrac)*(right-left);
   }
   function drawGeneration(w,h,left,right){
@@ -334,6 +394,7 @@
       else if(m.type==='metal'){events=8;kind='heat'}
       else events=1;
     }else if(band==='xray'){events=m.type==='metal'?12:10;kind=m.type==='semiconductor'?'cascade':'ionize'}
+    const entry=surfaceOptics().T;events=Math.round(events*entry);
     if(!events)return;
     for(let i=0;i<events;i++){
       const x=eventX(i,events,left,right),frac=(x-left)/span,env=powerEnvelope(frac),y=65+((i*79)%Math.max(80,h-130)),pulse=.5+.5*Math.sin(time*5+i);
@@ -347,14 +408,6 @@
       if(band==='xray'&&kind==='cascade'){for(let j=0;j<3;j++){ctx.strokeStyle='rgba(239,120,152,.35)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+18+j*8,y-18+j*13);ctx.stroke()}}
     }
   }
-  function drawIncident(w,h,left){
-    if(!root.getElementById('showField').checked)return;
-    if(band==='xray'){
-      ctx.fillStyle='#8fd6ff';for(let i=0;i<8;i++){const x=35+((time*70+i*41)%(Math.max(30,left-45))),y=90+i*48%(h-120);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill()}
-    }else{
-      ctx.strokeStyle='#8fd6ff';ctx.lineWidth=2;ctx.beginPath();for(let x=35;x<=left;x+=3){const y=h*.46+Math.sin(x*.055-time*3)*22;if(x===35)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
-    }
-  }
   function drawDepthAxis(w,h,left,right){
     const D=viewDepth();ctx.strokeStyle='rgba(220,232,248,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,h-24);ctx.lineTo(right,h-24);ctx.stroke();
     ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';
@@ -366,7 +419,6 @@
     const r=nano.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),left=w*.27,right=w*.96;
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
     ctx.fillStyle='rgba(109,132,165,.13)';ctx.fillRect(left,0,right-left,h);ctx.strokeStyle='rgba(220,232,248,.5)';ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(left,h);ctx.stroke();
-    drawIncident(w,h,left);
     if(band==='xray')drawXrayFlux(w,h,left,right);else drawClassicalField(w,h,left,right);
     drawLattice(m,w,h,left,right);drawCarriers(w,h,left,right);drawGeneration(w,h,left,right);drawDepthAxis(w,h,left,right);
     ctx.fillStyle='rgba(225,235,247,.8)';ctx.font='12px system-ui';ctx.fillText('vakum / hava',18,24);ctx.fillText(m.label,left+12,24);
