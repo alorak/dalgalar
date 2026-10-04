@@ -120,7 +120,7 @@
           <option value="water">Su · polar moleküler</option>
           <option value="nacl">NaCl · iyonik kristal</option>
         </select></div>
-        <div class="control"><label>Geliş açısı <output id="angleOut">35°</output></label><input id="angle" type="range" min="0" max="895" value="350"></div>
+        <div class="control"><label>Geliş açısı · yüzey normaline göre <output id="angleOut">35°</output></label><input id="angle" type="range" min="0" max="895" value="350"></div>
         <div class="control"><label>Alan genliği <output id="fieldOut">1.00×</output></label><input id="field" type="range" min="20" max="180" value="100"></div>
         <div class="control"><label>Gösterilen derinlik <output id="depthOut">3.0×</output></label><input id="depth" type="range" min="10" max="80" value="30"></div>
         <div class="control"><label>Animasyon hızı <output id="speedOut">1.0×</output></label><input id="speed" type="range" min="0" max="20" value="10"></div>
@@ -212,12 +212,17 @@
         }else{
           title='Baskın yanıt: polarizasyon';text='Bağlı yükler veya zayıf serbest taşıyıcılar elektromanyetik alana kolektif cevap verir. Faz gecikmesi arttıkça soğurma da artar.';flow='E alanı → polarizasyon / taşıyıcı cevabı → yeniden yayılan alan + iç kayıp';mechanism=m.type==='semiconductor'?'taşıyıcı + Lorentz':'dielektrik';lag='küçük';formula='P(ω)=ε₀χ(ω)E(ω)';
         }
-        let bragg='—';
+        let bragg='—',braggAngle=null,braggMatch=false;
         if(band==='xray'&&m.crystal&&m.d111){
           const s=b.lambda/(2*m.d111);
-          if(s<=1){const th=Math.asin(s)*180/Math.PI;bragg='θᴮ ≈ '+th.toFixed(1)+'°';}
+          if(s<=1){
+            braggAngle=Math.asin(s)*180/Math.PI;
+            const grazing=90-angle;
+            braggMatch=Math.abs(grazing-braggAngle)<2;
+            bragg=braggMatch?'uyumlu · θᴮ ≈ '+braggAngle.toFixed(1)+'°':'θᴮ ≈ '+braggAngle.toFixed(1)+'°';
+          }
         }
-        return {m:m,b:b,angle:angle,field:field,depthMul:depthMul,depth:depth,ratio:ratio,photon:photon,title:title,text:text,flow:flow,mechanism:mechanism,lag:lag,formula:formula,bragg:bragg};
+        return {m:m,b:b,angle:angle,field:field,depthMul:depthMul,depth:depth,ratio:ratio,photon:photon,title:title,text:text,flow:flow,mechanism:mechanism,lag:lag,formula:formula,bragg:bragg,braggAngle:braggAngle,braggMatch:braggMatch};
       }
       function updateUI(r){
         root.getElementById('angleOut').value=r.angle.toFixed(1)+'°';
@@ -334,15 +339,11 @@
           }
         });
 
-        if(band==='xray'&&r.m.crystal&&r.m.d111){
-          const lambda=r.b.lambda,s=lambda/(2*r.m.d111);
-          if(s<=1){
-            const bragg=Math.asin(s),incoming=bragg;
-            const y0=h*.58,x0=surface+110,len=180;
-            ctx.strokeStyle='rgba(143,214,255,.85)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x0-Math.cos(incoming)*len,y0+Math.sin(incoming)*len);ctx.lineTo(x0,y0);ctx.stroke();
-            ctx.strokeStyle='rgba(245,192,105,.85)';ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0+Math.cos(incoming)*len,y0-Math.sin(incoming)*len);ctx.stroke();
-            ctx.fillStyle='rgba(238,230,255,.85)';ctx.font='12px system-ui';ctx.fillText('Bragg yolu',x0+12,y0-12);
-          }
+        if(band==='xray'&&r.m.crystal&&r.m.d111&&r.braggAngle!==null&&root.getElementById('showPlanes').checked){
+          const incoming=r.braggAngle*Math.PI/180,y0=h*.58,x0=surface+110,len=180;
+          ctx.strokeStyle=r.braggMatch?'rgba(143,214,255,.9)':'rgba(143,214,255,.28)';ctx.lineWidth=r.braggMatch?2.4:1.2;ctx.beginPath();ctx.moveTo(x0-Math.cos(incoming)*len,y0+Math.sin(incoming)*len);ctx.lineTo(x0,y0);ctx.stroke();
+          ctx.strokeStyle=r.braggMatch?'rgba(245,192,105,.9)':'rgba(245,192,105,.28)';ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x0+Math.cos(incoming)*len,y0-Math.sin(incoming)*len);ctx.stroke();
+          ctx.fillStyle=r.braggMatch?'rgba(238,230,255,.9)':'rgba(238,230,255,.48)';ctx.font='12px system-ui';ctx.fillText(r.braggMatch?'Bragg koşulu yaklaşık sağlandı':'referans Bragg yönü',x0+12,y0-12);
         }
         if(root.getElementById('showAbsorption').checked&&band==='xray'){
           for(let i=0;i<5;i++){
