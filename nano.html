@@ -96,7 +96,7 @@
         <div class="metric"><strong id="wavelengthVal">3.00 m</strong><span>vakumdaki dalga boyu λ</span></div>
         <div class="metric"><strong id="attenuationVal">—</strong><span>1/e güç zayıflama uzunluğu Lₚ</span></div>
         <div class="metric"><strong id="viewDepthVal">—</strong><span>gösterilen fiziksel derinlik</span></div>
-        <div class="metric"><strong id="edgePowerVal">—</strong><span>sağ kenarda kalan güç</span></div>
+        <div class="metric"><strong id="edgePowerVal">—</strong><span>sağ kenarda kalan güç / içeri giren</span></div>
       </div>
     </section>
 
@@ -147,6 +147,7 @@
   </section>
 
   <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
+  <div class="note"><strong>Yüzey normalizasyonu:</strong> Nano sayfa yüzeyde ne kadar gücün yansıdığını tekrar hesaplamaz. Malzeme içine geçmiş alan/güç <strong>z=0⁺ noktasında 1'e normalize edilir</strong> ve bundan sonraki iç zayıflama gösterilir. Fresnel/yüzey yansıması Mikro ve Yüzey & Frekans sayfalarının konusudur.</div>
   <div class="note"><strong>Zayıflama modeli:</strong> Nano sahnedeki yatay eksen artık fiziksel derinliğe bağlıdır. <strong>Lₚ</strong>, güç/şiddetin 1/e'ye düştüğü karakteristik uzunluktur: I(z)=I₀e<sup>−z/Lₚ</sup>. Klasik alan çizildiğinde genlik bunun karekökü gibi, E(z)=E₀e<sup>−z/(2Lₚ)</sup>, azalır. X-ışını modunda sinüzoidal alan yerine azalan foton akısı ve etkileşim olayları gösterilir.</div>
   <div class="note"><strong>Uzaysal ölçek:</strong> Yatay eksen zayıflama hesabı için fiziksel derinliği temsil eder; atom/molekül sembolleri bu eksende gerçek atom aralıklarıyla çizilmez, yalnız etkileşen maddeyi örnekleyen şematik işaretlerdir. Bu nedenle metre ölçeğindeki düşük-kayıplı bir ortamda bile atom simgeleri görünür kalabilir.</div>
   <div class="note"><strong>Silisyum görünür ışık:</strong> hν &gt; E<sub>g</sub> enerji bakımından e–h üretimine izin verir; ancak kristal silisyum dolaylı bant aralıklı olduğundan gerçek optik geçiş olasılıkları bant yapısı ve fonon momentumuyla belirlenir. 550 nm’de soğurma yine güçlüdür ve burada ölçülmüş soğurma katsayısı ölçeği kullanılır.</div>
@@ -200,6 +201,14 @@
     if(m.lattice){for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const p=pts[i],q=pts[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d>45&&d<66){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke()}}}
     pts.forEach(p=>{
       const env=fieldEnvelope(p.frac);
+      if(m.type==='polar'){
+        const orient=band==='xray'?0:Math.sin(phaseAt(p.frac))*.45*(+root.getElementById('fieldAmp').value/100)*env;
+        const arm=10,half=.91;
+        ctx.fillStyle='rgba(104,188,255,.9)';ctx.beginPath();ctx.arc(p.x,p.y,4.2,0,Math.PI*2);ctx.fill();
+        [-half,half].forEach(a=>{const aa=orient+a,hx=p.x+Math.cos(aa)*arm,hy=p.y+Math.sin(aa)*arm;ctx.strokeStyle='rgba(210,226,246,.5)';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(hx,hy);ctx.stroke();ctx.fillStyle='rgba(244,205,126,.9)';ctx.beginPath();ctx.arc(hx,hy,2.4,0,Math.PI*2);ctx.fill()});
+        if(root.getElementById('showBound').checked&&band!=='xray')drawArrow(p.x,p.y,Math.cos(orient)*12*env,Math.sin(orient)*12*env,'#ad8dff',.32);
+        return;
+      }
       if(root.getElementById('showBound').checked){
         if(band==='xray'){
           ctx.strokeStyle='rgba(173,141,255,'+(.12+.22*env)+')';ctx.beginPath();ctx.arc(p.x,p.y,10,0,Math.PI*2);ctx.stroke();
@@ -335,7 +344,7 @@
       else{pair='Çoklu';carrier='ikincil kaskat';status='10 keV X-ışını Si içinde sonsuza kadar gitmez: NIST tabanlı 1/e güç zayıflama uzunluğu yaklaşık 127 µm’dir. Soğurulan/saçılan fotonlar hızlı ikincil elektronlar ve çoklu e–h çiftleri oluşturabilir.';flow='<strong>X-ışını:</strong> azalan foton akısı → fotoelektrik/saçılma → hızlı elektron → iyonizasyon kaskadı.';mech='photon attenuation + cascade'}
     }else if(m.type==='metal'){
       pair='Uygulanmaz';carrier='serbest elektron';
-      if(band==='xray'){status='10 keV X-ışını bakırda çok güçlü zayıflar: 1/e güç uzunluğu yaklaşık 5.2 µm. Kalan foton akısı derinlikle üstel azalır; etkileşimler fotoelektrik soğurma ve saçılmadır.';flow='<strong>Cu + X:</strong> I(z)=I₀e⁻ᵘᶻ → fotoelektrik/saçılma → hızlı elektronlar.';mech='NIST XCOM attenuation'}
+      if(band==='xray'){status='10 keV X-ışını bakırda çok güçlü zayıflar: 1/e güç uzunluğu yaklaşık 5.2 µm. 10 keV ayrıca Cu K-kenarının (~8.98 keV) hemen üzerindedir; fotoelektrik soğurma güçlüdür. Kalan foton akısı derinlikle üstel azalır.';flow='<strong>Cu + X:</strong> I(z)=I₀e⁻ᵘᶻ → fotoelektrik/saçılma → hızlı elektronlar.';mech='NIST XCOM attenuation'}
       else{status='Bakırda alan yüzeye yakın bölgede hızla söner; RF/mikrodalgada skin effect, görünürde optik soğurma baskındır.';flow='<strong>Metal:</strong> E(t) → serbest elektron akımı → yeniden yayım + Joule/optik kayıp.';mech='skin/optical loss'}
     }else{
       pair='Uygulanmaz';carrier=m.type==='polar'?'dipol/bağlı yük':'bağlı elektron';
@@ -346,7 +355,7 @@
     root.getElementById('electronCount').textContent=c.e;root.getElementById('holeCount').textContent=c.h;root.getElementById('fieldPeriod').textContent=fmtTime(1/bnd().f);root.getElementById('mechanism').textContent=mech;root.getElementById('attenuationModel').textContent=attModel;root.getElementById('sourceVal').textContent=m.source[band];
     root.getElementById('sceneTitle').textContent=bnd().label+' · '+m.label+' · nano elektronik görünüm';
     root.getElementById('sceneSubtitle').textContent=band==='xray'?'Foton akısı, zayıflama ve atomik etkileşimler.':(m.type==='semiconductor'?'İç alan, polarizasyon, serbest taşıyıcılar ve bant geçişleri.':'Atomik/moleküler alan cevabı.');
-    root.getElementById('overlayText').innerHTML=status+' <strong>Görüntü:</strong> '+fmtLen(D)+' = '+depthFactor().toFixed(1)+' Lₚ; sağ kenarda güç ≈ %'+(100*edge).toFixed(1)+'.';
+    root.getElementById('overlayText').innerHTML=status+' <strong>İç alan normalize:</strong> z=0⁺ için güç %100. <strong>Görüntü:</strong> '+fmtLen(D)+' = '+depthFactor().toFixed(1)+' Lₚ; sağ kenarda içeri giren gücün ≈ %'+(100*edge).toFixed(1)+' kadarı kalır.';
   }
   function frame(ts){if(!last)last=ts;const sp=+root.getElementById('speed').value/10;if(running)time+=Math.min(.05,(ts-last)/1000)*sp;last=ts;updateUI();drawScene();drawBands();requestAnimationFrame(frame)}
   root.querySelectorAll('[data-band]').forEach(btn=>btn.addEventListener('click',()=>{band=btn.dataset.band;root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b===btn))}));
