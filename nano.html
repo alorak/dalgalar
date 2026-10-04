@@ -31,9 +31,9 @@
     .visual-card{overflow:hidden}.visual-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 17px;border-bottom:1px solid var(--line)}
     .visual-head p{margin:3px 0 0;color:var(--muted);font-size:.8rem}
     .canvas-wrap{position:relative;background:#071427}.canvas-wrap canvas{display:block;width:100%;height:575px}
-    .legend{position:absolute;right:14px;top:14px;display:flex;gap:9px;flex-wrap:wrap;max-width:430px;padding:7px 9px;border-radius:10px;background:rgba(7,20,39,.82);color:#e7eef8;font-size:.7rem;backdrop-filter:blur(5px)}
+    .legend{display:flex;gap:7px 16px;flex-wrap:wrap;padding:9px 16px;background:#0b1a30;border-top:1px solid rgba(220,232,248,.08);color:#e7eef8;font-size:.72rem}
     .legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.e{background:#75c9ff}.h{background:#f5bd68}.bound{background:#ad8dff}.field{background:#80e0b1}.event{background:#ef7898}
-    .overlay{position:absolute;left:14px;bottom:14px;max-width:min(620px,calc(100% - 28px));padding:8px 10px;border-radius:10px;background:rgba(7,20,39,.83);color:#e5edf8;font-size:.75rem;backdrop-filter:blur(5px)}
+    .overlay{padding:10px 16px;background:#0f1f37;color:#dce8f7;font-size:.78rem;line-height:1.55}.overlay strong{color:#fff}
     .band-card{border-top:1px solid var(--line);padding:13px 16px;background:#fbfcfe}.band-card canvas{display:block;width:100%;height:195px}
     .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line)}
     .metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:1rem}.metric span{font-size:.69rem;color:var(--muted)}
@@ -49,7 +49,7 @@
     .explain{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.ex{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px}.ex h3{font-size:.96rem;margin:0 0 8px}.ex p{margin:0;color:#566980;font-size:.83rem}
     .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.83rem}
     @media(max-width:1000px){.intro,.layout{grid-template-columns:1fr}.bands{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr 1fr}.explain{grid-template-columns:1fr 1fr}}
-    @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.bands{grid-template-columns:1fr}.canvas-wrap canvas{height:440px}.metrics{grid-template-columns:1fr 1fr}.explain{grid-template-columns:1fr}.legend{left:12px;right:12px;top:12px}}
+    @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.bands{grid-template-columns:1fr}.canvas-wrap canvas{height:440px}.metrics{grid-template-columns:1fr 1fr}.explain{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
@@ -87,7 +87,7 @@
       <div class="canvas-wrap">
         <canvas id="nanoCanvas" aria-label="Nano elektromanyetik malzeme etkileşim simülasyonu"></canvas>
         <div class="legend"><span><i class="dot field"></i>iç E alanı</span><span><i class="dot" style="background:#f4c46c"></i>yansıyan alan / foton</span><span><i class="dot bound"></i>bağlı elektron polarizasyonu</span><span><i class="dot e"></i>serbest elektron</span><span><i class="dot h"></i>hol</span><span><i class="dot event"></i>soğurma / e–h üretimi</span></div>
-        <div class="overlay" id="overlayText">RF: hν ≪ E<sub>g</sub>. Yeni e–h çifti oluşmaz; mevcut taşıyıcılar ve bağlı elektronlar alan tarafından sürülür/polarize edilir.</div>
+        <div class="overlay" id="overlayText">—</div>
       </div>
       <div class="band-card"><canvas id="bandCanvas" aria-label="Silisyum enerji bant diyagramı"></canvas></div>
       <div class="metrics">
@@ -298,27 +298,37 @@
   // q: vakumda piksel başına faz (fiziksel ölçek). Çok sık ise okunabilirlik için seyreltilir; n oranı korunur.
   function waveScale(span){
     const q=2*Math.PI*(viewDepth()/span)/bnd().lambda,nEff=Math.hypot(O.sinI,O.kz.re),qMax=2*Math.PI/22/Math.max(1,nEff),qd=Math.min(q,qMax);
-    return {q:q,qd:qd,diluted:q>qMax*1.0001,factor:q/qd,cycles:viewDepth()*O.kz.re/bnd().lambda};
+    // Vakum tarafı derinlik ekseninde değildir: dalga boyu 28–140 px aralığında tutulur (ör. Cu RF'de λ=3 m ≫ 13 µm görüntü).
+    const per=2*Math.PI/Math.max(qd,1e-30),perV=Math.max(28,Math.min(140,per));
+    return {q:q,qd:qd,diluted:q>qMax*1.0001,factor:q/qd,cycles:viewDepth()*O.kz.re/bnd().lambda,qv:2*Math.PI/perV,vacScaled:Math.abs(perV-per)>.5};
   }
   function insidePhase(x,y){return W.qd*(O.kz.re*(x-G.left)+O.sinI*(G.hitY-y))-time*3+O.tArg}
-  function eDir(){return {x:Math.sin(O.thetaT),y:Math.cos(O.thetaT)}}
+  function eDir(){const t=G?G.tThetaT:O.thetaT;return {x:Math.sin(t),y:Math.cos(t)}}
   function layout(){
-    const r=nano.getBoundingClientRect(),w=r.width,h=r.height,left=w*.27,right=w*.96,hitY=h*.48,ci=O.cosI,si=O.sinI;
-    let rayLen=230;
-    if(ci>.02)rayLen=Math.min(rayLen,(left-22)/ci);
-    if(si>.02)rayLen=Math.min(rayLen,(h-hitY-28)/si);
+    const r=nano.getBoundingClientRect(),w=r.width,h=r.height,left=w*.27,right=w*.96,span=right-left;
+    // Kırılan ışın görüntüden çıkmasın: büyük θt'de çarpma noktası aşağı alınır, gerekirse çizim açısı sıkıştırılır.
+    const tanT=band==='xray'?0:Math.tan(Math.min(O.thetaT,1.5)),hitY=h*(.5+.2*Math.min(1,tanT)),tanD=Math.min(tanT,(hitY-50)/span);
+    // Çizim açısı fizikseldir; çok küçük grazing açılar görünür olsun diye en az 25° (X-ışını) / 5° çizilir.
+    const minG=(band==='xray'?25:5)*Math.PI/180,th=Math.min(O.thetaI,Math.PI/2-minG),ci=Math.cos(th),si=Math.sin(th);
+    const sep=si<.06?16:0; // dik/dike yakın gelişte gelen ve yansıyan ışını ayrı çiz
+    let rayLen=Math.min(230,left-30);
+    if(ci>.02)rayLen=Math.min(rayLen,(left-30)/ci);
+    if(si>.02)rayLen=Math.min(rayLen,(h-hitY-50)/si,(hitY-70)/si);
     rayLen=Math.max(55,rayLen);
-    G={w:w,h:h,left:left,right:right,span:right-left,hitY:hitY,rayLen:rayLen,start:{x:left-ci*rayLen,y:hitY+si*rayLen},ref:{x:left-ci*rayLen,y:hitY-si*rayLen}};
+    G={w:w,h:h,left:left,right:right,span:span,hitY:hitY,rayLen:rayLen,ci:ci,si:si,sep:sep,exaggerated:th<O.thetaI-1e-9,tThetaT:Math.atan(tanD),tCompressed:tanD<tanT-1e-6,
+      start:{x:left-ci*rayLen,y:hitY+sep+si*rayLen},ref:{x:left-ci*rayLen,y:hitY-sep-si*rayLen}};
   }
   function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
   function resize(){resizeOne(nano,ctx,parseFloat(getComputedStyle(nano).height));resizeOne(bandCanvas,bctx,195)}
   const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
   function sci(x,d){if(!isFinite(x))return '∞';if(x===0)return '0';const e=Math.floor(Math.log10(Math.abs(x))),mant=x/Math.pow(10,e);if(e>=-2&&e<=3)return String(+x.toPrecision(d+1));return mant.toFixed(d)+'×10'+String(e).split('').map(ch=>SUP[ch]).join('')}
-  function fmtE(e){if(e<1e-3)return e.toExponential(2)+' eV';if(e<1e3)return e.toFixed(e<10?2:1)+' eV';return (e/1e3).toFixed(1)+' keV'}
+  function fmtE(e){if(e<1e-3)return sci(e,2)+' eV';if(e<1e3)return e.toFixed(e<10?2:1)+' eV';return (e/1e3).toFixed(1)+' keV'}
   function fmtLen(m){if(m>=1e3)return (m/1e3).toFixed(m<1e4?2:1)+' km';if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=1e-2)return (m*100).toFixed(2)+' cm';if(m>=1e-3)return (m*1e3).toFixed(2)+' mm';if(m>=1e-6)return (m*1e6).toFixed(2)+' µm';if(m>=1e-9)return (m*1e9).toFixed(2)+' nm';return (m*1e12).toFixed(2)+' pm'}
   function fmtTime(s){if(s>=1e-9)return (s*1e9).toPrecision(3)+' ns';if(s>=1e-12)return (s*1e12).toPrecision(3)+' ps';if(s>=1e-15)return (s*1e15).toPrecision(3)+' fs';return (s*1e18).toPrecision(3)+' as'}
   function fmtRho(r){const ocm=r*100;return (ocm>=1e4||ocm<.01?sci(ocm,1):ocm.toPrecision(3))+' Ω·cm'}
+  function fmtPct(x){const v=100*x;if(v>=99.95&&v<100)return '%'+v.toFixed(3);if(v>=.05||v===0)return '%'+v.toFixed(1);return '%'+sci(v,1)}
   function fmtCount(x){return x>=1e4?sci(x,1):(x>=10?x.toFixed(0):x.toFixed(x>=1?1:2))}
+  function fitText(full,short,maxW){return ctx.measureText(full).width<=maxW?full:short}
   function hash(i){const s=Math.sin(i*127.1+311.7)*43758.5453;return s-Math.floor(s)}
   function drawArrow(x,y,dx,dy,color,a){if(Math.hypot(dx,dy)<.5)return;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=a;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke();const ang=Math.atan2(dy,dx),hh=4;ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.lineTo(x+dx-Math.cos(ang-.55)*hh,y+dy-Math.sin(ang-.55)*hh);ctx.lineTo(x+dx-Math.cos(ang+.55)*hh,y+dy-Math.sin(ang+.55)*hh);ctx.fill();ctx.globalAlpha=1}
   // Ekrana dik vektör: ⊙ izleyiciye doğru, ⊗ izleyiciden uzağa.
@@ -331,7 +341,7 @@
   function drawWavePath(x0,y0,ux,uy,len,nx,ny,ampFn,phaseFn,color,alpha,width){
     ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=width||2;ctx.beginPath();
     for(let s=0;s<=len;s+=2){
-      const x=x0+ux*s,y=y0+uy*s,off=Math.sin(phaseFn(x,y))*ampFn(x,y),xx=x+nx*off,yy=y+ny*off;
+      const x=x0+ux*s,y=y0+uy*s,off=Math.sin(phaseFn(x,y,s))*ampFn(x,y),xx=x+nx*off,yy=y+ny*off;
       if(s===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
     }
     ctx.stroke();ctx.globalAlpha=1;
@@ -344,7 +354,9 @@
   }
   function drawLattice(m){
     const {left,right,span,h}=G,pts=[],gap=56,amp=ampScale(),dir=eDir(),xr=band==='xray',showB=$('showBound').checked;
-    for(let x=left+25;x<right-20;x+=gap)for(let y=55;y<h-35;y+=gap){
+    // Satırlar ışın çizgisinin (hitY) iki yanına yerleşir; alan çizimi atomların altında kalmaz.
+    const rows=[];for(let y=G.hitY-gap/2;y>=80;y-=gap)rows.push(y);for(let y=G.hitY+gap/2;y<h-40;y+=gap)rows.push(y);
+    for(let x=left+25;x<right-20;x+=gap)for(const y of rows){
       let xx=x,yy=y;if(!m.lattice){xx+=Math.sin(x*.13+y*.17)*10;yy+=Math.cos(x*.19-y*.11)*8}pts.push({x:xx,y:yy,frac:(xx-left)/span});
     }
     ctx.strokeStyle='rgba(162,183,214,.12)';ctx.lineWidth=1;
@@ -414,65 +426,80 @@
     if(!$('showCarriers').checked)return;
     const {left,span,h}=G,c=carrierCounts(),resp=carrierResp(),amp=ampScale(),dir=eDir(),xr=band==='xray',ip=inPlane();
     for(let i=0;i<c.e;i++){
-      const baseX=left+35+((i*83)%Math.max(80,span-70)),baseY=68+((i*61)%Math.max(80,h-120)),env=fieldEnvelope((baseX-left)/span);
-      const d=xr?0:carrierDisp(baseX,baseY,-1,resp.e)*14*amp*resp.e.a*env,x=baseX+(ip?dir.x*d:0),y=baseY+Math.sin(time*2+i)*3+(ip?dir.y*d:0),rad=ip?4:Math.max(2,4*(1+.025*d));
+      const baseX=left+30+hash(i*2+1)*(span-60),baseY=80+hash(i*2+2)*(h-130),env=fieldEnvelope((baseX-left)/span);
+      const d=xr?0:carrierDisp(baseX,baseY,-1,resp.e.r)*14*amp*resp.e.a*env,x=baseX+(ip?dir.x*d:0),y=baseY+Math.sin(time*2+i)*3+(ip?dir.y*d:0),rad=ip?4:Math.max(2,4*(1+.025*d));
       ctx.fillStyle='rgba(117,201,255,.9)';ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',x-2,y+3);
     }
     for(let i=0;i<c.h;i++){
-      const baseX=left+58+((i*97)%Math.max(80,span-85)),baseY=92+((i*73)%Math.max(80,h-145)),env=fieldEnvelope((baseX-left)/span);
-      const d=xr?0:carrierDisp(baseX,baseY,1,resp.h)*14*amp*resp.h.a*env,x=baseX+(ip?dir.x*d:0),y=baseY+Math.cos(time*2+i)*3+(ip?dir.y*d:0),rad=ip?5:Math.max(2.5,5*(1+.025*d));
+      const baseX=left+30+hash(i*2+101)*(span-60),baseY=80+hash(i*2+102)*(h-130),env=fieldEnvelope((baseX-left)/span);
+      const d=xr?0:carrierDisp(baseX,baseY,1,resp.h.r)*14*amp*resp.h.a*env,x=baseX+(ip?dir.x*d:0),y=baseY+Math.cos(time*2+i)*3+(ip?dir.y*d:0),rad=ip?5:Math.max(2.5,5*(1+.025*d));
       ctx.strokeStyle='rgba(245,189,104,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',x-2.5,y+3);
     }
   }
-  function insideMag(){return O.tAbs<.25?.25/Math.max(O.tAbs,1e-30):1}
+  // |t| küçükse iç alan büyütülür: metalde (|t|≪1) gelenle aynı, diğerlerinde 0.6 katı genlikle çizilir.
+  function insideMag(){return O.tAbs<.35?(O.tAbs<.05?1:.6)/Math.max(O.tAbs,1e-30):1}
+  function rayHead(x,y,ux,uy,color){const a=Math.atan2(uy,ux),k=7;ctx.fillStyle=color;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-Math.cos(a-.45)*k,y-Math.sin(a-.45)*k);ctx.lineTo(x-Math.cos(a+.45)*k,y-Math.sin(a+.45)*k);ctx.fill()}
+  function rayLabels(R){
+    const {start,ref,h,left}=G,cl=y=>Math.max(62,Math.min(h-40,y)),fx=(x,t)=>Math.max(12,Math.min(x,left-ctx.measureText(t).width-10));
+    ctx.font='11px system-ui';ctx.fillStyle='rgba(143,214,255,.95)';ctx.fillText('gelen',fx(start.x,'gelen'),cl(start.y+20));
+    if(R>1e-4){const t=fitText('yansıyan · '+fmtPct(R),'R '+fmtPct(R),left-22);ctx.fillStyle='rgba(244,196,108,.95)';ctx.fillText(t,fx(ref.x,t),cl(ref.y-12))}
+  }
   function drawClassicalField(){
     if(!$('showField').checked)return;
-    const {left,span,hitY,start,ref,rayLen}=G,o=O,amp=ampScale(),A0=12*amp,ci=o.cosI,si=o.sinI,t3=time*3;
+    const {left,span,hitY,start,rayLen,ci,si,sep}=G,o=O,amp=ampScale(),A0=16*amp,t3=time*3,qv=W.qv;
     // Faz sürekliliği: yüzeyde gelen −ωt, yansıyan −ωt+arg r, iletilen −ωt+arg t.
-    drawWavePath(start.x,start.y,ci,-si,rayLen,si,ci,()=>A0,(x,y)=>W.qd*(ci*(x-left)+si*(hitY-y))-t3,'#8fd6ff',1);
-    if(o.R>1e-6)drawWavePath(left,hitY,-ci,-si,rayLen,-si,ci,()=>A0*Math.sqrt(o.R),(x,y)=>W.qd*(-ci*(x-left)+si*(hitY-y))-t3+o.rArg,'#f4c46c',Math.max(.35,Math.sqrt(o.R)));
+    drawWavePath(start.x,start.y,ci,-si,rayLen,si,ci,()=>A0,(x,y,s)=>-qv*(rayLen-s)-t3,'#8fd6ff',1);
+    rayHead(left-3,hitY+sep,ci,-si,'#8fd6ff');
+    if(o.R>1e-4){
+      drawWavePath(left,hitY-sep,-ci,-si,rayLen,-si,ci,()=>A0*Math.sqrt(o.R),(x,y,s)=>qv*s-t3+o.rArg,'#f4c46c',Math.max(.45,Math.sqrt(o.R)));
+      rayHead(G.ref.x,G.ref.y,-ci,-si,'#f4c46c');
+    }
     ctx.save();ctx.beginPath();ctx.rect(left,0,span,G.h);ctx.clip();
-    const ct=Math.max(.04,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=span/ct,mag=insideMag(),inA=A0*o.tAbs*mag;
-    drawWavePath(left,hitY,ct,-st,L,st,ct,x=>inA*fieldEnvelope((x-left)/span),insidePhase,'rgba(128,224,177,.95)',1,2.2);
-    ctx.fillStyle='rgba(128,224,177,.86)';ctx.font='11px system-ui';ctx.fillText('iç alan E_t=|t|E₀ · kırılır ve derinlikle zayıflar'+(mag>1.05?' · çizim ×'+fmtCount(mag)+' büyütüldü':''),left+12,42);
+    const ct=Math.cos(G.tThetaT),st=Math.sin(G.tThetaT),L=span/ct,mag=insideMag(),inA=A0*o.tAbs*mag;
+    // Sönüm zarfı ±|E_t|e^{-z/2L⊥} (gölgeli) + anlık alan E(z,t).
+    ctx.beginPath();
+    for(let s=0;s<=L;s+=4){const x=left+ct*s,y=hitY-st*s,a=inA*fieldEnvelope((x-left)/span);if(s===0)ctx.moveTo(x+st*a,y+ct*a);else ctx.lineTo(x+st*a,y+ct*a)}
+    for(let s=L;s>=0;s-=4){const x=left+ct*s,y=hitY-st*s,a=inA*fieldEnvelope((x-left)/span);ctx.lineTo(x-st*a,y-ct*a)}
+    ctx.closePath();ctx.fillStyle='rgba(128,224,177,.13)';ctx.fill();ctx.strokeStyle='rgba(128,224,177,.35)';ctx.lineWidth=1;ctx.setLineDash([3,4]);ctx.stroke();ctx.setLineDash([]);
+    drawWavePath(left,hitY,ct,-st,L,st,ct,x=>inA*fieldEnvelope((x-left)/span),insidePhase,'rgba(128,224,177,.95)',1,2.4);
+    ctx.fillStyle='rgba(128,224,177,.9)';ctx.font='11px system-ui';{const k=mag>1.05?' (×'+fmtCount(mag)+')':'';ctx.fillText(fitText('iç alan E_t=|t|·E₀'+(mag>1.05?' (çizimde ×'+fmtCount(mag)+')':''),'E_t'+k,span-24),left+12,44)}
     ctx.restore();
-    ctx.fillStyle='rgba(143,214,255,.9)';ctx.font='11px system-ui';ctx.fillText('gelen',Math.max(12,start.x+8),Math.max(42,start.y-10));
-    if(o.R>.001){ctx.fillStyle='rgba(244,196,108,.95)';ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,ref.x+8),Math.max(42,ref.y-10))}
+    rayLabels(o.R);
   }
   function drawXrayFlux(){
     if(!$('showField').checked)return;
-    const {left,span,hitY,start,ref}=G,o=O,count=22;
-    ctx.font='11px system-ui';
+    const {left,span,hitY,start,ref,sep}=G,o=O,count=22;
     for(let i=0;i<count;i++){
-      const q=(time*.12+i/count)%1,x=start.x+(left-start.x)*q,y=start.y+(hitY-start.y)*q;
+      const q=(time*.12+i/count)%1,x=start.x+(left-start.x)*q,y=start.y+(hitY+sep-start.y)*q;
       ctx.globalAlpha=.45+.55*(1-q);ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
     }
     const reflected=Math.round(count*o.R);
     for(let i=0;i<reflected;i++){
-      const q=(time*.12+i/Math.max(1,reflected))%1,x=left+(ref.x-left)*q,y=hitY+(ref.y-hitY)*q;
+      const q=(time*.12+i/Math.max(1,reflected))%1,x=left+(ref.x-left)*q,y=hitY-sep+(ref.y-hitY+sep)*q;
       ctx.globalAlpha=.5+.5*(1-q);ctx.fillStyle='#f4c46c';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
     }
     ctx.globalAlpha=1;
-    ctx.save();ctx.beginPath();ctx.rect(left,0,span,G.h);ctx.clip();
+    ctx.save();ctx.beginPath();ctx.rect(left,0,span,G.h);ctx.clip();ctx.font='11px system-ui';
     if(o.evanescent){
       fillDecay(.48,'143,214,255');
-      ctx.fillStyle='rgba(143,214,255,.9)';ctx.fillText('total external reflection · evanescent alan (L⊥≈'+fmtLen(o.Lperp)+')',left+10,62);
+      ctx.fillStyle='rgba(143,214,255,.95)';ctx.fillText(fitText('total external reflection · evanescent alan','TER · evanescent',span-24),left+12,44);
     }else{
-      const ct=Math.max(.025,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=span/ct,insideCount=Math.round(count*o.T);
+      // Yatay eksen yüzey-normal derinliktir; fotonların ekran yönü yalnız şematiktir.
+      const ct=Math.max(.9,Math.cos(o.thetaT)),st=Math.sqrt(1-ct*ct),L=span/ct,insideCount=Math.round(count*o.T);
       for(let i=0;i<insideCount;i++){
         const q=(time*.10+i/Math.max(1,insideCount))%1,s=L*q,x=left+ct*s,y=hitY-st*s,prob=powerEnvelope((x-left)/span);
         if(((i*37)%100)/100<prob){ctx.globalAlpha=.16+.84*prob;ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3.1,0,Math.PI*2);ctx.fill()}
       }
-      ctx.globalAlpha=1;ctx.fillStyle='rgba(143,214,255,.8)';ctx.fillText('içeri giren X-foton akısı · Beer–Lambert zayıflaması',left+10,62);
+      ctx.globalAlpha=1;ctx.fillStyle='rgba(143,214,255,.85)';ctx.fillText(fitText('içeri giren X-foton akısı · Beer–Lambert','X-foton akısı',span-24),left+12,44);
     }
     ctx.restore();
-    ctx.fillStyle='rgba(244,196,108,.95)';if(o.R>.002)ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,ref.x+8),Math.max(42,ref.y-10));
+    rayLabels(o.R);
   }
   // RF/mikrodalgada kayıp ayrık foton olayı değil, sürekli Joule/dielektrik ısınmadır: p(z) ∝ e^{-z/L⊥}.
   function drawLossGlow(){
     if(!$('showGeneration').checked||!lowFreq())return;
     fillDecay(.2,'239,120,152');
-    ctx.fillStyle='rgba(239,120,152,.75)';ctx.font='10px system-ui';ctx.fillText('sürekli kayıp → ısı (Joule / dielektrik), ∝ e^(−z/L⊥)',G.left+12,G.h-34);
+    ctx.fillStyle='rgba(239,120,152,.75)';ctx.font='10px system-ui';ctx.fillText(fitText('sürekli kayıp → ısı (Joule / dielektrik), ∝ e^(−z/L⊥)','kayıp → ısı',G.span-24),G.left+12,G.h-34);
   }
   function eventX(i,count){
     const K=depthFactor(),u=(i+.55)/(count+.2),F=1-Math.exp(-K),zFrac=-Math.log(Math.max(1e-8,1-u*F))/Math.max(K,1e-9);
@@ -489,7 +516,7 @@
     }else if(band==='xray'){events=m.type==='metal'?12:10;kind=m.type==='semiconductor'?'cascade':'ionize'}
     events=Math.round(events*O.T);
     for(let i=0;i<events;i++){
-      const x=eventX(i,events),env=powerEnvelope((x-left)/span),y=65+((i*79)%Math.max(80,h-130)),pulse=.5+.5*Math.sin(time*5+i);
+      const x=eventX(i,events),env=powerEnvelope((x-left)/span),y=80+hash(i+501)*(h-140),pulse=.5+.5*Math.sin(time*5+i);
       ctx.fillStyle='rgba(239,120,152,'+(.18+.65*pulse*env)+')';ctx.beginPath();ctx.arc(x,y,4+5*pulse,0,Math.PI*2);ctx.fill();
       if(kind==='pair'||kind==='cascade'){
         ctx.fillStyle='#75c9ff';ctx.beginPath();ctx.arc(x+10+pulse*5,y-10,3.5,0,Math.PI*2);ctx.fill();
@@ -512,57 +539,62 @@
     ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';
     ctx.fillText('0',left,h-9);ctx.fillText(fmtLen(D/2),left+span/2-18,h-9);ctx.fillText(fmtLen(D),right-42,h-9);
     const lpX=left+span/depthFactor();
-    if(lpX>left&&lpX<right){ctx.strokeStyle='rgba(245,189,104,.48)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(lpX,34);ctx.lineTo(lpX,h-28);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,189,104,.88)';ctx.fillText(o.evanescent?'evanescent 1/e (L⊥)':'L⊥ · güç 1/e',Math.min(right-90,lpX+5),h-46)}
+    if(lpX>left&&lpX<right){ctx.strokeStyle='rgba(245,189,104,.48)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(lpX,34);ctx.lineTo(lpX,h-28);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,189,104,.88)';ctx.fillText(o.evanescent?'evanescent 1/e (L⊥)':'L⊥ · güç 1/e',Math.min(right-110,lpX+5),66)}
   }
   function drawScene(){
     const {w,h,left,right,hitY}=G,m=mat();
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
     ctx.fillStyle='rgba(109,132,165,.13)';ctx.fillRect(left,0,right-left,h);ctx.strokeStyle='rgba(220,232,248,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(left,h);ctx.stroke();
     ctx.strokeStyle='rgba(220,232,248,.22)';ctx.setLineDash([4,5]);ctx.beginPath();ctx.moveTo(left-75,hitY);ctx.lineTo(left+75,hitY);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';ctx.fillText(band==='xray'?('grazing '+grazingDeg().toFixed(3)+'°'):('normalden '+incidenceDeg().toFixed(1)+'°'),Math.max(8,left-112),hitY-8);
-    drawLossGlow();
+    ctx.fillStyle='rgba(220,232,248,.7)';ctx.font='11px system-ui';{const ang=band==='xray'?'grazing '+grazingDeg().toFixed(3)+'°':'normalden '+incidenceDeg().toFixed(1)+'°';ctx.fillText(fitText((band==='xray'?'':'geliş: ')+ang+(G.exaggerated?' · çizimde abartılı':''),(band==='xray'?'θg=':'θ=')+(band==='xray'?grazingDeg().toFixed(2):incidenceDeg().toFixed(1))+'°'+(G.exaggerated?'*':''),left-26),18,44)}
+    drawLossGlow();drawLattice(m);
     if(band==='xray')drawXrayFlux();else drawClassicalField();
-    drawLattice(m);drawCarriers();drawGeneration();drawDepthAxis();
+    drawCarriers();drawGeneration();drawDepthAxis();
     ctx.fillStyle='rgba(225,235,247,.8)';ctx.font='12px system-ui';ctx.fillText('vakum / hava',18,24);ctx.fillText(m.label,left+12,24);
   }
   function drawBands(){
     const r=bandCanvas.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),p=photon();bctx.clearRect(0,0,w,h);bctx.fillStyle='#fbfcfe';bctx.fillRect(0,0,w,h);
     const left=70,right=w-25,cy=58,vy=130;
+    // Dar ekranda metin, canvas genişliğine sığana kadar küçültülür.
+    const T=(t,x,y)=>{const f=bctx.font;let size=+(/(\d+)px/.exec(f)||[0,12])[1];while(size>9&&bctx.measureText(t).width>w-x-6){size--;bctx.font=f.replace(/\d+px/,size+'px')}
+      if(bctx.measureText(t).width<=w-x-6)bctx.fillText(t,x,y);
+      else{const ws=t.split(' '),half=Math.ceil(ws.length/2);bctx.fillText(ws.slice(0,half).join(' '),x,y-5);bctx.fillText(ws.slice(half).join(' '),x,y+7)}
+      bctx.font=f};
     if(m.type==='metal'){
       const top=40,ef=80,x=w*.55;
       bctx.fillStyle='#dbe5f2';bctx.fillRect(left,top,right-left,ef-top);
       bctx.fillStyle='#31496a';bctx.fillRect(left,ef,right-left,24);
       bctx.fillStyle='#6b5a9a';bctx.fillRect(left,130,right-left,14);
       bctx.strokeStyle='#d18c31';bctx.lineWidth=1.5;bctx.setLineDash([5,4]);bctx.beginPath();bctx.moveTo(left-8,ef);bctx.lineTo(right,ef);bctx.stroke();bctx.setLineDash([]);
-      bctx.font='700 11px system-ui';bctx.fillStyle='#d18c31';bctx.fillText('E_F',left-34,ef+4);
-      bctx.fillStyle='#52667f';bctx.fillText('4s/p bandı · boş durumlar',left+8,top+14);
-      bctx.fillStyle='#fff';bctx.fillText('dolu 4s/p',left+8,ef+16);
-      bctx.fillStyle='#52667f';bctx.fillText('3d bandı · E_F − ≈'+m.interband.toFixed(1)+' eV',left+8,160);
+      bctx.font='700 11px system-ui';bctx.fillStyle='#d18c31';T('E_F',left-34,ef+4);
+      bctx.fillStyle='#52667f';T('4s/p bandı · boş durumlar',left+8,top+14);
+      bctx.fillStyle='#fff';T('dolu 4s/p',left+8,ef+16);
+      bctx.fillStyle='#52667f';T('3d bandı · E_F − ≈'+m.interband.toFixed(1)+' eV',left+8,160);
       bctx.font='700 12px system-ui';
-      if(band==='xray'){bctx.fillStyle='#ef7898';bctx.fillText('10 keV → iç kabuk fotoelektrik soğurma / saçılma → hızlı elektronlar',left,22)}
+      if(band==='xray'){bctx.fillStyle='#ef7898';T('10 keV → iç kabuk fotoelektrik soğurma / saçılma → hızlı elektronlar',left,22)}
       else if(band==='visible'&&p>=m.interband){
         bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,134);bctx.lineTo(x,64);bctx.stroke();bctx.fillStyle='#ef7898';bctx.beginPath();bctx.moveTo(x,58);bctx.lineTo(x-5,67);bctx.lineTo(x+5,67);bctx.fill();
         bctx.fillStyle='#75c9ff';bctx.beginPath();bctx.arc(x+12,62,4,0,Math.PI*2);bctx.fill();bctx.strokeStyle='#ad8dff';bctx.lineWidth=2;bctx.beginPath();bctx.arc(x-12,137,5,0,Math.PI*2);bctx.stroke();
-        bctx.fillStyle='#52667f';bctx.fillText('hν='+fmtE(p)+' ≥ '+m.interband.toFixed(1)+' eV → 3d → 4s/p bant-arası geçiş (bakırın rengi)',left,22);
+        bctx.fillStyle='#52667f';T('hν='+fmtE(p)+' ≥ '+m.interband.toFixed(1)+' eV → 3d → 4s/p bant-arası geçiş (bakırın rengi)',left,22);
       }else{
         bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,ef+6);bctx.lineTo(x+16,ef-6);bctx.stroke();
-        bctx.fillStyle='#52667f';bctx.fillText('hν='+fmtE(p)+' · bant-içi (Drude): E_F civarındaki elektronlar hızlanır',left,22);
+        bctx.fillStyle='#52667f';T('hν='+fmtE(p)+' · bant-içi (Drude): E_F civarındaki elektronlar hızlanır',left,22);
       }
       return;
     }
     const Eg=m.gap||EgSi;
     bctx.strokeStyle='#506a8b';bctx.lineWidth=6;bctx.beginPath();bctx.moveTo(left,cy);bctx.lineTo(right,cy);bctx.stroke();bctx.beginPath();bctx.moveTo(left,vy);bctx.lineTo(right,vy);bctx.stroke();
-    bctx.fillStyle='#52667f';bctx.font='700 12px system-ui';bctx.fillText('Üst elektronik durumlar',left,cy-10);bctx.fillText(m.type==='semiconductor'?'Valans bandı':'Dolu / bağlı durumlar',left,vy+20);bctx.fillText((m.type==='semiconductor'?'E_g':'elektronik eşik')+' ≈ '+Eg.toFixed(2)+' eV',right-145,95);
+    bctx.fillStyle='#52667f';bctx.font='700 12px system-ui';T('Üst elektronik durumlar',left,cy-10);T(m.type==='semiconductor'?'Valans bandı':'Dolu / bağlı durumlar',left,vy+20);T((m.type==='semiconductor'?'E_g':'elektronik eşik')+' ≈ '+Eg.toFixed(2)+' eV',right-145,95);
     if(band==='xray'){
-      bctx.fillStyle='#ef7898';bctx.font='700 12px system-ui';bctx.fillText(m.type==='semiconductor'?'10 keV → ~8 keV fotoelektron → ≈'+Math.round(1e4/WehSi)+' e–h çifti (3.6 eV/çift)':'10 keV → atomik iyonizasyon / ikincil elektronlar',left,22);
+      bctx.fillStyle='#ef7898';bctx.font='700 12px system-ui';T(m.type==='semiconductor'?'10 keV → ~8 keV fotoelektron → ≈'+Math.round(1e4/WehSi)+' e–h çifti (3.6 eV/çift)':'10 keV → atomik iyonizasyon / ikincil elektronlar',left,22);
       return;
     }
     if(m.type==='semiconductor'&&p>=Eg){
-      const x=w*.55;bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,vy-4);bctx.lineTo(x,cy+5);bctx.stroke();bctx.fillStyle='#ef7898';bctx.beginPath();bctx.moveTo(x,cy);bctx.lineTo(x-5,cy+9);bctx.lineTo(x+5,cy+9);bctx.fill();bctx.fillStyle='#75c9ff';bctx.beginPath();bctx.arc(x+12,cy,4,0,Math.PI*2);bctx.fill();bctx.strokeStyle='#f5bd68';bctx.lineWidth=2;bctx.beginPath();bctx.arc(x-10,vy,5,0,Math.PI*2);bctx.stroke();bctx.fillStyle='#52667f';bctx.fillText('soğurulan foton → e⁻ + hol',x-62,24);
-      bctx.font='11px system-ui';bctx.fillStyle='#7a899b';bctx.fillText('hν − E_g ≈ '+(p-Eg).toFixed(2)+' eV fazla enerji → sıcak taşıyıcı → ısı (termalizasyon)',left,178);
+      const x=w*.55;bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,vy-4);bctx.lineTo(x,cy+5);bctx.stroke();bctx.fillStyle='#ef7898';bctx.beginPath();bctx.moveTo(x,cy);bctx.lineTo(x-5,cy+9);bctx.lineTo(x+5,cy+9);bctx.fill();bctx.fillStyle='#75c9ff';bctx.beginPath();bctx.arc(x+12,cy,4,0,Math.PI*2);bctx.fill();bctx.strokeStyle='#f5bd68';bctx.lineWidth=2;bctx.beginPath();bctx.arc(x-10,vy,5,0,Math.PI*2);bctx.stroke();bctx.fillStyle='#52667f';T('soğurulan foton → e⁻ + hol',x-62,24);
+      bctx.font='11px system-ui';bctx.fillStyle='#7a899b';T('hν − E_g ≈ '+(p-Eg).toFixed(2)+' eV fazla enerji → sıcak taşıyıcı → ısı (termalizasyon)',left,178);
     }else{
-      bctx.fillStyle='#7a899b';bctx.font='12px system-ui';bctx.fillText('hν = '+fmtE(p)+(p<Eg?' < ':' ≥ ')+(m.type==='semiconductor'?'E_g':'elektronik eşik'),left,22);
-      if(band==='visible'&&m.type!=='semiconductor'){bctx.font='11px system-ui';bctx.fillText(m.type==='polar'?'Zayıf soğurma: O–H titreşim üst tonları → ısı (elektronik geçiş yok)':'Zayıf soğurma: safsızlık iyonları (ör. Fe) → ısı (elektronik geçiş yok)',left,178)}
+      bctx.fillStyle='#7a899b';bctx.font='12px system-ui';T('hν = '+fmtE(p)+(p<Eg?' < ':' ≥ ')+(m.type==='semiconductor'?'E_g':'elektronik eşik'),left,22);
+      if(band==='visible'&&m.type!=='semiconductor'){bctx.font='11px system-ui';T(m.type==='polar'?'Zayıf soğurma: O–H titreşim üst tonları → ısı (elektronik geçiş yok)':'Zayıf soğurma: safsızlık iyonları (ör. Fe) → ısı (elektronik geçiş yok)',left,178)}
     }
   }
   function updateUI(){
@@ -587,14 +619,14 @@
 
     $('photonVal').textContent=fmtE(p);
     $('gapVal').textContent=m.type==='metal'?'yok · d→sp ≈'+m.interband.toFixed(1)+' eV':gap.toFixed(2)+' eV';
-    $('ratioVal').textContent=isFinite(ratio)?(ratio<.001?ratio.toExponential(2):ratio.toFixed(2)):'—';
+    $('ratioVal').textContent=isFinite(ratio)?(ratio<.001?sci(ratio,2):ratio.toFixed(2)):'—';
     $('wavelengthVal').textContent=fmtLen(bnd().lambda);
     $('attenuationVal').textContent=fmtLen(Lp);
     $('lperpVal').textContent=fmtLen(o.Lperp);
     $('viewDepthVal').textContent=fmtLen(D);
-    $('edgePowerVal').textContent=(100*edge).toFixed(edge>.01?1:3)+'%';
-    $('surfaceReflectVal').textContent=(100*o.R).toFixed(o.R>.001?1:4)+'%';
-    $('surfaceEnterVal').textContent=(100*o.T).toFixed(o.T>.001?1:4)+'%';
+    $('edgePowerVal').textContent=fmtPct(edge);
+    $('surfaceReflectVal').textContent=fmtPct(o.R);
+    $('surfaceEnterVal').textContent=fmtPct(o.T);
     $('criticalVal').textContent=band==='xray'?(o.critical.toFixed(3)+'° grazing'):'—';
     $('tVal').textContent=o.tAbs<1e-3?sci(o.tAbs,2):o.tAbs.toFixed(3);
     $('ehVal').textContent=semi?(band==='visible'?'1':(band==='xray'?'≈'+Math.round(1e4/WehSi):'0')):'—';
@@ -636,13 +668,13 @@
       else{status='Cam: bağlı elektron ve iyon polarizasyonu (ε′≈4.6). Kayıp tanδ≈3.7×10⁻³ ile verilir → Lₚ≈'+fmtLen(Lp)+'.';flow='<strong>Dielektrik:</strong> Fresnel yansıması → kırılan alan → polarizasyon → tanδ kaybı.';mech='Fresnel + polarization'}
     }
 
-    let surfaceSummary=' Yüzeyde gücün %'+(100*o.R).toFixed(1)+' kadarı yansır, %'+(100*o.T).toFixed(1)+' kadarı malzemeye girer.';
+    let surfaceSummary=' Yüzeyde gücün '+fmtPct(o.R)+' kadarı yansır, '+fmtPct(o.T)+' kadarı malzemeye girer.';
     if(band==='xray'){
       if(o.evanescent){
-        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'°, kritik açı '+o.critical.toFixed(3)+'°: total external reflection bölgesi; yüzeyde R≈%'+(100*o.R).toFixed(1)+'. İçeride yalnız L⊥≈'+fmtLen(o.Lperp)+' derinlikli evanescent alan kalır.';
+        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'°, kritik açı '+o.critical.toFixed(3)+'°: total external reflection bölgesi; yüzeyde R≈'+fmtPct(o.R)+'. İçeride yalnız L⊥≈'+fmtLen(o.Lperp)+' derinlikli evanescent alan kalır.';
         attModel='evanescent + absorption';
       }else{
-        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'° kritik '+o.critical.toFixed(3)+'° değerinin üzerinde; R≈%'+(100*o.R).toFixed(2)+', kalan foton akısı içeri girer ve yüzey-normal 1/e derinliği L⊥≈'+fmtLen(o.Lperp)+' olur.';
+        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'° kritik '+o.critical.toFixed(3)+'° değerinin üzerinde; R≈'+fmtPct(o.R)+', kalan foton akısı içeri girer ve yüzey-normal 1/e derinliği L⊥≈'+fmtLen(o.Lperp)+' olur.';
       }
     }
     status+=surfaceSummary;
@@ -660,13 +692,17 @@
     $('sourceVal').textContent=m.source[band];
     $('sceneTitle').textContent=bnd().label+' · '+m.label+' · nano elektronik görünüm';
     $('sceneSubtitle').textContent='Yüzey yansıması + malzeme içi elektronik cevap ve zayıflama.';
-    let drawNote='';
+    // Canvas altındaki kısa çizim notu; ayrıntılı fizik açıklaması sağ paneldedir.
+    const notes=[];
     if(band!=='xray'){
-      drawNote=W.diluted?' <strong>Çizim:</strong> görüntü derinliğinde gerçekte ≈'+fmtCount(W.cycles)+' iç dalga boyu var; okunabilirlik için dalga boyları ×'+fmtCount(W.factor)+' uzatıldı (iç/dış dalga boyu oranı korunur).':' <strong>Çizim:</strong> dalga boyu ölçeklidir; görüntüde ≈'+fmtCount(W.cycles)+' iç dalga boyu var.';
-      if(insideMag()>1.05)drawNote+=' İç alan çizimi ×'+fmtCount(insideMag())+' büyütüldü.';
-    }
-    const totalEdge=o.T*edge;
-    $('overlayText').innerHTML=status+drawNote+' <strong>Sağ kenar:</strong> gelen gücün yaklaşık %'+(100*totalEdge).toFixed(totalEdge>.001?1:3)+' kadarı bu derinliğe kadar ulaşır.';
+      notes.push(W.diluted?'görüntüde gerçekte ≈'+fmtCount(W.cycles)+' iç dalga boyu var, çizimde ×'+fmtCount(W.factor)+' seyreltildi (n oranı korunur)':'iç dalga boyu ölçekli, görüntüde ≈'+fmtCount(W.cycles)+' dalga boyu');
+      if(m.type==='metal'&&lf)notes.push('iletkende alan bir iç dalga boyu (2πδ) ilerlemeden söner');
+      if(insideMag()>1.05)notes.push('iç alan genliği ×'+fmtCount(insideMag())+' büyütüldü (|t|='+(o.tAbs<1e-3?sci(o.tAbs,1):o.tAbs.toFixed(2))+')');
+      if(W.vacScaled)notes.push('vakum tarafındaki dalga boyu ölçeksiz (λ='+fmtLen(bnd().lambda)+')');
+    }else notes.push(o.evanescent?'evanescent alan L⊥≈'+fmtLen(o.Lperp)+' derinlikte söner':'foton yolları şematik, yatay eksen yüzey-normal derinlik');
+    if(G.exaggerated)notes.push('geliş açısı görünür olsun diye abartıldı');
+    if(G.tCompressed&&band!=='xray')notes.push('kırılma açısı çizimde '+(O.thetaT*180/Math.PI).toFixed(1)+'° yerine '+(G.tThetaT*180/Math.PI).toFixed(1)+'° çizildi');
+    $('overlayText').innerHTML='<strong>Çizim:</strong> '+notes.join(' · ')+'. <strong>Sağ kenar ('+fmtLen(D)+'):</strong> gelen gücün '+fmtPct(o.T*edge)+' kadarı ulaşır.';
   }
   function frame(ts){
     if(!last)last=ts;const sp=+$('speed').value/10;if(running)time+=Math.min(.05,(ts-last)/1000)*sp;last=ts;
