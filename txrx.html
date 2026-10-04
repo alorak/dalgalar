@@ -39,7 +39,7 @@
     .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line)}
     .metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:.98rem}.metric span{font-size:.68rem;color:var(--muted)}
     .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
-    .group{padding:12px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;background:#fbfcfe}.group h3{font-size:.84rem;margin:0 0 10px}
+    .group{padding:12px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;background:#fbfcfe}.group h3{font-size:.84rem;margin:0 0 10px}.group.secondary{background:#fffaf4;border-color:#eadcc7}.group.secondary.off{opacity:.58}.dual-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.dual-row label{font-size:.82rem;font-weight:800}.dual-row input{width:18px;height:18px;accent-color:var(--accent)}
     .control{margin-bottom:12px}.control:last-child{margin-bottom:0}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.79rem;font-weight:750;margin-bottom:5px}.control output{color:#526984}
     .control input[type=range]{width:100%;accent-color:var(--accent)}
     select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#263a55}
@@ -92,7 +92,7 @@
       </div>
       <div class="canvas-wrap">
         <canvas id="scene" aria-label="3 boyutlu TX RX anten bağlantısı simülasyonu"></canvas>
-        <div class="legend"><span><i class="dot txc"></i>TX / bağlantı</span><span><i class="dot rxc"></i>RX / alım</span><span><i class="dot lobec"></i>3B anten lobu</span><span><i class="dot wavec"></i>dalga cephesi</span></div>
+        <div class="legend"><span><i class="dot txc"></i>TX1</span><span><i class="dot" style="background:#ef9c72"></i>TX2</span><span><i class="dot rxc"></i>RX</span><span><i class="dot lobec"></i>3B anten lobu</span><span><i class="dot wavec"></i>dalga cephesi</span><span><i class="dot" style="background:#d8b96a"></i>yapıcı girişim</span></div>
         <div class="overlay" id="overlayText">TX ana lobu RX doğrultusuna bakıyor. Serbest uzay Friis modeli uygulanıyor.</div>
       </div>
       <div class="analyzer"><canvas id="analyzer" aria-label="RX spektrum ve gürültü analizörü"></canvas></div>
@@ -109,6 +109,11 @@
         <div class="metric"><strong id="rxSizeVal">— cm</strong><span>RX karakteristik fiziksel boyutu</span></div>
         <div class="metric"><strong id="wavesVal">— λ</strong><span>TX→RX arası dalga boyu sayısı</span></div>
         <div class="metric"><strong id="frontStepVal">—</strong><span>3B'de çizilen cephe aralığı</span></div>
+        <div class="metric"><strong id="rx1Val">— dBm</strong><span>yalnız TX1 → RX katkısı</span></div>
+        <div class="metric"><strong id="rx2Val">kapalı</strong><span>yalnız TX2 → RX katkısı</span></div>
+        <div class="metric"><strong id="pathDiffVal">—</strong><span>RX yol farkı ΔR</span></div>
+        <div class="metric"><strong id="phaseDiffVal">—</strong><span>RX'teki göreli faz</span></div>
+        <div class="metric"><strong id="combineVal">—</strong><span>coherent birleşim / güç toplamı</span></div>
       </div>
     </section>
 
@@ -122,6 +127,18 @@
         <div class="control"><label>Azimut <output id="txAzOut">0°</output></label><input id="txAz" type="range" min="-180" max="180" step="1" value="0"></div>
         <div class="control"><label>Elevasyon <output id="txElOut">0°</output></label><input id="txEl" type="range" min="-90" max="90" step="1" value="0"></div>
         <div class="control-hint" id="txSpec">Patch · 8 dBi · HPBW ≈ 70° · broadside</div>
+      </div>
+
+      <div class="group secondary off" id="tx2Group">
+        <div class="dual-row"><label for="tx2Enabled">TX2 · ikinci verici</label><input id="tx2Enabled" type="checkbox"></div>
+        <div class="control"><label for="tx2Type">Anten tipi</label><select id="tx2Type"><option value="patch">Patch</option><option value="directional">Yönlü</option><option value="omni">Çubuk / dipol (omni)</option></select></div>
+        <div class="control"><label>TX2 güç <output id="tx2PowerOut">20 dBm · 100 mW</output></label><input id="tx2Power" type="range" min="-10" max="30" step="1" value="20"></div>
+        <div class="control"><label>TX1'e yatay ayrım <output id="tx2SepOut">50 cm</output></label><input id="tx2Sep" type="range" min="0" max="300" step="1" value="50"></div>
+        <div class="control"><label>Başlangıç fazı <output id="tx2PhaseOut">0°</output></label><input id="tx2Phase" type="range" min="0" max="360" step="1" value="0"></div>
+        <div class="control"><label for="txRelation">Kaynak ilişkisi</label><select id="txRelation"><option value="coherent">Faz kilitli · coherent</option><option value="incoherent">Bağımsız · incoherent</option></select></div>
+        <div class="control"><label>Azimut <output id="tx2AzOut">0°</output></label><input id="tx2Az" type="range" min="-180" max="180" step="1" value="0"></div>
+        <div class="control"><label>Elevasyon <output id="tx2ElOut">0°</output></label><input id="tx2El" type="range" min="-90" max="90" step="1" value="0"></div>
+        <div class="control-hint" id="tx2Spec">Kapalı. Açıldığında ikinci alan RX'te kompleks olarak toplanabilir.</div>
       </div>
 
       <div class="group">
@@ -145,6 +162,7 @@
       <label class="switch"><input id="showRxLobe" type="checkbox" checked> RX kabul lobunu göster</label>
       <label class="switch"><input id="showWavefronts" type="checkbox" checked> λ'ya bağlı dalga cephelerini göster</label>
       <label class="switch"><input id="showFieldVectors" type="checkbox" checked> Güce bağlı E-alan göstergesini göster</label>
+      <label class="switch"><input id="showInterference" type="checkbox" checked> İki TX coherent ise girişim düzlemini göster</label>
       <label class="switch"><input id="showGrid" type="checkbox" checked> 3B referans düzlemini göster</label>
       <div class="status" id="statusText">Bağlantı far-field bölgesinde. Friis modeli uygundur.</div>
     </aside>
@@ -163,6 +181,7 @@
     <article class="info"><h3>Yönlü anten değişince ne değişiyor?</h3><p>Daha büyük elektriksel açıklık daha dar ana lob ve daha yüksek tepe kazanç üretir.</p><ul><li>Model: 14 dBi tepe kazanç</li><li>HPBW ≈ 32°</li><li>Boyut ölçeği ≈ 2.0λ</li><li>Hizalama hatasına daha hassas</li></ul></article>
   </section>
 
+  <div class="note"><strong>İkinci TX eklenince:</strong> Aynı frekansta faz kilitli iki vericinin güçleri doğrudan toplanmaz; önce kompleks alanlar toplanır. RX'teki yol farkı ΔR bir faz farkı <strong>2πΔR/λ</strong> oluşturur. Başlangıç fazıyla birlikte alanlar aynı fazdaysa yapıcı, π kadar ters fazdaysa yıkıcı girişim oluşur. Kaynaklar bağımsızsa göreli faz zamanla kayar ve uzun zaman ortalamasında sabit girişim saçakları yerine yaklaşık güç toplamı görülür.</div>
   <div class="note"><strong>Güç değişince:</strong> Lineer bir antende besleme gücü değiştiğinde normalize edilmiş 3B lobun <strong>şekli değişmez</strong>. Uzak alandaki elektrik alan genliği yaklaşık <strong>E ∝ √P<sub>TX</sub></strong>, güç yoğunluğu ise <strong>S ∝ P<sub>TX</sub></strong> değişir. Bu nedenle sahnede lob geometrisi sabit kalır; alan göstergesi ve dalga cephelerinin parlaklığı değişir.</div>
   <div class="note"><strong>Frekans değişince:</strong> Bu simülasyon aynı anten tipinin <strong>λ ile ölçeklenmiş ideal ailesini</strong> kullanır. Bu nedenle normalize edilmiş kazanç deseni ve tepe dBi sabit tutulurken fiziksel anten boyutu λ ile, dalga cephesi aralığı doğrudan λ ile değişir. 3B anten sembolünün boyutu tüm frekanslarda görülebilmesi için sıkıştırılmış görsel ölçek kullanır; alttaki fiziksel boyut değeri gerçek λ oranıyla hesaplanır. Sabit fiziksel bir gerçek anteni frekanstan uzaklaştırmak ayrıca empedans, S11, verim ve desen değişimi gerektirir; bu ayrı bir detuning modelidir.</div>
   <div class="note"><strong>Model sınırı:</strong> Simülasyon serbest uzay, tek-yol ve far-field Friis modelidir. Anten desenleri gerçek bir üretici datasheet’i değil; yarım-dalga dipol/çubuk, patch ve dar-huzmeli yönlü anten fiziğini karşılaştırmak için normalize edilmiş öğretici 3B modellerdir. Dalga cepheleri fiziksel λ aralığına göre yerleştirilir; sahne çok fazla dalga boyu içerdiğinde performans için her N'inci λ çizilir ve N ekranda belirtilir. Alan parlaklığı geniş güç aralığını görünür tutmak için log-sıkıştırılmıştır; fiziksel alan hesabı E∝√P olarak yapılır. Yakın alan, çoklu yol, zemin yansıması, empedans/S11 ve gerçek anten verimi bu sürümde ayrı modellenmez.</div>
