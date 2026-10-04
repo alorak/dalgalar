@@ -422,32 +422,67 @@
     actx.fillStyle='#6845c6';actx.fillText('P_RX '+s.prxDbm.toFixed(1)+' dBm',Math.min(R-110,cx+12),Math.max(T+23,peakY-8));
   }
   function update(){
-    const s=state(),txA=ANT[s.txType],rxA=ANT[s.rxType],txM=Math.max(0,Math.min(1,antennaPattern(s.txType,s.txTheta))),rxM=Math.max(0,Math.min(1,antennaPattern(s.rxType,s.rxTheta)));
+    const s=state(),txA=ANT[s.txType],rxA=ANT[s.rxType],tx2A=ANT[s.tx2Type],txM=Math.max(0,Math.min(1,antennaPattern(s.txType,s.txTheta))),rxM=Math.max(0,Math.min(1,antennaPattern(s.rxType,s.rxTheta)));
+    const phaseDeg=((s.phaseDiff*180/Math.PI+180)%360+360)%360-180;
+
     root.getElementById('txPowerOut').value=s.txPdbm.toFixed(0)+' dBm · '+(s.txP*1000).toFixed(s.txP<.1?1:0)+' mW';
     root.getElementById('txAzOut').value=root.getElementById('txAz').value+'°';root.getElementById('txElOut').value=root.getElementById('txEl').value+'°';
+    root.getElementById('tx2Group').classList.toggle('off',!s.dual);
+    root.getElementById('tx2PowerOut').value=s.tx2Pdbm.toFixed(0)+' dBm · '+(s.tx2P*1000).toFixed(s.tx2P<.1?1:0)+' mW';
+    root.getElementById('tx2SepOut').value=(s.tx2Sep<1?(s.tx2Sep*100).toFixed(0)+' cm':s.tx2Sep.toFixed(2)+' m')+' · '+(s.tx2Sep/s.lam).toFixed(2)+'λ';
+    root.getElementById('tx2PhaseOut').value=root.getElementById('txRelation').value==='coherent'?root.getElementById('tx2Phase').value+'°':'faz ortalaması';
+    root.getElementById('tx2Phase').disabled=!s.dual||!s.coherent;
+    root.getElementById('tx2AzOut').value=root.getElementById('tx2Az').value+'°';root.getElementById('tx2ElOut').value=root.getElementById('tx2El').value+'°';
+
     root.getElementById('rxAzOut').value=root.getElementById('rxAz').value+'°';root.getElementById('rxElOut').value=root.getElementById('rxEl').value+'°';
     root.getElementById('polOut').value=root.getElementById('polMismatch').value+'°';root.getElementById('distanceOut').value=s.R.toFixed(1)+' m';root.getElementById('heightOut').value=(+root.getElementById('height').value).toFixed(1)+' m';
-    root.getElementById('bwOut').value=s.bw>=1e6?(s.bw/1e6).toFixed(s.bw<10e6?0:0)+' MHz':s.bw+' Hz';root.getElementById('nfOut').value=s.nf.toFixed(1)+' dB';
+    root.getElementById('bwOut').value=s.bw>=1e6?(s.bw/1e6).toFixed(0)+' MHz':s.bw+' Hz';root.getElementById('nfOut').value=s.nf.toFixed(1)+' dB';
+
     root.getElementById('txSpec').textContent=txA.omni
       ?txA.label+' · '+txA.gain+' dBi tepe · azimutta omni · link–çubuk ekseni '+(s.txTheta*180/Math.PI).toFixed(1)+'° · bu doğrultuda '+s.gtDb.toFixed(1)+' dBi'
       :txA.label+' · '+txA.gain+' dBi tepe · HPBW ≈ '+txA.hpbw+'° · bu doğrultuda '+s.gtDb.toFixed(1)+' dBi';
+    root.getElementById('tx2Spec').textContent=!s.dual?'Kapalı. Açıldığında ikinci alan RX’te kompleks olarak toplanabilir.':
+      (tx2A.omni
+        ?tx2A.label+' · '+tx2A.gain+' dBi tepe · link–çubuk ekseni '+(s.tx2Theta*180/Math.PI).toFixed(1)+'° · bu doğrultuda '+s.gt2Db.toFixed(1)+' dBi'
+        :tx2A.label+' · '+tx2A.gain+' dBi tepe · HPBW ≈ '+tx2A.hpbw+'° · bu doğrultuda '+s.gt2Db.toFixed(1)+' dBi');
     root.getElementById('rxSpec').textContent=rxA.omni
-      ?rxA.label+' · '+rxA.gain+' dBi tepe · azimutta omni · link–çubuk ekseni '+(s.rxTheta*180/Math.PI).toFixed(1)+'° · bu doğrultuda '+s.grDb.toFixed(1)+' dBi'
-      :rxA.label+' · '+rxA.gain+' dBi tepe · HPBW ≈ '+rxA.hpbw+'° · bu doğrultuda '+s.grDb.toFixed(1)+' dBi';
+      ?rxA.label+' · '+rxA.gain+' dBi tepe · TX1 doğrultusunda '+s.grDb.toFixed(1)+' dBi'+(s.dual?', TX2 doğrultusunda '+s.gr2Db.toFixed(1)+' dBi':'')
+      :rxA.label+' · '+rxA.gain+' dBi tepe · TX1 doğrultusunda '+s.grDb.toFixed(1)+' dBi'+(s.dual?', TX2 doğrultusunda '+s.gr2Db.toFixed(1)+' dBi':'');
+
     root.getElementById('lambdaVal').textContent=fmtLen(s.lam);root.getElementById('fsplVal').textContent=s.fspl.toFixed(1)+' dB';root.getElementById('rxPowerVal').textContent=fmtPowerDbm(s.prxDbm);root.getElementById('snrVal').textContent=s.snr.toFixed(1)+' dB';
     root.getElementById('eFieldVal').textContent=s.Erms>=1?s.Erms.toFixed(2)+' V/m':(s.Erms*1000).toFixed(2)+' mV/m';root.getElementById('delayVal').textContent=(s.R/c0*1e9).toFixed(1)+' ns';root.getElementById('aeVal').textContent=(s.Ae*1e4).toFixed(1)+' cm²';root.getElementById('ffVal').textContent=s.Rff.toFixed(2)+' m';
     const txSize=ANT[s.txType].sizeLambda*s.lam,rxSize=ANT[s.rxType].sizeLambda*s.lam,nWaves=s.R/s.lam,frontStride=Math.max(1,Math.ceil(nWaves/200));
     root.getElementById('txSizeVal').textContent=fmtLen(txSize);root.getElementById('rxSizeVal').textContent=fmtLen(rxSize);root.getElementById('wavesVal').textContent=nWaves.toFixed(nWaves<100?1:0)+' λ';root.getElementById('frontStepVal').textContent=frontStride===1?'her λ':'her '+frontStride+'λ';
-    root.getElementById('sceneTitle').textContent=(freq/1e9>=1?(freq/1e9).toFixed(2)+' GHz':(freq/1e6).toFixed(0)+' MHz')+' · '+txA.label+' TX → '+rxA.label+' RX';
+
+    root.getElementById('rx1Val').textContent=fmtPowerDbm(w2dbm(s.prx1));
+    root.getElementById('rx2Val').textContent=s.dual?fmtPowerDbm(w2dbm(s.prx2)):'kapalı';
+    root.getElementById('pathDiffVal').textContent=s.dual?((s.pathDiff>=0?'+':'−')+fmtLen(Math.abs(s.pathDiff))+' · '+(s.pathDiff/s.lam).toFixed(3)+'λ'):'—';
+    root.getElementById('phaseDiffVal').textContent=s.dual?(s.coherent?phaseDeg.toFixed(1)+'°':'kararsız / ortalama'):'—';
+    root.getElementById('combineVal').textContent=s.dual?(s.coherent?((s.combineDb>=0?'+':'')+s.combineDb.toFixed(2)+' dB'):'0 dB · güç toplamı'):'—';
+
+    root.getElementById('sceneTitle').textContent=(freq/1e9>=1?(freq/1e9).toFixed(2)+' GHz':(freq/1e6).toFixed(0)+' MHz')+' · '+txA.label+(s.dual?' + '+tx2A.label:'')+' → '+rxA.label+' RX';
+
     const far=s.R>=s.Rff,polLoss=s.polFactor>0?lin2db(s.polFactor):-99,txOff=s.txTheta*180/Math.PI,rxOff=s.rxTheta*180/Math.PI;
-    let msg=(txA.omni?'TX link–çubuk açısı ':'TX boresight sapma ')+txOff.toFixed(1)+'°, '+(rxA.omni?'RX link–çubuk açısı ':'RX boresight sapma ')+rxOff.toFixed(1)+'°. ';
-    msg+=far?'Bağlantı far-field bölgesinde; Friis yaklaşımı uygun. ':'Mesafe TX Fraunhofer sınırından küçük; Friis sonucu yalnız yaklaşık referanstır. ';
+    let msg=(txA.omni?'TX1 link–çubuk açısı ':'TX1 boresight sapma ')+txOff.toFixed(1)+'°, '+(rxA.omni?'RX link–çubuk açısı ':'RX boresight sapma ')+rxOff.toFixed(1)+'°. ';
+    msg+=far?'Bağlantı far-field bölgesinde; Friis yaklaşımı uygun. ':'En az bir TX için mesafe Fraunhofer sınırından küçük; Friis sonucu yaklaşık referanstır. ';
     if(+root.getElementById('polMismatch').value>0)msg+='Polarizasyon kaybı '+(-polLoss).toFixed(1)+' dB. ';
+    if(s.dual){
+      if(s.coherent){
+        const kind=Math.cos(s.phaseDiff)>.25?'yapıcı':(Math.cos(s.phaseDiff)<-.25?'yıkıcı':'ara faz');
+        msg+='TX2 coherent: RX’te '+kind+' girişim, birleşim farkı '+(s.combineDb>=0?'+':'')+s.combineDb.toFixed(2)+' dB. ';
+      }else msg+='TX2 bağımsız: sabit girişim deseni yok; ortalama güçler toplanıyor. ';
+    }
     if(s.snr<0)msg+='Sinyal gürültü tabanının altında.'; else if(s.snr<10)msg+='SNR düşük.'; else msg+='RX analizi için kullanılabilir SNR.';
-    msg+=' Anten geometrisi ideal λ-ölçekli modeldir; güç lob şeklini değiştirmez.';
-    root.getElementById('statusText').textContent=msg;root.getElementById('overlayText').innerHTML='<strong>Bağlantı:</strong> '+s.R.toFixed(1)+' m · λ='+fmtLen(s.lam)+' · '+(s.R/s.lam).toFixed(0)+' dalga boyu · G_TX='+s.gtDb.toFixed(1)+' dBi · P_TX='+s.txPdbm.toFixed(0)+' dBm · P_RX='+s.prxDbm.toFixed(1)+' dBm · E_RX='+(s.Erms>=1?s.Erms.toFixed(2)+' V/m':(s.Erms*1000).toFixed(2)+' mV/m')+'. <strong>3B:</strong> frekans cephe aralığını/anten boyutunu, güç ise alan parlaklığını değiştirir.';
+    root.getElementById('statusText').textContent=msg;
+
+    let overlay='<strong>RX:</strong> toplam '+s.prxDbm.toFixed(1)+' dBm · TX1 '+w2dbm(s.prx1).toFixed(1)+' dBm';
+    if(s.dual)overlay+=' · TX2 '+w2dbm(s.prx2).toFixed(1)+' dBm · ΔR='+(s.pathDiff/s.lam).toFixed(3)+'λ'+(s.coherent?' · Δφ='+phaseDeg.toFixed(1)+'° · birleşim '+(s.combineDb>=0?'+':'')+s.combineDb.toFixed(2)+' dB':' · incoherent güç toplamı');
+    overlay+='. <strong>3B:</strong> '+(s.dual&&s.coherent?'alt düzlemde açık noktalar yapıcı, koyu noktalar yıkıcı girişim bölgelerini gösterir.':'tek-yol alan/yayılım görünümü.');
+    root.getElementById('overlayText').innerHTML=overlay;
+
     drawScene(s);drawAnalyzer(s);
   }
+
   function frame(ts){if(!last)last=ts;time+=Math.min(.05,(ts-last)/1000);last=ts;update();requestAnimationFrame(frame)}
 
   root.querySelectorAll('[data-f]').forEach(btn=>btn.addEventListener('click',()=>{freq=+btn.dataset.f;root.querySelectorAll('[data-f]').forEach(b=>b.classList.toggle('active',b===btn))}));
@@ -458,6 +493,13 @@
   root.getElementById('rxType').addEventListener('change',function(){
     if(this.value==='omni'){root.getElementById('rxAz').value=0;root.getElementById('rxEl').value=90}
     else{root.getElementById('rxAz').value=180;root.getElementById('rxEl').value=0}
+  });
+  root.getElementById('tx2Type').addEventListener('change',function(){
+    if(this.value==='omni'){root.getElementById('tx2Az').value=0;root.getElementById('tx2El').value=90}
+    else{root.getElementById('tx2Az').value=0;root.getElementById('tx2El').value=0}
+  });
+  root.getElementById('tx2Enabled').addEventListener('change',function(){
+    root.getElementById('tx2Group').classList.toggle('off',!this.checked);
   });
   root.getElementById('viewIso').addEventListener('click',()=>{camYaw=-.72;camPitch=.38;camZoom=1});
   root.getElementById('viewTop').addEventListener('click',()=>{camYaw=-Math.PI/2;camPitch=1.45;camZoom=.95});
