@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f172a">
-  <title>Mikro / Nano EM Etkileşimi — Dalgalar</title>
-  <meta name="description" content="RF, mikrodalga, görünür ışık ve X-ışınlarının farklı malzemelerde elektron, dipol, atom ve kristal düzlemleriyle etkileşimini mikro ve nano ölçekte inceleyin.">
+  <title>Mikro EM Etkileşimi — Dalgalar</title>
+  <meta name="description" content="RF, mikrodalga, görünür ışık ve X-ışınlarının farklı malzemelerde kolektif elektromanyetik cevabını mikro ölçekte inceleyin.">
   <style>
     :root{
       --bg:#f6f8fc;--surface:#fff;--surface2:#eef3fb;--text:#142033;--muted:#607087;
@@ -63,7 +63,8 @@
         <a href="2d.html">2B Girişim</a>
         <a href="3d.html">3B Girişim</a>
         <a href="yuzey.html">Yüzey & Frekans</a>
-        <a href="mikro.html" aria-current="page">Mikro / Nano</a>
+        <a href="mikro.html" aria-current="page">Mikro</a>
+        <a href="nano.html">Nano</a>
       </nav>
     </div>
   </header>
@@ -71,9 +72,9 @@
   <main>
     <section class="intro">
       <div>
-        <span class="badge">Atomik ve mezoskopik görünüm</span>
-        <h1>Makro yansımanın altında elektronlar, dipoller ve atom düzlemleri ne yapıyor?</h1>
-        <p>Frekans ve malzemeyi değiştirerek aynı elektromanyetik alanın serbest elektron akımına, bağlı elektron polarizasyonuna, moleküler dipol hareketine veya X-ışını saçılmasına nasıl dönüştüğünü gözle.</p>
+        <span class="badge">Mikroskopik / kolektif görünüm</span>
+        <h1>Makro yansımanın altında hacim içindeki kolektif alan cevabı ne yapıyor?</h1>
+        <p>Frekans ve malzemeyi değiştirerek yüzey yansıması, hacim içi polarizasyon, sönüm ve yeniden yayımın nasıl birlikte oluştuğunu gözle. Atomik taşıyıcı ayrıntıları artık ayrı Nano sayfasında.</p>
       </div>
       <div class="intro-note"><strong>Önemli:</strong> Bu sayfa gerçek zamanlı kuantum/DFT çözümü değildir. Maxwell–Drude–Lorentz sezgisini ve X-ışını saçılma geometrisini öğretmek için ölçeklendirilmiş, fiziksel olarak yönlendirilen bir simülasyondur.</div>
     </section>
@@ -89,13 +90,10 @@
       <section class="card visual-card">
         <div class="visual-head">
           <div><strong id="sceneTitle">RF · Bakır · mikro görünüm</strong><p id="sceneSubtitle">Yüzey akımı ve alanın malzeme içine sönümlenmesi.</p></div>
-          <div class="scale-tabs">
-            <button class="scale-btn active" data-scale="micro" type="button">Mikro</button>
-            <button class="scale-btn" data-scale="nano" type="button">Nano</button>
-          </div>
+          <a class="scale-btn active" href="nano.html" style="text-decoration:none">Nano taşıyıcı görünümüne geç →</a>
         </div>
         <div class="canvas-wrap">
-          <canvas id="microCanvas" aria-label="Mikro nano elektromanyetik malzeme etkileşimi simülasyonu"></canvas>
+          <canvas id="microCanvas" aria-label="Mikro elektromanyetik malzeme etkileşimi simülasyonu"></canvas>
           <div class="secondary-legend" id="secondaryLegend"><span><i class="sec-dot sec-fwd"></i>ileri ikincil alan → birleşir</span><span><i class="sec-dot sec-back"></i>geri ikincil alan → hacimde iptal</span><span><i class="sec-dot sec-net"></i>yüzeyde kalan net geri alan</span></div>
           <div class="overlay" id="overlayText">Mikro görünüm: atomlar tek tek çizilmez; çok sayıda atomun kolektif elektron cevabı hücreler halinde temsil edilir.</div>
         </div>
@@ -181,7 +179,7 @@
     <div class="note"><strong>Uzak kaynak / dalga demeti:</strong> Kaynak numuneden dalga boyuna göre çok uzaktaysa yüzeye ulaşan küçük bölge yaklaşık bir <strong>düzlemsel dalga</strong> gibi modellenebilir. Paralel sinüzoidal izler tek tek farklı dalgalar değil, aynı dalga alanının farklı kesitleridir; soluk paralel çizgiler eş-faz dalga cephelerini gösterir. Bu mod fizik hesabını değiştirmez, yalnız uzaktaki kaynak geometrisini daha doğru görselleştirir.</div>
     <div class="note"><strong>Numune kalınlığı:</strong> Slider fiziksel kalınlık <em>d</em>’yi değiştirir. Çizimde arka yüzey logaritmik ölçekle sağa-sola hareket eder. Asıl fiziksel ölçüt <strong>d/δ</strong> oranıdır: d ≪ δ ise alan arka yüzeye rahat ulaşır; d ≳ δ olduğunda belirgin sönüm; d ≫ δ olduğunda numune pratik olarak opak davranır. “Arka yüzeye ulaşan” değerler yalnız malzeme içindeki sönümü, “arka taraftan çıkan” değer ise buna iki yüzeydeki yansımaları da dahil eder.</div>
     <div class="note"><strong>Hacim içi yeniden yayım:</strong> Homojen bir dielektrik/yarıiletkende her indüklenmiş dipol hem ileri hem geri yönlere ikincil alan üretir. Hacmin içindeki geri yönlü katkılar faz ilişkileri nedeniyle büyük ölçüde birbirini söndürür; ileri katkılar ise koherent birleşerek malzeme içindeki dalgayı oluşturur. Sınırda bu simetri bozulduğu için net geri alan kalır ve makroskopik yansıma oluşur. Kusur, katman veya indis değişimi varsa hacim içi geri saçılma artık tam iptal olmayabilir.</div>
-    <div class="note"><strong>Ölçek uyarısı:</strong> Nano görünümde atomlar ve elektron sapmaları görünür olması için büyütülür; gerçek elektron yer değiştirmeleri atom boyutundan çok daha küçüktür. Mikro görünüm ise milyonlarca atomu tek tek çizmek yerine kolektif hücrelerle temsil eder. X-ışını soğurma olayları olasılıksal süreçlerin şematik gösterimidir. “Su” modeli düşük iletkenlikli suyu temsil eder; tuzlu/iyonik su RF’de çok daha kuvvetli sönüm gösterebilir.</div>
+    <div class="note"><strong>Ölçek uyarısı:</strong> Mikro görünüm milyonlarca atomu tek tek çizmek yerine kolektif hücrelerle temsil eder. Atomik elektron/hol ve bant resmi ayrı Nano sayfasında ele alınır. X-ışını soğurma olayları olasılıksal süreçlerin şematik gösterimidir. “Su” modeli düşük iletkenlikli suyu temsil eder; tuzlu/iyonik su RF’de çok daha kuvvetli sönüm gösterebilir.</div>
   </main>
 
   <script>
@@ -640,13 +638,12 @@
       function setScale(v){scale=v;root.querySelectorAll('[data-scale]').forEach(function(b){b.classList.toggle('active',b.dataset.scale===scale)});}
 
       root.querySelectorAll('[data-band]').forEach(function(btn){btn.addEventListener('click',function(){setBand(btn.dataset.band,false)})});
-      root.querySelectorAll('[data-scale]').forEach(function(btn){btn.addEventListener('click',function(){setScale(btn.dataset.scale)})});
       root.getElementById('singleSourceBtn').addEventListener('click',function(){sourceMode='single';});
       root.getElementById('farSourceBtn').addEventListener('click',function(){sourceMode='beam';});
       root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
       root.getElementById('resetBtn').addEventListener('click',function(){
         root.getElementById('material').value='copper';root.getElementById('angle').value=350;root.getElementById('field').value=100;root.getElementById('thickness').value=-1;root.getElementById('speed').value=10;root.getElementById('beamCount').value=5;sourceMode='beam';
-        root.getElementById('showField').checked=true;root.getElementById('showElectrons').checked=true;root.getElementById('showSecondary').checked=true;root.getElementById('showPlanes').checked=true;root.getElementById('showAbsorption').checked=true;setBand('rf',true);setScale('micro');time=0;
+        root.getElementById('showField').checked=true;root.getElementById('showElectrons').checked=true;root.getElementById('showSecondary').checked=true;root.getElementById('showPlanes').checked=true;root.getElementById('showAbsorption').checked=true;setBand('rf',true);scale='micro';time=0;
       });
       window.addEventListener('resize',resize);
       resize();requestAnimationFrame(frame);
