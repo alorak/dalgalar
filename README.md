@@ -26,7 +26,7 @@ Teknoloji bağımsız, etkileşimli fizik eğitim sayfaları.
 - `yuzey.html` — RF, mikrodalga, görünür ve X-ışını için makroskopik yüzey/kalınlık/yansıma simülasyonu
 - `mikro.html` — farklı malzeme ve frekanslarda kolektif alan, yansıma, yeniden yayım ve sönümü mikro ölçekte gösteren simülasyon
 - `nano.html` — silisyum ağırlıklı elektron/hol, bağlı elektron polarizasyonu, iç EM alan ve bant geçişlerini nano ölçekte gösteren simülasyon
-- `txrx.html` — 3B TX/RX anten bağlantısı, çubuk/dipol omni + patch + yönlü desenler, Friis link bütçesi ve RX analiz simülasyonu
+- `txrx.html` — 3B TX/RX anten bağlantısı, çubuk/dipol omni + patch + yönlü desenler, çift TX coherent/incoherent girişim, Friis link bütçesi ve RX analiz simülasyonu
 
 Tüm sayfalar vanilla HTML/CSS/JavaScript ile çalışır ve harici kütüphane gerektirmez.
 
