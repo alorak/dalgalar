@@ -32,7 +32,7 @@
 <main>
   <section class="intro">
     <div><span class="badge">Kanal ölçümü</span><h1>CSI · kanalın genlik ve faz haritası</h1><p>OFDM alt taşıyıcılarının kompleks kanal cevabını inceleyin; çoklu yolun frekansa göre genlik çukurları, faz eğimi ve gecikme tepeleri oluşturduğunu görün.</p></div>
-    <div class="intro-note"><strong>Temel fark:</strong> RSSI kanalı tek güç değerine indirger. CSI ise her alt taşıyıcı ve çoğu sistemde her TX–RX anten çifti için <strong>kompleks</strong> kanal katsayısı verir: <strong>H<sub>k</sub>=A<sub>k</sub>e<sup>jφk</sup></strong>.</div>
+    <div class="intro-note"><strong>Temel fark:</strong> RSSI kanalı tek bir sinyal-seviyesi değerine indirger. CSI ise her raporlanan alt taşıyıcı ve çoğu MIMO sistemde her TX–RX zincir çifti için <strong>kompleks</strong> kanal katsayısı verir: <strong>H<sub>k</sub>=A<sub>k</sub>e<sup>jφk</sup></strong>. Buradaki H normalize edilmiş göreli kanal cevabıdır; dBm değildir.</div>
   </section>
 
   <div class="freqs">
@@ -48,29 +48,33 @@
       <div class="plots"><div class="plot"><canvas id="ampPlot" aria-label="CSI alt taşıyıcı genliği"></canvas></div><div class="plot"><canvas id="phasePlot" aria-label="CSI alt taşıyıcı fazı"></canvas></div></div>
       <div class="delay"><canvas id="delayPlot" aria-label="CSI gecikme profili"></canvas></div>
       <div class="metrics">
-        <div class="metric"><strong id="nVal">64</strong><span>FFT / alt taşıyıcı örneği</span></div>
+        <div class="metric"><strong id="nVal">64</strong><span>ideal FFT/frekans örnek sayısı</span></div>
         <div class="metric"><strong id="dfVal">312.5 kHz</strong><span>alt taşıyıcı aralığı Δf</span></div>
         <div class="metric"><strong id="delayResVal">50 ns</strong><span>yaklaşık gecikme çözünürlüğü 1/B</span></div>
-        <div class="metric"><strong id="maxDelayVal">3.20 µs</strong><span>gecikme periyodu 1/Δf</span></div>
+        <div class="metric"><strong id="maxDelayVal">3.20 µs</strong><span>delay aliasing periyodu 1/Δf</span></div>
         <div class="metric"><strong id="rmsVal">— ns</strong><span>RMS delay spread</span></div>
-        <div class="metric"><strong id="cohVal">— MHz</strong><span>yaklaşık coherence bandwidth</span></div>
-        <div class="metric"><strong id="avgVal">— dB</strong><span>ortalama |H|²</span></div>
+        <div class="metric"><strong id="cohVal">— MHz</strong><span>yaklaşık Bc ≈ 1/(5τσ)</span></div>
+        <div class="metric"><strong id="avgVal">— dB</strong><span>ortalama göreli |H|²</span></div>
         <div class="metric"><strong id="rippleVal">— dB</strong><span>CSI genlik ripple</span></div>
+        <div class="metric"><strong id="directDelayVal">— ns</strong><span>fiziksel direkt yol gecikmesi d/c</span></div>
+        <div class="metric"><strong id="timingVal">— ns</strong><span>ölçüm lineer faz / timing ofseti</span></div>
       </div>
     </section>
 
     <aside class="panel">
       <h2>CSI kanal modeli</h2>
       <div class="control"><label for="bandwidth">Bant genişliği</label><select id="bandwidth"><option value="20">20 MHz · 64 FFT</option><option value="40">40 MHz · 128 FFT</option><option value="80">80 MHz · 256 FFT</option></select></div>
-      <div class="control"><label>TX–RX mesafesi <output id="distanceOut">8.0 m</output></label><input id="distance" type="range" min="10" max="500" step="1" value="151"></div>
-      <div class="control"><label>Yansıma alan katsayısı a₁ <output id="reflOut">0.60</output></label><input id="reflection" type="range" min="0" max="90" step="1" value="60"></div>
+      <div class="control"><label>TX–RX mesafesi <output id="distanceOut">8.0 m</output></label><input id="distance" type="range" min="1" max="30" step=".1" value="8"></div>
+      <div class="control"><label>Yol-1 göreli alan katsayısı ρ₁ <output id="reflOut">0.60</output></label><input id="reflection" type="range" min="0" max="90" step="1" value="60"></div>
       <div class="control"><label>Yansıma ek yol ΔR₁ <output id="excessOut">1.20 m</output></label><input id="excess" type="range" min="0" max="500" step="1" value="120"></div>
       <div class="control"><label>Hareket genliği <output id="motionOut">3.0 cm</output></label><input id="motion" type="range" min="0" max="30" step="1" value="3"></div>
       <div class="control"><label>Hareket hızı <output id="speedOut">0.40 Hz</output></label><input id="speed" type="range" min="0" max="150" step="1" value="40"></div>
-      <div class="control"><label>Sabit ikinci yol a₂ <output id="refl2Out">0.25</output></label><input id="reflection2" type="range" min="0" max="60" step="1" value="25"></div>
+      <div class="control"><label>Yol-2 göreli alan katsayısı ρ₂ <output id="refl2Out">0.25</output></label><input id="reflection2" type="range" min="0" max="60" step="1" value="25"></div>
       <div class="control"><label>İkinci yol ek mesafe <output id="excess2Out">3.00 m</output></label><input id="excess2" type="range" min="0" max="800" step="1" value="300"></div>
       <div class="control"><label>Ölçüm ortak faz ofseti <output id="phaseOffsetOut">55°</output></label><input id="phaseOffset" type="range" min="-180" max="180" step="1" value="55"></div>
+      <div class="control"><label>Ölçüm timing ofseti <output id="timingOffsetOut">80 ns</output></label><input id="timingOffset" type="range" min="0" max="200" step="1" value="80"></div>
       <label class="switch"><input id="calibratePhase" type="checkbox"> Ortak faz ofsetini kaldır</label>
+      <label class="switch"><input id="calibrateSlope" type="checkbox"> Lineer timing faz eğimini kaldır</label>
       <div class="actions"><button id="pauseBtn" type="button">Duraklat</button><button id="resetBtn" class="alt" type="button">Sıfırla</button></div>
       <div class="status" id="statusText">Ham CSI fazı kanal geometrisine ek olarak ölçüm zinciri faz ofsetleri içerebilir.</div>
     </aside>
@@ -78,18 +82,18 @@
 
   <section class="flow">
     <article class="step"><b>1</b><h3>OFDM alt taşıyıcıları</h3><p>Geniş bant kanal, birbirine yakın birçok dar bant frekans örneğiyle ölçülür.</p><div class="formula">fₖ=f_c+kΔf</div></article>
-    <article class="step"><b>2</b><h3>Her yol faz taşır</h3><p>Bir yolun gecikmesi, her alt taşıyıcıda farklı kompleks faz döndürür.</p><div class="formula">Hₖ=Σ aₚ e^(−j2πfₖτₚ)</div></article>
+    <article class="step"><b>2</b><h3>Her yol faz taşır</h3><p>Bir yolun göreli gecikmesi, her alt taşıyıcıda farklı kompleks faz döndürür. Bu sayfada direkt yolun ortak genliği ve ortak gecikmesi faktörlenerek H normalize edilir.</p><div class="formula">Hrel,k=1+Σ ρₚ e^(−j2πfₖΔτₚ)</div></article>
     <article class="step"><b>3</b><h3>CSI genlik + faz olur</h3><p>Frekansa göre çukurlar, tepeler ve faz eğimi çoklu yol geometrisinin izini taşır.</p><div class="formula">Hₖ=Aₖe^(jφₖ)</div></article>
     <article class="step"><b>4</b><h3>Gecikme alanına geçilebilir</h3><p>Frekans örneklerinin ters dönüşümü, farklı gecikmeli yolların yaklaşık profilini verir.</p><div class="formula">h(τ)≈IFFT{Hₖ}</div></article>
   </section>
 
   <section class="infos">
     <article class="info"><h3>CSI neden RSSI'den daha zengin?</h3><p>RSSI bütün kanal bilgisini tek güce indirger; CSI frekans eksenindeki yapıyı korur.</p><ul><li>alt taşıyıcı başına genlik</li><li>alt taşıyıcı başına faz</li><li>frekans-seçici fading</li><li>MIMO sistemlerde anten çifti başına H<sub>r,t,k</sub></li></ul></article>
-    <article class="info"><h3>Ham CSI fazına neden dikkat?</h3><p>Ölçülen faz yalnız geometrik yayılım değildir. Gerçek donanımda ortak faz, lineer faz eğimi ve zincirler arası ofset oluşabilir.</p><ul><li>CFO / residual frequency offset</li><li>sampling/timing offset</li><li>packet detection delay</li><li>RF zinciri sabit faz farkları</li><li>cihaz/driver'a özgü kalibrasyon</li></ul></article>
+    <article class="info"><h3>Ham CSI fazına neden dikkat?</h3><p>Ölçülen faz yalnız geometrik yayılım değildir. Paket/simge bazlı ortak faz dönüşü ve alt taşıyıcı indeksine göre yaklaşık lineer faz eğimi eklenebilir.</p><ul><li>residual CFO / common phase error → paket/simge ortak faz dönüşü</li><li>sampling/timing offset ve packet-detection delay → alt taşıyıcılar boyunca faz eğimi</li><li>SFO → bu eğimin paketler arasında değişmesine yol açabilir</li><li>RF zinciri sabit faz farkları</li><li>cihaz/driver'a özgü kalibrasyon</li></ul></article>
   </section>
 
-  <div class="note"><strong>Çözünürlük:</strong> Gecikme alanında kabaca ayırabileceğiniz zaman ölçeği bant genişliğiyle belirlenir: Δτ≈1/B. 20 MHz için yaklaşık 50 ns, 80 MHz için yaklaşık 12.5 ns. Bu, serbest uzay yol farkı olarak yaklaşık 15 m ve 3.75 m ölçeklerine karşılık gelir; daha küçük hareketler yine CSI faz/genlik desenini değiştirebilir fakat ayrı gecikme tepeleri olarak çözülmeyebilir.</div>
-  <div class="note"><strong>Simülasyon sınırı:</strong> Buradaki CSI, ideal OFDM kanal katsayısı modelidir. Gerçek cihazlarda hangi alt taşıyıcıların raporlandığı, nicemleme, AGC, pilot/DC/guard taşıyıcılar, MIMO zincirleri ve faz kalibrasyonu chipset/firmware/driver'a bağlıdır.</div>
+  <div class="note"><strong>Çözünürlük ve aliasing:</strong> İdeal, sürekli ve tam bant örneklemede gecikme ayırma ölçeği yaklaşık Δτ≈1/B’dir. 20 MHz için ~50 ns, 80 MHz için ~12.5 ns. Alt taşıyıcı aralığı ise gecikme alanının periyodunu belirler: T<sub>alias</sub>=1/Δf. Bu değer “kanal bu gecikmeye kadar sorunsuz çalışır” anlamına gelmez; gerçek OFDM’de cyclic prefix ve kanal kestiricisinin penceresi ayrı sınırlardır. Guard/DC/null taşıyıcılar ve pencereleme gerçek çözünürlüğü ideal 1/B’den kötüleştirebilir.</div>
+  <div class="note"><strong>OFDM numerolojisi:</strong> Bu sayfa öğretici olarak 312.5 kHz’lik ideal, eşit aralıklı bir frekans ızgarası kullanır; bu legacy/HT/VHT kanal-estimation yapılarıyla uyumlu bir örnektir. Gerçek Wi-Fi CSI çıktısında bütün FFT binleri raporlanmaz; occupied/pilot/DC/guard taşıyıcılar ve HE/EHT alanlarındaki farklı numerolojiler cihaz/PHY’ye göre değişebilir.</div><div class="note"><strong>CSI ölçeği ve RSSI ilişkisi:</strong> Buradaki H normalize edilmiş göreli kanal cevabıdır. Gerçek donanımda ham CSI genliği AGC ve sayısal ölçeklemeye bağlı olabilir; mutlak alınan güçle ilişkilendirmek için RSSI/AGC veya cihaz-özel kalibrasyon gerekebilir. Bu nedenle “CSI genliği 0 dB” doğrudan “0 dBm aldım” demek değildir.</div><div class="note"><strong>Simülasyon sınırı:</strong> Buradaki CSI, ideal OFDM kanal katsayısı modelidir. Gerçek cihazlarda hangi alt taşıyıcıların raporlandığı, nicemleme, AGC, pilot/DC/guard taşıyıcılar, MIMO zincirleri ve faz kalibrasyonu chipset/firmware/driver'a bağlıdır.</div>
 </main>
 
 <script>
@@ -99,20 +103,28 @@
   let fc=5.18e9,running=true,t=0,last=0;
   function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
   function resize(){resizeOne(sc,sctx,260);resizeOne(amp,actx,230);resizeOne(phase,pctx,230);resizeOne(delay,dctx,190)}
-  function distance(){const x=+root.getElementById('distance').value/500;return .5*Math.pow(100,x)}
+  function distance(){return +root.getElementById('distance').value}
   function params(time){
-    const B=+root.getElementById('bandwidth').value*1e6,N=Math.round(B/312500),df=B/N,d=distance(),a1=+root.getElementById('reflection').value/100,a2=+root.getElementById('reflection2').value/100;
-    const motion=+root.getElementById('motion').value/100,speed=+root.getElementById('speed').value/100,dr1=+root.getElementById('excess').value/100+motion*Math.sin(2*Math.PI*speed*time),dr2=+root.getElementById('excess2').value/100;
-    const tau1=dr1/c0,tau2=dr2/c0,measurePhase=(+root.getElementById('phaseOffset').value)*Math.PI/180,cal=root.getElementById('calibratePhase').checked;
-    return {B,N,df,d,a1,a2,dr1,dr2,tau1,tau2,measurePhase,cal};
+    const B=+root.getElementById('bandwidth').value*1e6,N=Math.round(B/312500),df=B/N,d=distance(),rho1=+root.getElementById('reflection').value/100,rho2=+root.getElementById('reflection2').value/100;
+    const motion=+root.getElementById('motion').value/100,speed=+root.getElementById('speed').value/100;
+    const dr1=Math.max(0,+root.getElementById('excess').value/100+motion*Math.sin(2*Math.PI*speed*time)),dr2=Math.max(0,+root.getElementById('excess2').value/100);
+    const tau0=d/c0,tau1=dr1/c0,tau2=dr2/c0;
+    // Direct path amplitude and common delay are factored out. Longer reflected paths
+    // retain a geometric 1/r field scaling relative to the direct path.
+    const a1=rho1*d/(d+dr1),a2=rho2*d/(d+dr2);
+    const measurePhase=(+root.getElementById('phaseOffset').value)*Math.PI/180,timingOffset=+root.getElementById('timingOffset').value*1e-9;
+    const cal=root.getElementById('calibratePhase').checked,calSlope=root.getElementById('calibrateSlope').checked;
+    return {B,N,df,d,rho1,rho2,a1,a2,dr1,dr2,tau0,tau1,tau2,measurePhase,timingOffset,cal,calSlope};
   }
   function channel(q){
     const H=[],amps=[],phases=[];let sumP=0,minDb=1e9,maxDb=-1e9;
     for(let i=0;i<q.N;i++){
-      const k=i-q.N/2,f=fc+k*q.df;
+      const k=i-q.N/2,f=fc+k*q.df,fb=k*q.df;
       const ph1=-2*Math.PI*f*q.tau1,ph2=-2*Math.PI*f*q.tau2;
       let re=1+q.a1*Math.cos(ph1)+q.a2*Math.cos(ph2),im=q.a1*Math.sin(ph1)+q.a2*Math.sin(ph2);
-      const mphase=q.cal?0:q.measurePhase,cr=Math.cos(mphase),ci=Math.sin(mphase),rr=re*cr-im*ci,ii=re*ci+im*cr;re=rr;im=ii;
+      // Measurement chain: packet/symbol common phase + timing/PDD/SFO-like linear slope.
+      const common=q.cal?0:q.measurePhase,timing=q.calSlope?0:q.timingOffset,mphase=common-2*Math.PI*fb*timing;
+      const cr=Math.cos(mphase),ci=Math.sin(mphase),rr=re*cr-im*ci,ii=re*ci+im*cr;re=rr;im=ii;
       const p=re*re+im*im,aDb=10*Math.log10(Math.max(p,1e-12)),ph=Math.atan2(im,re);
       H.push({re,im,f,k});amps.push(aDb);phases.push(ph);sumP+=p;minDb=Math.min(minDb,aDb);maxDb=Math.max(maxDb,aDb);
     }
@@ -147,27 +159,31 @@
   function unwrap(phases){const out=[phases[0]];for(let i=1;i<phases.length;i++){let v=phases[i],prev=out[i-1];while(v-prev>Math.PI)v-=2*Math.PI;while(v-prev<-Math.PI)v+=2*Math.PI;out.push(v)}return out}
   function drawPhase(q,ch){
     const vals=unwrap(ch.phases),min=Math.min(...vals),max=Math.max(...vals),r=phase.getBoundingClientRect(),w=r.width,h=r.height;pctx.clearRect(0,0,w,h);pctx.fillStyle='#fbfcfe';pctx.fillRect(0,0,w,h);const L=42,R=w-12,T=14,B=h-27,pad=Math.max(.25,(max-min)*.08),lo=min-pad,hi=max+pad;
-    axes(pctx,w,h,L,T,R,B,q.cal?'CSI phase · ortak faz kaldırılmış':'CSI phase · ham / unwrapped',[{label:(hi*180/Math.PI).toFixed(0)+'°'},{label:(((hi+lo)/2)*180/Math.PI).toFixed(0)+'°'},{label:(lo*180/Math.PI).toFixed(0)+'°'}]);
+    const phaseTitle=(q.cal&&q.calSlope)?'CSI phase · common + lineer ofset kaldırılmış':((q.cal||q.calSlope)?'CSI phase · kısmi kalibrasyon':'CSI phase · ham / unwrapped');
+    axes(pctx,w,h,L,T,R,B,phaseTitle,[{label:(hi*180/Math.PI).toFixed(0)+'°'},{label:(((hi+lo)/2)*180/Math.PI).toFixed(0)+'°'},{label:(lo*180/Math.PI).toFixed(0)+'°'}]);
     pctx.strokeStyle='#2f8b79';pctx.lineWidth=1.7;pctx.beginPath();vals.forEach((v,i)=>{const x=L+(R-L)*i/(q.N-1),y=T+(hi-v)/(hi-lo)*(B-T);if(i===0)pctx.moveTo(x,y);else pctx.lineTo(x,y)});pctx.stroke();pctx.fillStyle='#6a7a8d';pctx.font='10px system-ui';pctx.fillText('−B/2',L,B+17);pctx.fillText('f_c',((L+R)/2)-7,B+17);pctx.fillText('+B/2',R-28,B+17);
   }
   function drawDelay(q,ch){
     const r=delay.getBoundingClientRect(),w=r.width,h=r.height;dctx.clearRect(0,0,w,h);dctx.fillStyle='#fff';dctx.fillRect(0,0,w,h);const L=48,R=w-14,T=14,B=h-28,maxTau=Math.min(800e-9,1/q.df),bins=180,vals=[];
     let vmax=0;for(let j=0;j<bins;j++){const tau=maxTau*j/(bins-1);let re=0,im=0;for(let i=0;i<q.N;i++){const fk=(i-q.N/2)*q.df,ang=2*Math.PI*fk*tau,reH=ch.H[i].re,imH=ch.H[i].im;re+=reH*Math.cos(ang)-imH*Math.sin(ang);im+=reH*Math.sin(ang)+imH*Math.cos(ang)}const p=(re*re+im*im)/(q.N*q.N);vals.push(p);vmax=Math.max(vmax,p)}
-    axes(dctx,w,h,L,T,R,B,'Approx. channel impulse / delay profile',[{label:'0 dB'},{label:'−15'},{label:'−30'}]);
+    axes(dctx,w,h,L,T,R,B,'Approx. relative CIR / delay profile',[{label:'0 dB'},{label:'−15'},{label:'−30'}]);
     dctx.strokeStyle='#b0793c';dctx.lineWidth=1.7;dctx.beginPath();vals.forEach((p,i)=>{const db=10*Math.log10(Math.max(p/vmax,1e-3)),x=L+(R-L)*i/(bins-1),y=T+(-db/30)*(B-T);if(i===0)dctx.moveTo(x,y);else dctx.lineTo(x,y)});dctx.stroke();dctx.fillStyle='#6a7a8d';dctx.font='10px system-ui';dctx.fillText('0 ns',L,B+17);dctx.fillText((maxTau*1e9).toFixed(0)+' ns',R-38,B+17);
     [q.tau1,q.tau2].forEach((tau,i)=>{if(tau<=maxTau){const x=L+(R-L)*tau/maxTau;dctx.strokeStyle=i===0?'#efae70':'#b998e8';dctx.setLineDash([4,4]);dctx.beginPath();dctx.moveTo(x,T+16);dctx.lineTo(x,B);dctx.stroke();dctx.setLineDash([])}});
   }
   function update(q,ch,st){
-    root.getElementById('distanceOut').value=q.d.toFixed(2)+' m';root.getElementById('reflOut').value=q.a1.toFixed(2);root.getElementById('excessOut').value=q.dr1.toFixed(3)+' m';root.getElementById('motionOut').value=(+root.getElementById('motion').value).toFixed(1)+' cm';root.getElementById('speedOut').value=(+root.getElementById('speed').value/100).toFixed(2)+' Hz';root.getElementById('refl2Out').value=q.a2.toFixed(2);root.getElementById('excess2Out').value=q.dr2.toFixed(2)+' m';root.getElementById('phaseOffsetOut').value=root.getElementById('phaseOffset').value+'°';
-    root.getElementById('nVal').textContent=q.N;root.getElementById('dfVal').textContent=(q.df/1e3).toFixed(1)+' kHz';root.getElementById('delayResVal').textContent=(1/q.B*1e9).toFixed(1)+' ns';root.getElementById('maxDelayVal').textContent=(1/q.df*1e6).toFixed(2)+' µs';root.getElementById('rmsVal').textContent=(st.rms*1e9).toFixed(2)+' ns';root.getElementById('cohVal').textContent=isFinite(st.coh)?(st.coh/1e6).toFixed(2)+' MHz':'∞';root.getElementById('avgVal').textContent=(10*Math.log10(ch.avgP)).toFixed(2)+' dB';root.getElementById('rippleVal').textContent=ch.ripple.toFixed(2)+' dB';
-    root.getElementById('sceneTitle').textContent=(fc/1e9).toFixed(3)+' GHz · '+(q.B/1e6).toFixed(0)+' MHz · '+q.N+' FFT bin';
-    root.getElementById('statusText').textContent=q.cal?'Ortak faz ofseti kaldırıldı. Kalan faz eğimi ve kıvrımlar çoklu yol gecikmelerinden geliyor.':'Ham faza '+root.getElementById('phaseOffset').value+'° ortak ölçüm ofseti ekleniyor; gerçek cihazlarda buna başka zamanlama/frekans ofsetleri de eklenebilir.';
-    root.getElementById('overlayText').innerHTML='<strong>CSI:</strong> hareketli yol ΔR₁='+q.dr1.toFixed(3)+' m ('+(q.tau1*1e9).toFixed(2)+' ns). Aynı yol her alt taşıyıcıda farklı faz döndürdüğü için |Hₖ| ve φₖ frekans boyunca şekilleniyor.';
+    root.getElementById('distanceOut').value=q.d.toFixed(2)+' m';root.getElementById('reflOut').value=q.rho1.toFixed(2)+' → a₁='+q.a1.toFixed(2);root.getElementById('excessOut').value=q.dr1.toFixed(3)+' m';root.getElementById('motionOut').value=(+root.getElementById('motion').value).toFixed(1)+' cm';root.getElementById('speedOut').value=(+root.getElementById('speed').value/100).toFixed(2)+' Hz';root.getElementById('refl2Out').value=q.rho2.toFixed(2)+' → a₂='+q.a2.toFixed(2);root.getElementById('excess2Out').value=q.dr2.toFixed(2)+' m';root.getElementById('phaseOffsetOut').value=root.getElementById('phaseOffset').value+'°';root.getElementById('timingOffsetOut').value=(q.timingOffset*1e9).toFixed(0)+' ns';
+    root.getElementById('nVal').textContent=q.N;root.getElementById('dfVal').textContent=(q.df/1e3).toFixed(1)+' kHz';root.getElementById('delayResVal').textContent=(1/q.B*1e9).toFixed(1)+' ns';root.getElementById('maxDelayVal').textContent=(1/q.df*1e6).toFixed(2)+' µs';root.getElementById('rmsVal').textContent=(st.rms*1e9).toFixed(2)+' ns';root.getElementById('cohVal').textContent=isFinite(st.coh)?(st.coh/1e6).toFixed(2)+' MHz':'∞';root.getElementById('avgVal').textContent=(10*Math.log10(ch.avgP)).toFixed(2)+' dB';root.getElementById('rippleVal').textContent=ch.ripple.toFixed(2)+' dB';root.getElementById('directDelayVal').textContent=(q.tau0*1e9).toFixed(2)+' ns';root.getElementById('timingVal').textContent=(q.calSlope?0:q.timingOffset*1e9).toFixed(0)+' ns';
+    root.getElementById('sceneTitle').textContent=(fc/1e9).toFixed(3)+' GHz · '+(q.B/1e6).toFixed(0)+' MHz · ideal '+q.N+'-bin grid';
+    let status='Fiziksel kanal: direkt yol ortak genlik/gecikmesi faktörlenmiş göreli H. ';
+    if(!q.cal)status+='Ortak ölçüm fazı '+root.getElementById('phaseOffset').value+'° ekli. '; else status+='Ortak faz ofseti kaldırıldı. ';
+    if(!q.calSlope)status+='Timing/PDD-benzeri '+(q.timingOffset*1e9).toFixed(0)+' ns lineer faz eğimi ekli.'; else status+='Lineer timing faz eğimi kaldırıldı.';
+    root.getElementById('statusText').textContent=status;
+    root.getElementById('overlayText').innerHTML='<strong>CSI:</strong> direkt fiziksel gecikme d/c='+(q.tau0*1e9).toFixed(2)+' ns; bu ortak terim normalize H’den faktörlenmiştir. Hareketli ek yol ΔR₁='+q.dr1.toFixed(3)+' m → Δτ₁='+(q.tau1*1e9).toFixed(2)+' ns. Frekans seçici yapı bu göreli gecikmelerden oluşur.';
   }
   function frame(ts){if(!last)last=ts;const dt=Math.min(.05,(ts-last)/1000);last=ts;if(running)t+=dt;const q=params(t),ch=channel(q),st=delayStats(q);update(q,ch,st);drawScene(q);drawAmp(q,ch);drawPhase(q,ch);drawDelay(q,ch);requestAnimationFrame(frame)}
   root.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{fc=+b.dataset.f;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x===b))}));
   root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
-  root.getElementById('resetBtn').addEventListener('click',()=>{fc=5.18e9;root.getElementById('bandwidth').value='20';root.getElementById('distance').value=151;root.getElementById('reflection').value=60;root.getElementById('excess').value=120;root.getElementById('motion').value=3;root.getElementById('speed').value=40;root.getElementById('reflection2').value=25;root.getElementById('excess2').value=300;root.getElementById('phaseOffset').value=55;root.getElementById('calibratePhase').checked=false;t=0;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x.dataset.f==='5.18e9'))});
+  root.getElementById('resetBtn').addEventListener('click',()=>{fc=5.18e9;root.getElementById('bandwidth').value='20';root.getElementById('distance').value=8;root.getElementById('reflection').value=60;root.getElementById('excess').value=120;root.getElementById('motion').value=3;root.getElementById('speed').value=40;root.getElementById('reflection2').value=25;root.getElementById('excess2').value=300;root.getElementById('phaseOffset').value=55;root.getElementById('timingOffset').value=80;root.getElementById('calibratePhase').checked=false;root.getElementById('calibrateSlope').checked=false;t=0;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x.dataset.f==='5.18e9'))});
   window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
 })();
 </script>
