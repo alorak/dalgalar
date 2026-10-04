@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>RSSI — Dalgalar</title>
+  <meta name="description" content="RSSI tekniğini, yol kaybını, çoklu yol sönümlemesini ve zamanla değişen alınan gücü etkileşimli olarak inceleyin.">
+  <style>
+    :root{--bg:#f6f8fc;--surface:#fff;--text:#142033;--muted:#607087;--line:#dbe3ef;--nav:#0f1f3d;--nav2:#15305d;--accent:#6845c6;--shadow:0 18px 45px rgba(20,32,51,.09);--radius:20px}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+    button,input,select{font:inherit}button{cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--nav),var(--nav2));color:#fff;box-shadow:0 8px 24px rgba(15,31,61,.18)}
+    .topbar-inner{max-width:1360px;margin:auto;display:flex;gap:18px;align-items:center;padding:12px 20px}
+    .brand{font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+    .nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+    .nav a{text-decoration:none;font-size:.9rem;padding:8px 11px;border-radius:999px;color:#dce7fb;white-space:nowrap}
+    .nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff}.nav a[aria-current="page"]{background:rgba(255,255,255,.18);color:#fff}
+    main{max-width:1360px;margin:auto;padding:26px 20px 56px}
+    .intro{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:end;margin-bottom:18px}
+    .intro h1{font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.05;letter-spacing:-.04em;margin:0 0 10px}
+    .intro p{margin:0;color:var(--muted);font-size:1.01rem}
+    .intro-note{padding:17px 18px;border-radius:17px;background:#fff;border:1px solid var(--line);color:#4d5f76}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eee9ff;color:#5f4998;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .freqs{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 0}
+    .freq{border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px;text-align:left;color:#41536b}.freq strong{display:block}.freq span{display:block;color:var(--muted);font-size:.74rem;margin-top:3px}.freq.active{background:#142a4d;color:#fff;border-color:#142a4d}.freq.active span{color:#d9e5f7}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 355px;gap:18px;align-items:start}
+    .card,.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .visual-card{overflow:hidden}.visual-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 17px;border-bottom:1px solid var(--line)}
+    .visual-head p{margin:3px 0 0;color:var(--muted);font-size:.8rem}
+    .canvas-wrap{position:relative;background:#071427}.canvas-wrap canvas{display:block;width:100%;height:430px}
+    .legend{position:absolute;right:14px;top:14px;display:flex;gap:9px;flex-wrap:wrap;max-width:430px;padding:7px 9px;border-radius:10px;background:rgba(7,20,39,.82);color:#e7eef8;font-size:.7rem;backdrop-filter:blur(5px)}
+    .legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+    .overlay{position:absolute;left:14px;bottom:14px;max-width:min(720px,calc(100% - 28px));padding:9px 11px;border-radius:10px;background:rgba(7,20,39,.84);color:#e5edf8;font-size:.75rem;backdrop-filter:blur(5px)}
+    .chart{border-top:1px solid var(--line);background:#fbfcfe;padding:12px 15px}.chart canvas{display:block;width:100%;height:205px}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line)}
+    .metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:.98rem}.metric span{font-size:.68rem;color:var(--muted)}
+    .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
+    .control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}.control input[type=range]{width:100%;accent-color:var(--accent)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{border:0;border-radius:10px;padding:8px 11px;background:#543c91;color:#fff;font-weight:800}.actions button.alt{background:#eef2f7;color:#39516e;border:1px solid var(--line)}
+    .status{padding:11px 12px;border-radius:12px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.78rem;margin-top:12px}
+    .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.step,.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.step b{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:#152d52;color:#fff;font-size:.75rem;margin-bottom:8px}.step h3,.info h3{font-size:.92rem;margin:0 0 6px}.step p,.info p{font-size:.8rem;color:#586b82;margin:0}.formula{margin-top:9px;padding:8px 9px;border-radius:9px;background:#101f37;color:#dce7f5;font:600 .7rem "SFMono-Regular",Consolas,monospace}
+    .infos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.info ul{padding-left:18px;margin:8px 0 0;color:#586b82;font-size:.78rem}
+    .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.82rem}
+    @media(max-width:1000px){.intro,.layout{grid-template-columns:1fr}.freqs{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr}.flow{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.freqs,.metrics,.flow,.infos{grid-template-columns:1fr}.canvas-wrap canvas{height:360px}.legend{left:12px;right:12px}}
+  </style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">dalgalar</div>
+  <nav class="nav" aria-label="Sayfalar">
+    <a href="index.html">Altyapı</a><a href="2d.html">2B Girişim</a><a href="3d.html">3B Girişim</a><a href="yuzey.html">Yüzey & Frekans</a><a href="mikro.html">Mikro</a><a href="nano.html">Nano</a><a href="txrx.html">TX / RX</a><a href="rssi.html" aria-current="page">RSSI</a><a href="csi.html">CSI</a>
+  </nav>
+</div></header>
+<main>
+  <section class="intro">
+    <div><span class="badge">Kanal ölçümü</span><h1>RSSI · tek sayı ile alınan güç</h1><p>RSSI'nin mesafe, yol kaybı, gölgelenme ve çoklu yol girişimi nedeniyle neden değiştiğini zaman alanında inceleyin.</p></div>
+    <div class="intro-note"><strong>Önemli:</strong> RSSI çoğu cihazda bir paket/ölçüm penceresi için alınan toplam gücü özetleyen tek skaler değerdir. Fazı, alt taşıyıcıları ve tek tek çoklu yol bileşenlerini göstermez.</div>
+  </section>
+
+  <div class="freqs">
+    <button class="freq" data-f="433e6" type="button"><strong>433 MHz</strong><span>λ ≈ 69 cm</span></button>
+    <button class="freq" data-f="915e6" type="button"><strong>915 MHz</strong><span>λ ≈ 32.8 cm</span></button>
+    <button class="freq active" data-f="2.45e9" type="button"><strong>2.45 GHz</strong><span>λ ≈ 12.2 cm</span></button>
+    <button class="freq" data-f="5.8e9" type="button"><strong>5.8 GHz</strong><span>λ ≈ 5.17 cm</span></button>
+  </div>
+
+  <div class="layout">
+    <section class="card visual-card">
+      <div class="visual-head"><div><strong id="sceneTitle">2.45 GHz · iki-yol RSSI modeli</strong><p>Doğrudan yol ile hareketli yansıma yolunun kompleks alanları birleşir; alıcı yalnız toplam gücü RSSI olarak görür.</p></div></div>
+      <div class="canvas-wrap">
+        <canvas id="scene" aria-label="RSSI çoklu yol simülasyonu"></canvas>
+        <div class="legend"><span><i class="dot" style="background:#81d4ff"></i>doğrudan yol</span><span><i class="dot" style="background:#efae70"></i>yansıyan yol</span><span><i class="dot" style="background:#83e2b1"></i>RX</span></div>
+        <div class="overlay" id="overlayText">RSSI, iki yolun alanlarının faza bağlı birleşiminden oluşan toplam alınan gücü özetliyor.</div>
+      </div>
+      <div class="chart"><canvas id="chart" aria-label="RSSI zaman serisi"></canvas></div>
+      <div class="metrics">
+        <div class="metric"><strong id="rssiVal">— dBm</strong><span>anlık RSSI</span></div>
+        <div class="metric"><strong id="directVal">— dBm</strong><span>yalnız doğrudan yol</span></div>
+        <div class="metric"><strong id="fadeVal">— dB</strong><span>çoklu yol kazanç / fade</span></div>
+        <div class="metric"><strong id="lambdaVal">—</strong><span>dalga boyu λ</span></div>
+        <div class="metric"><strong id="deltaVal">—</strong><span>yol farkı ΔR / λ</span></div>
+        <div class="metric"><strong id="phaseVal">—°</strong><span>yansıma göreli fazı</span></div>
+        <div class="metric"><strong id="pathLossVal">— dB</strong><span>doğrudan yol kaybı</span></div>
+        <div class="metric"><strong id="rangeVal">— dB</strong><span>son 8 s RSSI aralığı</span></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>RSSI koşulları</h2>
+      <div class="control"><label>TX güç <output id="txPowerOut">10 dBm</output></label><input id="txPower" type="range" min="-10" max="30" step="1" value="10"></div>
+      <div class="control"><label>TX–RX mesafesi <output id="distanceOut">8.0 m</output></label><input id="distance" type="range" min="10" max="500" step="1" value="151"></div>
+      <div class="control"><label>Yol kaybı üssü n <output id="nOut">2.20</output></label><input id="pathN" type="range" min="16" max="45" step="1" value="22"></div>
+      <div class="control"><label>Ek gölgelenme / engel kaybı <output id="shadowOut">3.0 dB</output></label><input id="shadow" type="range" min="0" max="200" step="5" value="30"></div>
+      <div class="control"><label>Yansıtıcı yan konumu <output id="reflectorOut">1.20 m</output></label><input id="reflector" type="range" min="5" max="400" step="1" value="120"></div>
+      <div class="control"><label>Yansıma alan katsayısı |Γ| <output id="gammaOut">0.55</output></label><input id="gamma" type="range" min="0" max="90" step="1" value="55"></div>
+      <div class="control"><label>Yansıma fazı ∠Γ <output id="reflPhaseOut">180°</output></label><input id="reflPhase" type="range" min="-180" max="180" step="1" value="180"></div>
+      <div class="control"><label>Hareket genliği <output id="motionOut">20 cm</output></label><input id="motion" type="range" min="0" max="100" step="1" value="20"></div>
+      <div class="control"><label>Hareket hızı <output id="speedOut">0.35 Hz</output></label><input id="speed" type="range" min="0" max="150" step="1" value="35"></div>
+      <div class="actions"><button id="pauseBtn" type="button">Duraklat</button><button id="resetBtn" class="alt" type="button">Sıfırla</button></div>
+      <div class="status" id="statusText">RSSI tek sayı olduğu için aynı RSSI değerini üreten birçok farklı kanal geometrisi olabilir.</div>
+    </aside>
+  </div>
+
+  <section class="flow">
+    <article class="step"><b>1</b><h3>TX gücü yayılır</h3><p>Anten kazancı ve mesafe, alıcı yönündeki ortalama güç yoğunluğunu belirler.</p><div class="formula">PL(d)=PL(d₀)+10n log₁₀(d/d₀)</div></article>
+    <article class="step"><b>2</b><h3>Birden fazla yol gelir</h3><p>Doğrudan ve yansıyan alanların yol uzunlukları farklıdır; dolayısıyla fazları farklıdır.</p><div class="formula">Δφ=2πΔR/λ + φΓ</div></article>
+    <article class="step"><b>3</b><h3>Alanlar birleşir</h3><p>Yapıcı veya yıkıcı girişim, toplam alınan gücü küçük hareketlerde bile değiştirebilir.</p><div class="formula">P∝|E₁+E₂|²</div></article>
+    <article class="step"><b>4</b><h3>RSSI tek sayıya indirger</h3><p>Alıcı bu karmaşık kanalın ayrıntısını değil, toplam güç seviyesini raporlar.</p><div class="formula">RSSI ≈ 10 log₁₀(P_RX / 1 mW)</div></article>
+  </section>
+
+  <section class="infos">
+    <article class="info"><h3>RSSI ne için iyidir?</h3><p>Bağlantı seviyesi, kapsama, yakınlık eğilimi ve kaba hareket/gölgeleme değişimini izlemek için basittir.</p><ul><li>tek değer → düşük veri hacmi</li><li>çoğu RF/Wi-Fi cihazında erişilebilir</li><li>zaman serisi olarak değişim takibi kolay</li></ul></article>
+    <article class="info"><h3>RSSI neyi söylemez?</h3><p>Aynı toplam güç çok farklı çoklu yol geometrilerinden oluşabilir. Faz ve frekans-seçici kanal bilgisi kaybolmuştur.</p><ul><li>tek tek yansıma yolları ayrılmaz</li><li>alt taşıyıcı genlik/fazı yoktur</li><li>cihazlar arası kalibrasyon farklı olabilir</li><li>dBm benzeri raporlama her chipset'te aynı doğrulukta değildir</li></ul></article>
+  </section>
+
+  <div class="note"><strong>Yansıma katsayısı:</strong> Gerçekte Γ kompleks bir sayıdır; büyüklüğü yansıyan alanın genliğini, açısı ise yansıma fazını belirler. Fazın 180° olması yalnız belirli sınır/polarizasyon durumlarının sonucudur; bu nedenle simülasyonda |Γ| ve ∠Γ ayrı kontrol edilir.</div>
+  <div class="note"><strong>Simülasyon sınırı:</strong> Bu sayfa öğretici iki-yol + log-distance modelidir. Gerçek ortamda duvarlar, çok sayıda saçıcı, anten polarizasyonu, AGC, alıcının RSSI filtresi, cihaz kalibrasyonu ve paket başına ölçüm yöntemi sonucu değiştirir. RSSI'yi tek başına kesin mesafe ölçeri gibi yorumlamak genellikle doğru değildir.</div>
+</main>
+
+<script>
+(function(){
+  const root=document,scene=root.getElementById('scene'),ctx=scene.getContext('2d'),chart=root.getElementById('chart'),g=chart.getContext('2d');
+  const c0=299792458,dpr=Math.min(window.devicePixelRatio||1,2);
+  let freq=2.45e9,running=true,t=0,last=0,lastSample=0,history=[];
+  function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
+  function resize(){resizeOne(scene,ctx,parseFloat(getComputedStyle(scene).height));resizeOne(chart,g,205)}
+  function dbm2w(v){return Math.pow(10,(v-30)/10)} function w2dbm(v){return 10*Math.log10(Math.max(v,1e-30))+30}
+  function lambda(){return c0/freq}
+  function distance(){const x=+root.getElementById('distance').value/500;return .5*Math.pow(100,x)}
+  function fmtLen(m){if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=.01)return (m*100).toFixed(1)+' cm';return (m*1000).toFixed(1)+' mm'}
+  function pathLoss(r,n){const lam=lambda(),pl1=20*Math.log10(4*Math.PI/lam);return pl1+10*n*Math.log10(Math.max(r,1))}
+  function calc(time){
+    const d=distance(),n=+root.getElementById('pathN').value/10,txDbm=+root.getElementById('txPower').value,extra=+root.getElementById('shadow').value/10,gamma=+root.getElementById('gamma').value/100;
+    const y0=+root.getElementById('reflector').value/100,motion=+root.getElementById('motion').value/100,speed=+root.getElementById('speed').value/100,reflPhase=+root.getElementById('reflPhase').value*Math.PI/180;
+    const y=y0+motion*Math.sin(2*Math.PI*speed*time),r1=d,r2=2*Math.hypot(d/2,y),pl1=pathLoss(r1,n)+extra,pl2=pathLoss(r2,n)+extra;
+    const a1=Math.pow(10,-pl1/20),a2=gamma*Math.pow(10,-pl2/20),phase=2*Math.PI*(r2-r1)/lambda()+reflPhase;
+    const re=a1+a2*Math.cos(phase),im=a2*Math.sin(phase),p=dbm2w(txDbm)*(re*re+im*im),p1=dbm2w(txDbm)*a1*a1;
+    const rssi=w2dbm(p),direct=w2dbm(p1),fade=rssi-direct;
+    return {d,n,txDbm,extra,gamma,y,r1,r2,pl1,pl2,a1,a2,phase,p,p1,rssi,direct,fade,delta:r2-r1};
+  }
+  function drawScene(s){
+    const r=scene.getBoundingClientRect(),w=r.width,h=r.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
+    const tx={x:70,y:h*.56},rx={x:w-70,y:h*.56},mid=(tx.x+rx.x)/2,scale=(rx.x-tx.x)/Math.max(s.d,1),ry=h*.56-Math.min(h*.36,s.y*scale*.72);
+    ctx.strokeStyle='rgba(119,150,186,.14)';ctx.lineWidth=1;for(let x=30;x<w;x+=55){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}for(let y=30;y<h;y+=55){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+    ctx.strokeStyle='#81d4ff';ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(tx.x,tx.y);ctx.lineTo(rx.x,rx.y);ctx.stroke();
+    ctx.strokeStyle='#efae70';ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(tx.x,tx.y);ctx.lineTo(mid,ry);ctx.lineTo(rx.x,rx.y);ctx.stroke();
+    ctx.fillStyle='#81d4ff';ctx.beginPath();ctx.arc(tx.x,tx.y,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#83e2b1';ctx.beginPath();ctx.arc(rx.x,rx.y,8,0,Math.PI*2);ctx.fill();ctx.fillStyle='#efae70';ctx.beginPath();ctx.arc(mid,ry,8,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#e5edf8';ctx.font='700 13px system-ui';ctx.fillText('TX',tx.x-12,tx.y-16);ctx.fillText('RX',rx.x-12,rx.y-16);ctx.fillText('yansıtıcı / hareketli saçıcı',Math.max(12,mid-78),Math.max(22,ry-18));
+    const waveN=Math.min(48,Math.max(5,Math.round(s.d/lambda()))),step=(rx.x-tx.x)/waveN;ctx.strokeStyle='rgba(129,212,255,.33)';ctx.lineWidth=1;
+    for(let i=1;i<waveN;i++){const x=tx.x+i*step;ctx.beginPath();ctx.arc(x,tx.y,8,0,Math.PI*2);ctx.stroke()}
+    ctx.fillStyle='rgba(229,237,248,.72)';ctx.font='11px system-ui';ctx.fillText('d='+s.d.toFixed(2)+' m',mid-28,tx.y+27);ctx.fillText('ΔR='+fmtLen(s.delta),mid-28,tx.y+45);
+  }
+  function drawChart(){
+    const r=chart.getBoundingClientRect(),w=r.width,h=r.height;g.clearRect(0,0,w,h);g.fillStyle='#fbfcfe';g.fillRect(0,0,w,h);const L=45,R=w-15,T=14,B=h-27;
+    const vals=history.map(x=>x.v),min=(vals.length?Math.min(...vals):-90)-3,max=(vals.length?Math.max(...vals):-30)+3;
+    g.strokeStyle='#d5deea';g.beginPath();g.moveTo(L,T);g.lineTo(L,B);g.lineTo(R,B);g.stroke();
+    for(let i=0;i<5;i++){const y=T+(B-T)*i/4,v=max-(max-min)*i/4;g.strokeStyle='#edf1f6';g.beginPath();g.moveTo(L,y);g.lineTo(R,y);g.stroke();g.fillStyle='#68798d';g.font='10px system-ui';g.fillText(v.toFixed(0),8,y+3)}
+    if(history.length>1){g.strokeStyle='#6845c6';g.lineWidth=2;g.beginPath();history.forEach((p,i)=>{const x=L+(R-L)*i/(history.length-1),y=T+(max-p.v)/(max-min)*(B-T);if(i===0)g.moveTo(x,y);else g.lineTo(x,y)});g.stroke()}
+    g.fillStyle='#253a56';g.font='700 11px system-ui';g.fillText('RSSI zaman serisi · son 8 saniye',L,T+9);g.fillStyle='#6a7a8d';g.font='10px system-ui';g.fillText('−8 s',L,B+17);g.fillText('şimdi',R-28,B+17);
+  }
+  function update(s){
+    root.getElementById('txPowerOut').value=s.txDbm.toFixed(0)+' dBm';root.getElementById('distanceOut').value=s.d.toFixed(2)+' m';root.getElementById('nOut').value=s.n.toFixed(2);root.getElementById('shadowOut').value=s.extra.toFixed(1)+' dB';root.getElementById('reflectorOut').value=s.y.toFixed(2)+' m';root.getElementById('gammaOut').value=s.gamma.toFixed(2);root.getElementById('reflPhaseOut').value=root.getElementById('reflPhase').value+'°';root.getElementById('motionOut').value=(+root.getElementById('motion').value).toFixed(0)+' cm';root.getElementById('speedOut').value=(+root.getElementById('speed').value/100).toFixed(2)+' Hz';
+    root.getElementById('rssiVal').textContent=s.rssi.toFixed(1)+' dBm';root.getElementById('directVal').textContent=s.direct.toFixed(1)+' dBm';root.getElementById('fadeVal').textContent=(s.fade>=0?'+':'')+s.fade.toFixed(1)+' dB';root.getElementById('lambdaVal').textContent=fmtLen(lambda());root.getElementById('deltaVal').textContent=(s.delta/lambda()).toFixed(3)+' λ';root.getElementById('phaseVal').textContent=((((s.phase*180/Math.PI)%360)+360)%360).toFixed(1)+'°';root.getElementById('pathLossVal').textContent=s.pl1.toFixed(1)+' dB';
+    if(history.length){const vs=history.map(x=>x.v);root.getElementById('rangeVal').textContent=(Math.max(...vs)-Math.min(...vs)).toFixed(1)+' dB'}else root.getElementById('rangeVal').textContent='—';
+    const kind=s.fade>1?'yapıcı girişim':s.fade<-1?'yıkıcı girişim':'ara faz';root.getElementById('statusText').textContent='Şu anda '+kind+'. Küçük bir yol değişimi ΔR/λ oranını değiştirip RSSI’yi belirgin oynatabilir.';
+    root.getElementById('overlayText').innerHTML='<strong>RSSI '+s.rssi.toFixed(1)+' dBm:</strong> doğrudan yol '+s.direct.toFixed(1)+' dBm; yansıyan yol toplam alanı '+(s.fade>=0?'+' :'')+s.fade.toFixed(1)+' dB değiştirdi. Alıcı bu iki yolu ayrı ayrı raporlamıyor.';
+    root.getElementById('sceneTitle').textContent=(freq>=1e9?(freq/1e9).toFixed(2)+' GHz':(freq/1e6).toFixed(0)+' MHz')+' · iki-yol RSSI modeli';
+  }
+  function frame(ts){if(!last)last=ts;const dt=Math.min(.05,(ts-last)/1000);last=ts;if(running)t+=dt;const s=calc(t);if(ts-lastSample>80){history.push({t:t,v:s.rssi});while(history.length>100)history.shift();lastSample=ts}update(s);drawScene(s);drawChart();requestAnimationFrame(frame)}
+  root.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{freq=+b.dataset.f;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x===b));history=[]}));
+  root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
+  root.getElementById('resetBtn').addEventListener('click',()=>{freq=2.45e9;root.getElementById('txPower').value=10;root.getElementById('distance').value=151;root.getElementById('pathN').value=22;root.getElementById('shadow').value=30;root.getElementById('reflector').value=120;root.getElementById('gamma').value=55;root.getElementById('reflPhase').value=180;root.getElementById('motion').value=20;root.getElementById('speed').value=35;history=[];t=0;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x.dataset.f==='2.45e9'))});
+  window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
