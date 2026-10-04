@@ -293,7 +293,7 @@
         const bulkDielectric=(r.m.type==='dielectric'||r.m.type==='semiconductor'||r.m.type==='ionic'||r.m.type==='polar')&&band!=='xray';
         root.getElementById('bulkBackVal').textContent=band==='xray'?(r.m.crystal?'Bragg’a bağlı':'dağınık'):bulkDielectric?'≈ 0':'yüzeye yakın';
         root.getElementById('bulkForwardVal').textContent=band==='xray'?'saçılma toplamı':bulkDielectric?'koherent':'sönümlü';
-        root.getElementById('secondaryLegend').style.display=root.getElementById('showSecondary').checked?'flex':'none';
+        root.getElementById('secondaryLegend').style.display=(root.getElementById('showSecondary').checked&&band!=='xray'&&r.m.type!=='metal')?'flex':'none';
         root.getElementById('formulaBox').textContent=r.formula;
         root.getElementById('sceneTitle').textContent=r.b.label+' · '+r.m.label+' · '+(scale==='micro'?'mikro':'nano')+' görünüm';
         let sub='Kolektif alan cevabı ve nüfuz derinliği.';
@@ -331,7 +331,7 @@
         drawArrow(x,y,x+d.bx*len,y+d.by*len,isSurface?'#f4c46c':'#b99cff',(isSurface?.62:.13+.24*env)*pulse,isSurface?1.8:1);
       }
       function drawCancellationSummary(front,back,h,theta2){
-        if(!root.getElementById('showSecondary').checked||band==='xray')return;
+        if(!root.getElementById('showSecondary').checked||band==='xray'||mat().type==='metal')return;
         const y=h-55,d=secondaryDirections(theta2),mid=(front+back)/2;
         ctx.font='11px system-ui';
         ctx.fillStyle='rgba(143,227,185,.92)';ctx.fillText('Σ ileri ikincil alan → içerideki dalga',front+16,y-16);
