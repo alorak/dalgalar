@@ -97,12 +97,15 @@
         <div class="metric"><strong id="pairVal">Hayır</strong><span>tek fotonla Si e–h / elektronik uyarım</span></div>
         <div class="metric"><strong id="carrierVal">mevcut taşıyıcı</strong><span>baskın elektronik cevap</span></div>
         <div class="metric"><strong id="wavelengthVal">3.00 m</strong><span>vakumdaki dalga boyu λ</span></div>
-        <div class="metric"><strong id="attenuationVal">—</strong><span>1/e güç zayıflama uzunluğu Lₚ</span></div>
+        <div class="metric"><strong id="attenuationVal">—</strong><span>malzeme 1/e güç uzunluğu Lₚ=λ/4πκ</span></div>
+        <div class="metric"><strong id="lperpVal">—</strong><span>yüzey-normal 1/e güç derinliği L⊥</span></div>
         <div class="metric"><strong id="viewDepthVal">—</strong><span>gösterilen yüzey-normal derinlik</span></div>
         <div class="metric"><strong id="edgePowerVal">—</strong><span>sağ kenarda kalan güç / içeri giren</span></div>
         <div class="metric"><strong id="surfaceReflectVal">—</strong><span>yüzeyde yansıyan güç</span></div>
         <div class="metric"><strong id="surfaceEnterVal">—</strong><span>malzemeye giren güç</span></div>
         <div class="metric"><strong id="criticalVal">—</strong><span>X-ışını kritik grazing açı</span></div>
+        <div class="metric"><strong id="tVal">—</strong><span>yüzeyde iç alan genlik oranı |t|=E<sub>t</sub>/E₀</span></div>
+        <div class="metric"><strong id="ehVal">—</strong><span>soğurulan foton başına Si e–h çifti</span></div>
       </div>
     </section>
 
@@ -118,17 +121,26 @@
         <option value="intrinsic">Saf / intrinsik</option>
         <option value="n">n-tipi · elektron çoğunluk</option>
         <option value="p">p-tipi · hol çoğunluk</option>
-      </select></div>
+      </select>
+        <div id="dopingLevelWrap" style="display:none;margin-top:8px"><label for="dopingLevel">Katkı yoğunluğu</label><select id="dopingLevel">
+          <option value="1e13">10¹³ cm⁻³ · yüksek özdirenç</option>
+          <option value="1e15" selected>10¹⁵ cm⁻³ · tipik wafer</option>
+          <option value="1e17">10¹⁷ cm⁻³ · yoğun katkı</option>
+        </select></div>
+        <div class="control-hint" id="dopingHint" style="margin:6px 0 0"></div>
+      </div>
       <div class="control"><label>Geliş açısı · yüzey normaline göre <output id="angleOut">0.00°</output></label><input id="angle" type="range" min="0" max="8995" step="5" value="0"></div>
       <div class="control-hint">Yüzeye göre grazing açı: <strong id="grazingOut">90.00°</strong>. X-ışınında güçlü yansıma özellikle grazing açı çok küçükken görülür.</div>
       <div class="angle-presets"><button id="normalBtn" type="button">Dik · 0°</button><button id="obliqueBtn" type="button">45°</button><button id="xrayGrazingBtn" type="button">X-grazing · 0.10°</button></div>
       <div class="control" id="xrayFineWrap" style="display:none"><label>X-ışını grazing ince ayar <output id="xrayFineOut">0.10°</output></label><input id="xrayFine" type="range" min="5" max="500" step="5" value="10"></div>
       <div class="control"><label>Polarizasyon</label><div class="seg3"><button id="polAvg" class="active" type="button">Ortalama</button><button id="polS" type="button">s / TE</button><button id="polP" type="button">p / TM</button></div></div>
+      <div class="control-hint">EM dalga eninedir: E, ilerleme yönüne diktir. <strong>p/TM</strong>: E ekran düzleminde — yükler ekranda salınır. <strong>s/TE</strong>: E ekrana dik — yükler ekrana girip çıkar (boyut değişimi, ⊙/⊗). <strong>Ortalama</strong>: polarize olmamış ışık; R ve |t| ortalanır, salınım p bileşeniyle çizilir.</div>
       <div class="control"><label>Görsel alan ölçeği <output id="fieldOut">1.00×</output></label><input id="fieldAmp" type="range" min="20" max="180" value="100"></div>
-      <div class="control-hint">Lineer modelde bu kontrol yalnız çizim genliğini değiştirir; malzemenin zayıflama uzunluğunu değiştirmez.</div>
+      <div class="control-hint">Lineer modelde bu kontrol yalnız çizim genliğini değiştirir; zayıflama uzunluğunu değiştirmez. Taşıyıcı ve bağlı elektron yer değiştirmeleri yerel alana göre normalize edilmiştir (gerçek genlikler nm altıdır).</div>
       <div class="control"><label>Görsel taşıyıcı sayısı <output id="densityOut">1.0×</output></label><input id="density" type="range" min="4" max="20" value="10"></div>
       <div class="control-hint">Bu sayı gerçek taşıyıcı yoğunluğu değildir; yalnız ekrandaki işaret sayısını değiştirir.</div>
-      <div class="control"><label>Görüntü derinliği <output id="depthFactorOut">4.0 × Lₚ</output></label><input id="depthFactor" type="range" min="5" max="60" value="40"></div>
+      <div class="control"><label>Görüntü derinliği <output id="depthFactorOut">4.0 × L⊥</output></label><input id="depthFactor" type="range" min="5" max="60" value="40"></div>
+      <div class="control-hint">Görüntü, yüzey-normal 1/e güç derinliği L⊥'nin katıdır; L⊥=λ/(4π·Im k<sub>z</sub>) her açıda kompleks dalga vektöründen hesaplanır.</div>
       <div class="control"><label>Animasyon hızı <output id="speedOut">1.0×</output></label><input id="speed" type="range" min="0" max="20" value="10"></div>
 
       <label class="switch"><input id="showField" type="checkbox" checked> İç elektromanyetik alanı göster</label>
@@ -152,405 +164,540 @@
 
   <section class="explain">
     <article class="ex"><h3>RF · 100 MHz</h3><p>Silisyum için hν yaklaşık 4×10⁻⁷ eV’dir; 1.12 eV bant aralığından çok küçüktür. Yeni elektron–hol çifti oluşturmaz. Mevcut taşıyıcılar salınan alanla sürüklenir.</p></article>
-    <article class="ex"><h3>Mikrodalga · 2.45 GHz</h3><p>Foton enerjisi yine bant aralığından çok küçüktür. Taşıyıcı hareketi ve dielektrik polarizasyon önemlidir; soğurma taşıyıcı saçılması ve kayıplardan gelir.</p></article>
-    <article class="ex"><h3>Görünür · 550 nm</h3><p>Foton enerjisi yaklaşık 2.25 eV’dir ve Si bant aralığından büyüktür. Soğurulan foton valans bandından bir elektronu iletim bandına çıkarıp geride hol bırakabilir.</p></article>
-    <article class="ex"><h3>X-ışını · 10 keV</h3><p>X-ışını için klasik “alan aynı genlikle ilerliyor” resmi kullanılmaz. Foton akısı Beer–Lambert yasasına göre azalır. 10 keV’de 1/e güç uzunluğu yaklaşık Cu 5.2 µm, Si 127 µm, borosilikat 263 µm ve su 1.88 mm’dir.</p></article>
+    <article class="ex"><h3>Mikrodalga · 2.45 GHz</h3><p>Foton enerjisi yine bant aralığından çok küçüktür. Taşıyıcı hareketi ve dielektrik polarizasyon önemlidir. Suda dipoller alanı ≈7° gecikmeyle izler (Debye, ωτ≈0.13); bu faz gecikmesi mikrodalga ısınmasının kaynağıdır.</p></article>
+    <article class="ex"><h3>Görünür · 550 nm</h3><p>Foton enerjisi yaklaşık 2.25 eV’dir ve Si bant aralığından büyüktür. Soğurulan foton valans bandından bir elektronu iletim bandına çıkarıp geride hol bırakabilir. Bakırda ise ≈2.1 eV eşikli 3d → 4s/p bant-arası geçiş başlar.</p></article>
+    <article class="ex"><h3>X-ışını · 10 keV</h3><p>Zayıflama yine kompleks kırılma indisiyle (n=1−δ+iβ) aynı üstel yasaya uyar; fark, foton enerjisinin bağlanma enerjilerinden çok büyük olmasıdır. Bu yüzden etkileşimler ayrık foton olayları (fotoelektrik, saçılma) olarak gösterilir. 10 keV’de 1/e güç uzunluğu yaklaşık Cu 5.2 µm, Si 127 µm, borosilikat 263 µm ve su 1.88 mm’dir.</p></article>
   </section>
 
   <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
   <div class="note"><strong>Yüzey + iç ortam birlikte:</strong> Nano sayfa artık hava/vakum → malzeme sınırındaki Fresnel yansımasını da gösterir. Yüzeyde yansıyan güç kompleks kırılma indisi ve polarizasyondan hesaplanır; içeri giren kısım daha sonra malzemeye özgü zayıflama uzunluğuyla ilerler. X-ışınında normal gelişte yansıma genellikle çok küçüktür, fakat yüzeye çok küçük grazing açıda kırılma indisi 1'in biraz altında olduğu için total external reflection oluşabilir.</div>
-  <div class="note"><strong>Zayıflama modeli:</strong> Nano sahnedeki yatay eksen artık fiziksel derinliğe bağlıdır. <strong>Lₚ</strong>, güç/şiddetin 1/e'ye düştüğü karakteristik uzunluktur: I(z)=I₀e<sup>−z/Lₚ</sup>. Klasik alan çizildiğinde genlik bunun karekökü gibi, E(z)=E₀e<sup>−z/(2Lₚ)</sup>, azalır. X-ışını modunda sinüzoidal alan yerine azalan foton akısı ve etkileşim olayları gösterilir.</div>
+  <div class="note"><strong>Zayıflama modeli:</strong> Nano sahnedeki yatay eksen fiziksel yüzey-normal derinliktir. <strong>Lₚ=λ/(4πκ)</strong> malzemenin 1/e güç uzunluğudur. Eğik gelişte içerideki dalganın normal bileşeni k<sub>z</sub>=k₀√(N²−sin²θ) olur ve derinlik boyunca güç I(z)=I₀e<sup>−z/L⊥</sup>, L⊥=λ/(4π·Im(k<sub>z</sub>/k₀)) ile azalır; alan genliği bunun karekökü gibi azalır. Bu tek formül hem kırılan dalgayı hem de X-ışını total external reflection bölgesindeki evanescent alanı süreksizlik olmadan verir. X-ışını modunda sinüzoidal alan yerine azalan foton akısı ve etkileşim olayları gösterilir.</div>
+  <div class="note"><strong>Alan genliği, faz ve dalga boyu:</strong> İçerideki alan √T ile değil Fresnel genlik katsayısı |t| ile çizilir; yüzeyde teğetsel E sürekliliği (E<sub>i</sub>+E<sub>r</sub>=E<sub>t</sub>) bunu gerektirir. İyi bir iletkende |t|≈10⁻⁵ olduğundan yüzey, gelen ve yansıyan dalganın duran dalgasının düğümüne çok yakındır. Yansıyan dalganın fazı arg(r)'dir (n&gt;1 için ≈π). Dalga boyu derinlik eksenine bağlıdır: görüntüye gerçekte ~Re(k<sub>z</sub>)·D/λ iç dalga boyu sığar; bu sayı çok büyükse okunabilirlik için dalga boyları aynı oranda uzatılır ve iç/dış dalga boyu oranı (n) korunur.</div>
+  <div class="note"><strong>Yüklerin cevabı ve faz:</strong> Serbest taşıyıcılar Drude modeliyle çizilir: m(ẍ+ẋ/τ)=qE. RF/mikrodalgada çarpışma baskındır (ωτ≪1); hız E ile aynı fazda, yer değiştirme 90° geridedir ve genlik mobiliteyle orantılıdır (Si: μₙ/μₚ≈3). Optik frekansta ωτ≫1 olur ve yer değiştirme kuvvete zıt fazdadır. Bağlı elektronlar rezonans altında kuvvetle aynı fazda, yani E'ye zıt yönde yer değiştirir. Su molekülleri Debye gevşemesiyle (τ≈8.3 ps) döner: RF'de alanı gecikmesiz izler, 2.45 GHz'te ≈7° geride kalır, görünür ışıkta dönemez ve yalnız elektronik polarizasyon kalır (n²≈1.78 ≪ ε<sub>s</sub>≈78).</div>
   <div class="note"><strong>Uzaysal ölçek:</strong> Yatay eksen zayıflama hesabı için fiziksel derinliği temsil eder; atom/molekül sembolleri bu eksende gerçek atom aralıklarıyla çizilmez, yalnız etkileşen maddeyi örnekleyen şematik işaretlerdir. Bu nedenle metre ölçeğindeki düşük-kayıplı bir ortamda bile atom simgeleri görünür kalabilir.</div>
   <div class="note"><strong>Silisyum görünür ışık:</strong> hν &gt; E<sub>g</sub> enerji bakımından e–h üretimine izin verir; ancak kristal silisyum dolaylı bant aralıklı olduğundan gerçek optik geçiş olasılıkları bant yapısı ve fonon momentumuyla belirlenir. 550 nm’de soğurma yine güçlüdür ve burada ölçülmüş soğurma katsayısı ölçeği kullanılır.</div>
-  <div class="note"><strong>Silisyum RF/mikrodalga:</strong> n-tipi veya p-tipi demek tek başına RF kaybını belirlemez; katkılama yoğunluğu ve özdirenç gerekir. Bu sayfadaki RF/mikrodalga Si zayıflaması yüksek-özdirençli silisyum için öğretici bir presettir. Taşıyıcı tipi seçimi yalnız elektron/hol popülasyonunu görselleştirir.</div>
-  <div class="note"><strong>Simülasyon sınırı:</strong> Taşıyıcı sayıları ve atom ölçeği görsel anlaşılabilirlik için ölçeklendirilmiştir. Gerçek taşıyıcı yoğunluğu doping, sıcaklık, saflık, mobilite ve yaşam süresine bağlıdır. Bu sayfa TDDFT/Monte Carlo yarıiletken transport hesabı değildir.</div>
+  <div class="note"><strong>RF/mikrodalga malzeme modeli:</strong> Bu bantlarda kırılma indisi kompleks dielektrik fonksiyonundan hesaplanır, N=√ε. Silisyumda ε=11.7+iσ/(ωε₀), σ=q(nμₙ+pμₚ); taşıyıcı yoğunlukları n·p=nᵢ² kütle-etki yasasından, mobiliteler Caughey–Thomas modelinden gelir. Saf Si (ρ≈3×10⁵ Ω·cm) düşük kayıplı bir dielektriktir; 10¹⁵ cm⁻³ katkılı Si (ρ≈5 Ω·cm) ise bu frekanslarda iletken gibi davranır ve Lₚ milimetrelere iner. Bakır ε=1+iσ/(ωε₀), cam ε′≈4.6 ve tanδ≈3.7×10⁻³ (borosilikat, temsilî), su Debye modeli (25 °C) ile hesaplanır.</div>
+  <div class="note"><strong>Yarı-sonsuz ortam varsayımı:</strong> Yüzey yansıması, malzemenin Lₚ'ye göre çok kalın olduğu varsayımıyla hesaplanır. RF/mikrodalgada Lₚ çoğu zaman numuneden büyüktür (ör. 0.5 mm Si pul); o durumda arka yüzey yansımaları ince-levha (Fabry–Pérot) problemi oluşturur ve gerçek R farklıdır. X-ışını yansımasında yüzey pürüzlülüğü (Névot–Croce) ihmal edilmiştir.</div>
+  <div class="note"><strong>Simülasyon sınırı:</strong> Taşıyıcı sayıları ve atom ölçeği görsel anlaşılabilirlik için ölçeklendirilmiştir. Katkılı Si'de azınlık taşıyıcı yoğunluğu çoğunluğun ~10⁻¹⁰ katı olduğundan ekranda gösterilmez. Bakırda gerçekte atom başına ~1 serbest elektron vardır. Gerçek taşıyıcı yoğunluğu doping, sıcaklık, saflık, mobilite ve yaşam süresine bağlıdır. Bu sayfa TDDFT/Monte Carlo yarıiletken transport hesabı değildir.</div>
 </main>
 
 <script>
 (function(){
-  const root=document,nano=root.getElementById('nanoCanvas'),ctx=nano.getContext('2d'),bandCanvas=root.getElementById('bandCanvas'),bctx=bandCanvas.getContext('2d');
-  const dpr=Math.min(window.devicePixelRatio||1,2),hEV=4.135667696e-15,c0=299792458,EgSi=1.12;
-  let band='rf',polarization='avg',running=true,time=0,last=0;
+  const root=document,$=id=>root.getElementById(id);
+  const nano=$('nanoCanvas'),ctx=nano.getContext('2d'),bandCanvas=$('bandCanvas'),bctx=bandCanvas.getContext('2d');
+  const dpr=Math.min(window.devicePixelRatio||1,2),hEV=4.135667696e-15,c0=299792458,eps0=8.8541878128e-12,qe=1.602176634e-19,me=9.1093837015e-31,EgSi=1.12,WehSi=3.6;
+  let band='rf',polarization='avg',running=true,time=0,last=0,O=null,G=null,W=null;
   const bands={
     rf:{label:'RF',f:1e8,lambda:c0/1e8},
     micro:{label:'Mikrodalga',f:2.45e9,lambda:c0/2.45e9},
     visible:{label:'Görünür',f:c0/550e-9,lambda:550e-9},
     xray:{label:'X-ışını',f:c0/0.12398e-9,lambda:0.12398e-9}
   };
-  // powerDepth = intensity/power 1/e attenuation length.
-  // 10 keV X-ray: NIST XCOM using density: Cu 5.17 µm, Si 126.6 µm,
-  // borosilicate glass 263 µm, liquid water 1.88 mm.
-  // Si 550 nm: alpha≈6406 cm^-1 => 1/alpha≈1.56 µm.
-  // Water 550 nm: alpha≈0.0563 m^-1 => ≈17.8 m.
-  // 2.45 GHz: representative penetration depths, strongly material/temperature dependent.
+  // RF/mikrodalga: N=√ε, kompleks dielektrik fonksiyonundan (e^{-iωt}, Im ε>0 = kayıp).
+  //   Si: ε=ε_L+iσ/(ωε₀), σ=q(nμₙ+pμₚ); n·p=nᵢ², Caughey–Thomas mobilite (300 K).
+  //   Cu: ε=1+iσ/(ωε₀), σ=5.8e7 S/m → Lₚ=δ/2 (100 MHz 3.3 µm, 2.45 GHz 0.67 µm).
+  //   Cam: borosilikat ε′≈4.6, tanδ≈3.7e-3 (Borofloat 33 tipi; temsilî).
+  //   Su: Debye 25 °C, ε_s=78.4, ε_∞=5.2, τ=8.27 ps, σ=5.5 µS/m → 2.45 GHz Lₚ≈1.9 cm.
+  // Görünür / X-ışını: ölçülmüş n ve 1/e güç uzunluğu Lₚ'den κ=λ/(4πLₚ).
+  //   10 keV NIST XCOM: Cu 5.17 µm, Si 126.6 µm, borosilikat 263 µm, su 1.88 mm.
+  //   Si 550 nm: α≈6406 cm⁻¹ → 1.56 µm. Su 550 nm: α≈0.0563 m⁻¹ → 17.8 m.
+  //   Cu 550 nm: n≈1.0, κ≈2.6 → R≈%62 (d→sp bant-arası eşiği ≈2.1 eV'nin hemen üstü).
+  const SI={ni:9.65e9,epsL:11.7,e:{min:68.5,max:1414,Nref:9.2e16,a:.711,m:.26},h:{min:44.9,max:470.5,Nref:2.23e17,a:.719,m:.39}};
   const materials={
     silicon:{
-      label:'Silisyum',type:'semiconductor',gap:EgSi,lattice:true,
-      nReal:{rf:3.42,micro:3.42,visible:3.9766},
-      xrayDelta:4.82e-6,
-      powerDepth:{rf:20,micro:4,visible:1.56e-6,xray:126.6e-6},
-      source:{rf:'yüksek-özdirençli Si preset',micro:'yüksek-özdirençli Si preset',visible:'Aspnes/Si optik sabitleri + α',xray:'NIST XCOM 10 keV'}
+      label:'Silisyum',type:'semiconductor',gap:EgSi,lattice:true,nVis:3.9766,xrayDelta:4.82e-6,
+      opticalDepth:{visible:1.56e-6,xray:126.6e-6},
+      source:{rf:'Si: ε_L=11.7 + σ(katkı)',micro:'Si: ε_L=11.7 + σ(katkı)',visible:'Aspnes/Si optik sabitleri + α',xray:'NIST XCOM 10 keV'}
     },
     copper:{
-      label:'Bakır',type:'metal',gap:0,lattice:true,
-      nReal:{rf:null,micro:null,visible:.395},sigma:5.8e7,xrayDelta:1.67e-5,
-      powerDepth:{rf:3.3e-6,micro:0.67e-6,visible:17e-9,xray:5.17e-6},
-      source:{rf:'Cu skin depth',micro:'Cu skin depth',visible:'Querry/Cu optik sabitleri',xray:'NIST XCOM 10 keV'}
+      label:'Bakır',type:'metal',gap:0,interband:2.1,lattice:true,sigma:5.8e7,tau:2.5e-14,nVis:1.0,xrayDelta:1.67e-5,
+      opticalDepth:{visible:17e-9,xray:5.17e-6},
+      source:{rf:'Cu σ=5.8×10⁷ S/m',micro:'Cu σ=5.8×10⁷ S/m',visible:'Cu 550 nm: n≈1.0, κ≈2.6',xray:'NIST XCOM 10 keV'}
     },
     glass:{
-      label:'Cam',type:'dielectric',gap:8.5,lattice:false,
-      nReal:{rf:2.0,micro:2.05,visible:1.52},xrayDelta:4.4e-6,
-      powerDepth:{rf:100,micro:15.7,visible:0.1,xray:263e-6},
-      source:{rf:'düşük-kayıplı cam preset',micro:'borosilikat ~15.7 m',visible:'n≈1.52 şeffaf cam preset',xray:'NIST XCOM Pyrex 10 keV'}
+      label:'Cam',type:'dielectric',gap:8.5,lattice:false,epsR:4.6,tanD:3.7e-3,nVis:1.52,xrayDelta:4.4e-6,
+      opticalDepth:{visible:0.1,xray:263e-6},
+      source:{rf:'borosilikat ε′≈4.6, tanδ≈3.7×10⁻³',micro:'borosilikat ε′≈4.6, tanδ≈3.7×10⁻³',visible:'n≈1.52 şeffaf cam preset',xray:'NIST XCOM Pyrex 10 keV'}
     },
     water:{
-      label:'Su',type:'polar',gap:6.5,lattice:false,
-      nReal:{rf:8.94,micro:8.6,visible:1.3325},xrayDelta:2.30e-6,
-      powerDepth:{rf:10,micro:0.018,visible:17.8,xray:1.88e-3},
-      source:{rf:'saf su Debye ölçek preset',micro:'25 °C su ~1.8 cm',visible:'Hale–Querry su optik sabitleri',xray:'NIST XCOM 10 keV'}
+      label:'Su',type:'polar',gap:6.5,lattice:false,debye:{es:78.4,einf:5.2,tau:8.27e-12},sigma:5.5e-6,nVis:1.3325,xrayDelta:2.30e-6,
+      opticalDepth:{visible:17.8,xray:1.88e-3},
+      source:{rf:'saf su Debye, 25 °C',micro:'saf su Debye, 25 °C',visible:'Hale–Querry n + Pope–Fry α',xray:'NIST XCOM 10 keV'}
     }
   };
-  function bnd(){return bands[band]} function mat(){return materials[root.getElementById('material').value]}
+  function bnd(){return bands[band]} function mat(){return materials[$('material').value]}
   function photon(){return hEV*bnd().f}
-  function attenuation(){return mat().powerDepth[band]}
-  function depthFactor(){return +root.getElementById('depthFactor').value/10}
-  function viewDepth(){return attenuation()*depthFactor()}
+  function omega(){return 2*Math.PI*bnd().f}
+  function ampScale(){return +$('fieldAmp').value/100}
+  function lowFreq(){return band==='rf'||band==='micro'}
+  function inPlane(){return polarization!=='s'}
+  function depthFactor(){return +$('depthFactor').value/10}
+  function viewDepth(){return depthFactor()*O.Lperp}
   function C(re,im){return {re:re,im:im||0}}
   function cadd(a,b){return C(a.re+b.re,a.im+b.im)}
   function csub(a,b){return C(a.re-b.re,a.im-b.im)}
   function cmul(a,b){return C(a.re*b.re-a.im*b.im,a.re*b.im+a.im*b.re)}
   function cdiv(a,b){const d=b.re*b.re+b.im*b.im||1e-30;return C((a.re*b.re+a.im*b.im)/d,(a.im*b.re-a.re*b.im)/d)}
   function cabs2(a){return a.re*a.re+a.im*a.im}
-  function csqrt(z){const r=Math.hypot(z.re,z.im),re=Math.sqrt(Math.max(0,(r+z.re)/2)),im=(z.im<0?-1:1)*Math.sqrt(Math.max(0,(r-z.re)/2));return C(re,im)}
-  function incidenceDeg(){return +root.getElementById('angle').value/100}
+  function carg(a){return Math.atan2(a.im,a.re)}
+  // Sayısal olarak kararlı ana karekök (Im≪Re iken iptal hatası olmadan; Re≥0, işaret(Im)=işaret(z.im)).
+  function csqrt(z){
+    const r=Math.hypot(z.re,z.im);if(r===0)return C(0,0);
+    if(z.re>=0){const re=Math.sqrt((r+z.re)/2);return C(re,z.im/(2*re))}
+    const im=(z.im<0?-1:1)*Math.sqrt((r-z.re)/2);return C(z.im/(2*im),im);
+  }
+  function clamp01(x){return Math.max(0,Math.min(1,x))}
+  function incidenceDeg(){return +$('angle').value/100}
   function grazingDeg(){return 90-incidenceDeg()}
+  // Silisyum taşıyıcıları: kütle-etki yasası + Caughey–Thomas mobilite; σ [S/m], τ=μm*/q.
+  function siState(){
+    const d=$('doping').value,N=d==='intrinsic'?0:+$('dopingLevel').value,ni=SI.ni;
+    let n=ni,p=ni;
+    if(d==='n'){n=N/2+Math.sqrt(N*N/4+ni*ni);p=ni*ni/n}
+    if(d==='p'){p=N/2+Math.sqrt(N*N/4+ni*ni);n=ni*ni/p}
+    const mob=c=>c.min+(c.max-c.min)/(1+Math.pow(N/c.Nref,c.a)),mue=mob(SI.e),muh=mob(SI.h);
+    const sigma=qe*(n*mue+p*muh)*100;
+    return {N:N,n:n,p:p,mue:mue,muh:muh,sigma:sigma,rho:1/sigma,tauE:mue*1e-4*SI.e.m*me/qe,tauH:muh*1e-4*SI.h.m*me/qe};
+  }
+  function lowFreqEps(m){
+    const w=omega();
+    if(m.type==='semiconductor')return C(SI.epsL,siState().sigma/(w*eps0));
+    if(m.type==='metal')return C(1,m.sigma/(w*eps0));
+    if(m.type==='dielectric')return C(m.epsR,m.epsR*m.tanD);
+    const D=m.debye,wt=w*D.tau,den=1+wt*wt;
+    return C(D.einf+(D.es-D.einf)/den,(D.es-D.einf)*wt/den+m.sigma/(w*eps0));
+  }
   function complexIndex(){
-    const m=mat(),b=bnd(),Lp=attenuation(),kappa=b.lambda/(4*Math.PI*Math.max(Lp,1e-30));
-    if(band==='xray')return C(1-m.xrayDelta,kappa);
-    if(m.type==='metal'&&(band==='rf'||band==='micro'))return C(kappa,kappa);
-    return C(m.nReal[band]||1,kappa);
+    const m=mat(),lam=bnd().lambda;
+    if(band==='xray')return C(1-m.xrayDelta,lam/(4*Math.PI*m.opticalDepth.xray));
+    if(band==='visible')return C(m.nVis,lam/(4*Math.PI*m.opticalDepth.visible));
+    return csqrt(lowFreqEps(m));
   }
+  function attenuation(){return bnd().lambda/(4*Math.PI*Math.max(O.N.im,1e-30))}
   function surfaceOptics(){
-    const m=mat(),N=complexIndex(),theta=incidenceDeg()*Math.PI/180,s=Math.sin(theta),c=Math.cos(theta);
-    const sinT=cdiv(C(s,0),N),cosT=csqrt(csub(C(1,0),cmul(sinT,sinT))),Ncos=cmul(N,cosT);
-    const rs=cdiv(csub(C(c,0),Ncos),cadd(C(c,0),Ncos));
-    const rp=cdiv(csub(C(N.re*c,N.im*c),cosT),cadd(C(N.re*c,N.im*c),cosT));
-    const Rs=Math.max(0,Math.min(1,cabs2(rs))),Rp=Math.max(0,Math.min(1,cabs2(rp)));
-    const R=polarization==='s'?Rs:(polarization==='p'?Rp:(Rs+Rp)/2);
-    let thetaT=0;
-    if(Math.abs(N.re)>1e-9){const st=Math.max(-.999999,Math.min(.999999,s/N.re));thetaT=Math.asin(st)}
-    if(m.type==='metal'&&band!=='xray')thetaT=0;
+    const m=mat(),b=bnd(),N=complexIndex(),theta=incidenceDeg()*Math.PI/180,s=Math.sin(theta),c=Math.cos(theta);
+    // kz/k0 = √(N²−sin²θ), Im≥0: kırılan dalga ve evanescent alan için tek ifade.
+    const N2=cmul(N,N),kz=csqrt(csub(N2,C(s*s,0))),N2c=C(N2.re*c,N2.im*c),cc=C(c,0);
+    const rs=cdiv(csub(cc,kz),cadd(cc,kz)),rp=cdiv(csub(N2c,kz),cadd(N2c,kz));
+    const ts=cdiv(C(2*c,0),cadd(cc,kz)),tp=cdiv(cmul(C(2*c,0),N),cadd(N2c,kz));
+    const Rs=clamp01(cabs2(rs)),Rp=clamp01(cabs2(rp));
+    let R,tAbs,rArg,tArg;
+    // p için rp işaret kuralı dik gelişte −rs verir; çizimde aynı E yönü için π eklenir.
+    if(polarization==='s'){R=Rs;tAbs=Math.sqrt(cabs2(ts));rArg=carg(rs);tArg=carg(ts)}
+    else if(polarization==='p'){R=Rp;tAbs=Math.sqrt(cabs2(tp));rArg=carg(rp)+Math.PI;tArg=carg(tp)}
+    else{R=(Rs+Rp)/2;tAbs=Math.sqrt((cabs2(ts)+cabs2(tp))/2);rArg=carg(rs);tArg=carg(ts)}
+    const Lperp=b.lambda/(4*Math.PI*Math.max(kz.im,1e-30));
+    const thetaT=Math.atan2(s,Math.max(kz.re,1e-12));
     const critical=band==='xray'?Math.sqrt(2*m.xrayDelta)*180/Math.PI:null;
-    const evanescent=band==='xray'&&critical!==null&&grazingDeg()<critical;
-    const kz=cmul(N,cosT);
-    const evPowerDepth=band==='xray'&&Math.abs(kz.im)>1e-12?bnd().lambda/(4*Math.PI*Math.abs(kz.im)):Infinity;
-    const pathFactor=1/Math.max(.03,Math.abs(Math.cos(thetaT)));
-    return {N:N,thetaI:theta,thetaT:thetaT,cosT:cosT,Rs:Rs,Rp:Rp,R:R,T:1-R,critical:critical,evanescent:evanescent,evPowerDepth:evPowerDepth,pathFactor:pathFactor};
+    const evanescent=band==='xray'&&grazingDeg()<critical;
+    return {N:N,kz:kz,thetaI:theta,sinI:s,cosI:c,thetaT:thetaT,Rs:Rs,Rp:Rp,R:R,T:1-R,tAbs:tAbs,rArg:rArg,tArg:tArg,critical:critical,evanescent:evanescent,Lperp:Lperp};
   }
-  function powerEnvelope(frac){
-    const o=surfaceOptics(),f=Math.max(0,frac);
-    if(o.evanescent)return Math.exp(-f*viewDepth()/Math.max(o.evPowerDepth,1e-30));
-    return Math.exp(-f*depthFactor()*o.pathFactor);
-  }
+  // Yatay eksen = yüzey-normal derinlik, sağ kenar = depthFactor × L⊥.
+  function powerEnvelope(frac){return Math.exp(-Math.max(0,frac)*depthFactor())}
   function fieldEnvelope(frac){return Math.sqrt(powerEnvelope(frac))}
+  // q: vakumda piksel başına faz (fiziksel ölçek). Çok sık ise okunabilirlik için seyreltilir; n oranı korunur.
+  function waveScale(span){
+    const q=2*Math.PI*(viewDepth()/span)/bnd().lambda,nEff=Math.hypot(O.sinI,O.kz.re),qMax=2*Math.PI/22/Math.max(1,nEff),qd=Math.min(q,qMax);
+    return {q:q,qd:qd,diluted:q>qMax*1.0001,factor:q/qd,cycles:viewDepth()*O.kz.re/bnd().lambda};
+  }
+  function insidePhase(x,y){return W.qd*(O.kz.re*(x-G.left)+O.sinI*(G.hitY-y))-time*3+O.tArg}
+  function eDir(){return {x:Math.sin(O.thetaT),y:Math.cos(O.thetaT)}}
+  function layout(){
+    const r=nano.getBoundingClientRect(),w=r.width,h=r.height,left=w*.27,right=w*.96,hitY=h*.48,ci=O.cosI,si=O.sinI;
+    let rayLen=230;
+    if(ci>.02)rayLen=Math.min(rayLen,(left-22)/ci);
+    if(si>.02)rayLen=Math.min(rayLen,(h-hitY-28)/si);
+    rayLen=Math.max(55,rayLen);
+    G={w:w,h:h,left:left,right:right,span:right-left,hitY:hitY,rayLen:rayLen,start:{x:left-ci*rayLen,y:hitY+si*rayLen},ref:{x:left-ci*rayLen,y:hitY-si*rayLen}};
+  }
   function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
   function resize(){resizeOne(nano,ctx,parseFloat(getComputedStyle(nano).height));resizeOne(bandCanvas,bctx,195)}
+  const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+  function sci(x,d){if(!isFinite(x))return '∞';if(x===0)return '0';const e=Math.floor(Math.log10(Math.abs(x))),mant=x/Math.pow(10,e);if(e>=-2&&e<=3)return String(+x.toPrecision(d+1));return mant.toFixed(d)+'×10'+String(e).split('').map(ch=>SUP[ch]).join('')}
   function fmtE(e){if(e<1e-3)return e.toExponential(2)+' eV';if(e<1e3)return e.toFixed(e<10?2:1)+' eV';return (e/1e3).toFixed(1)+' keV'}
-  function fmtLen(m){if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=1e-2)return (m*100).toFixed(2)+' cm';if(m>=1e-3)return (m*1e3).toFixed(2)+' mm';if(m>=1e-6)return (m*1e6).toFixed(2)+' µm';if(m>=1e-9)return (m*1e9).toFixed(2)+' nm';return (m*1e12).toFixed(2)+' pm'}
+  function fmtLen(m){if(m>=1e3)return (m/1e3).toFixed(m<1e4?2:1)+' km';if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=1e-2)return (m*100).toFixed(2)+' cm';if(m>=1e-3)return (m*1e3).toFixed(2)+' mm';if(m>=1e-6)return (m*1e6).toFixed(2)+' µm';if(m>=1e-9)return (m*1e9).toFixed(2)+' nm';return (m*1e12).toFixed(2)+' pm'}
   function fmtTime(s){if(s>=1e-9)return (s*1e9).toPrecision(3)+' ns';if(s>=1e-12)return (s*1e12).toPrecision(3)+' ps';if(s>=1e-15)return (s*1e15).toPrecision(3)+' fs';return (s*1e18).toPrecision(3)+' as'}
-  function phaseAt(frac){return time*3-frac*8*Math.PI}
-  function phaseAtPoint(x,y,left,right,h){
-    const o=surfaceOptics(),ux=Math.cos(o.thetaT),uy=-Math.sin(o.thetaT),s=((x-left)*ux+(y-h*.48)*uy)/Math.max(1,right-left);
-    return time*3-s*8*Math.PI;
+  function fmtRho(r){const ocm=r*100;return (ocm>=1e4||ocm<.01?sci(ocm,1):ocm.toPrecision(3))+' Ω·cm'}
+  function fmtCount(x){return x>=1e4?sci(x,1):(x>=10?x.toFixed(0):x.toFixed(x>=1?1:2))}
+  function hash(i){const s=Math.sin(i*127.1+311.7)*43758.5453;return s-Math.floor(s)}
+  function drawArrow(x,y,dx,dy,color,a){if(Math.hypot(dx,dy)<.5)return;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=a;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke();const ang=Math.atan2(dy,dx),hh=4;ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.lineTo(x+dx-Math.cos(ang-.55)*hh,y+dy-Math.sin(ang-.55)*hh);ctx.lineTo(x+dx-Math.cos(ang+.55)*hh,y+dy-Math.sin(ang+.55)*hh);ctx.fill();ctx.globalAlpha=1}
+  // Ekrana dik vektör: ⊙ izleyiciye doğru, ⊗ izleyiciden uzağa.
+  function drawOOP(x,y,v,r,color,a){
+    ctx.globalAlpha=a;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=1.2;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();
+    if(v>=0){ctx.beginPath();ctx.arc(x,y,r*.32,0,Math.PI*2);ctx.fill()}
+    else{const k=r*.55;ctx.beginPath();ctx.moveTo(x-k,y-k);ctx.lineTo(x+k,y+k);ctx.moveTo(x+k,y-k);ctx.lineTo(x-k,y+k);ctx.stroke()}
+    ctx.globalAlpha=1;
   }
-  function drawArrow(x,y,dx,dy,color,a){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=a;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke();const ang=Math.atan2(dy,dx),hh=4;ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.lineTo(x+dx-Math.cos(ang-.55)*hh,y+dy-Math.sin(ang-.55)*hh);ctx.lineTo(x+dx-Math.cos(ang+.55)*hh,y+dy-Math.sin(ang+.55)*hh);ctx.fill();ctx.globalAlpha=1}
-  function drawLattice(m,w,h,left,right){
-    const pts=[],gap=56,span=right-left;
+  function drawWavePath(x0,y0,ux,uy,len,nx,ny,ampFn,phaseFn,color,alpha,width){
+    ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=width||2;ctx.beginPath();
+    for(let s=0;s<=len;s+=2){
+      const x=x0+ux*s,y=y0+uy*s,off=Math.sin(phaseFn(x,y))*ampFn(x,y),xx=x+nx*off,yy=y+ny*off;
+      if(s===0)ctx.moveTo(xx,yy);else ctx.lineTo(xx,yy);
+    }
+    ctx.stroke();ctx.globalAlpha=1;
+  }
+  // Derinlikle e^{-z/L⊥} azalan güç profiliyle malzeme bölgesini boya.
+  function fillDecay(alphaMax,rgb){
+    const grad=ctx.createLinearGradient(G.left,0,G.right,0);
+    for(let k=0;k<=12;k++){const f=k/12;grad.addColorStop(f,'rgba('+rgb+','+(alphaMax*powerEnvelope(f)).toFixed(4)+')')}
+    ctx.fillStyle=grad;ctx.fillRect(G.left,0,G.span,G.h);
+  }
+  function drawLattice(m){
+    const {left,right,span,h}=G,pts=[],gap=56,amp=ampScale(),dir=eDir(),xr=band==='xray',showB=$('showBound').checked;
     for(let x=left+25;x<right-20;x+=gap)for(let y=55;y<h-35;y+=gap){
       let xx=x,yy=y;if(!m.lattice){xx+=Math.sin(x*.13+y*.17)*10;yy+=Math.cos(x*.19-y*.11)*8}pts.push({x:xx,y:yy,frac:(xx-left)/span});
     }
     ctx.strokeStyle='rgba(162,183,214,.12)';ctx.lineWidth=1;
     if(m.lattice){for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const p=pts[i],q=pts[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d>45&&d<66){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke()}}}
-    pts.forEach(p=>{
-      const env=fieldEnvelope(p.frac);
+    const rD=m.type==='polar'?omega()*m.debye.tau:0,eAng=Math.atan2(dir.y,dir.x);
+    pts.forEach((p,i)=>{
+      const env=fieldEnvelope(p.frac),ph=insidePhase(p.x,p.y),E=xr?0:Math.sin(ph)*env;
       if(m.type==='polar'){
-        const orient=band==='xray'?0:Math.sin(phaseAtPoint(p.x,p.y,left,right,h))*.45*(+root.getElementById('fieldAmp').value/100)*env;
-        const arm=10,half=.91;
+        // Debye: yönelim polarizasyonu E'yi atan(ωτ) kadar geriden izler, genlik 1/√(1+ω²τ²).
+        const P=xr?0:(Math.sin(ph)+rD*Math.cos(ph))/(1+rD*rD)*env;
+        const base=hash(i)*Math.PI*2,orient=base+(inPlane()?.45*amp*P*Math.sin(eAng-base):0),arm=10,half=.91;
         ctx.fillStyle='rgba(104,188,255,.9)';ctx.beginPath();ctx.arc(p.x,p.y,4.2,0,Math.PI*2);ctx.fill();
-        [-half,half].forEach(a=>{const aa=orient+a,hx=p.x+Math.cos(aa)*arm,hy=p.y+Math.sin(aa)*arm;ctx.strokeStyle='rgba(210,226,246,.5)';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(hx,hy);ctx.stroke();ctx.fillStyle='rgba(244,205,126,.9)';ctx.beginPath();ctx.arc(hx,hy,2.4,0,Math.PI*2);ctx.fill()});
-        if(root.getElementById('showBound').checked&&band!=='xray')drawArrow(p.x,p.y,Math.cos(orient)*12*env,Math.sin(orient)*12*env,'#ad8dff',.32);
+        [-half,half].forEach(a=>{const aa=orient+a,hx=p.x+Math.cos(aa)*arm,hy=p.y+Math.sin(aa)*arm;ctx.strokeStyle='rgba(210,226,246,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(hx,hy);ctx.stroke();ctx.fillStyle='rgba(244,205,126,.9)';ctx.beginPath();ctx.arc(hx,hy,2.4,0,Math.PI*2);ctx.fill()});
+        if(showB&&!xr){
+          if(rD<1){
+            if(inPlane())drawArrow(p.x,p.y,dir.x*14*amp*P,dir.y*14*amp*P,'#ad8dff',.55);
+            else if(Math.abs(P)>.08)drawOOP(p.x+13,p.y-13,P,4,'#ad8dff',.25+.45*Math.abs(P));
+          }else{
+            // optik frekans: moleküller dönemez, yalnız elektron bulutu E'ye zıt yönde kayar.
+            const off=-E*3*amp;
+            ctx.strokeStyle='rgba(173,141,255,.3)';ctx.beginPath();ctx.arc(p.x,p.y,7,0,Math.PI*2);ctx.stroke();
+            if(inPlane()){ctx.fillStyle='rgba(111,197,255,.85)';ctx.beginPath();ctx.arc(p.x+dir.x*off,p.y+dir.y*off,2.2,0,Math.PI*2);ctx.fill()}
+            else drawOOP(p.x,p.y,off,Math.max(1.5,2.5+.6*off),'#6fc5ff',.85);
+          }
+        }
         return;
       }
-      if(root.getElementById('showBound').checked){
-        if(band==='xray'){
+      if(showB){
+        if(xr){
           ctx.strokeStyle='rgba(173,141,255,'+(.12+.22*env)+')';ctx.beginPath();ctx.arc(p.x,p.y,10,0,Math.PI*2);ctx.stroke();
         }else{
-          const off=Math.sin(phaseAtPoint(p.x,p.y,left,right,h))*4*(+root.getElementById('fieldAmp').value/100)*env;
-          ctx.strokeStyle='rgba(173,141,255,.28)';ctx.beginPath();ctx.arc(p.x,p.y,11+Math.abs(off),0,Math.PI*2);ctx.stroke();
-          ctx.fillStyle='rgba(111,197,255,.78)';ctx.beginPath();ctx.arc(p.x+off,p.y,3,0,Math.PI*2);ctx.fill();
+          // Rezonans altı bağlı elektron: kuvvetle aynı fazda → E'ye zıt yönde yer değiştirir.
+          const off=-E*4*amp;
+          ctx.strokeStyle='rgba(173,141,255,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.arc(p.x,p.y,11,0,Math.PI*2);ctx.stroke();
+          ctx.fillStyle='rgba(111,197,255,.78)';ctx.beginPath();
+          if(inPlane())ctx.arc(p.x+dir.x*off,p.y+dir.y*off,3,0,Math.PI*2);else ctx.arc(p.x,p.y,Math.max(1.2,3*(1+.12*off)),0,Math.PI*2);
+          ctx.fill();
         }
       }
       ctx.fillStyle='rgba(223,230,240,.75)';ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();
       ctx.fillStyle='rgba(247,193,99,.9)';ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,Math.PI*2);ctx.fill();
     });
-    return pts;
   }
   function carrierCounts(){
-    const m=mat();if(m.type!=='semiconductor')return {e:m.type==='metal'?12:0,h:0};
-    const d=root.getElementById('doping').value,dens=+root.getElementById('density').value/10;
-    if(d==='n')return {e:Math.round(10*dens),h:Math.max(1,Math.round(1*dens))};
-    if(d==='p')return {e:Math.max(1,Math.round(1*dens)),h:Math.round(10*dens)};
-    return {e:Math.max(1,Math.round(2*dens)),h:Math.max(1,Math.round(2*dens))};
+    const m=mat(),dens=+$('density').value/10;
+    if(m.type==='metal')return {e:Math.round(14*dens),h:0};
+    if(m.type!=='semiconductor')return {e:0,h:0};
+    const s=siState();
+    if($('doping').value==='intrinsic')return {e:Math.max(1,Math.round(2*dens)),h:Math.max(1,Math.round(2*dens))};
+    // n·p=nᵢ²: azınlık/çoğunluk oranı ~10⁻¹⁰ → ekranda genelde 0.
+    const maj=Math.max(1,Math.round(10*dens)),minor=Math.round(maj*Math.min(s.n,s.p)/Math.max(s.n,s.p));
+    return s.n>s.p?{e:maj,h:minor}:{e:minor,h:maj};
   }
-  function drawCarriers(w,h,left,right){
-    if(!root.getElementById('showCarriers').checked)return;
-    const c=carrierCounts(),amp=+root.getElementById('fieldAmp').value/100,span=right-left;
-    for(let i=0;i<c.e;i++){const baseX=left+35+((i*83)%Math.max(80,span-70)),frac=(baseX-left)/span,env=fieldEnvelope(frac),baseY=68+((i*61)%Math.max(80,h-120)),E=Math.sin(phaseAtPoint(baseX,baseY,left,right,h)),drift=band==='xray'?0:-E*14*amp*env;ctx.fillStyle='rgba(117,201,255,.9)';ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.sin(time*2+i)*3,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',baseX+drift-2,baseY+3)}
-    for(let i=0;i<c.h;i++){const baseX=left+58+((i*97)%Math.max(80,span-85)),frac=(baseX-left)/span,env=fieldEnvelope(frac),baseY=92+((i*73)%Math.max(80,h-145)),E=Math.sin(phaseAtPoint(baseX,baseY,left,right,h)),drift=band==='xray'?0:E*11*amp*env;ctx.strokeStyle='rgba(245,189,104,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.cos(time*2+i)*3,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',baseX+drift-2.5,baseY+3)}
-  }
-  function drawWaveSegment(x0,y0,x1,y1,amp,period,color,alpha,phaseOffset){
-    const dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
-    ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=2;ctx.beginPath();
-    for(let s=0;s<=L;s+=3){
-      const off=Math.sin(s/period*Math.PI*2-time*3+(phaseOffset||0))*amp,x=x0+ux*s+nx*off,y=y0+uy*s+ny*off;
-      if(s===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  // Drude: m(ẍ+ẋ/τ)=qE. Göreli genlik ∝ (τ/m*)/√(1+ω²τ²); r=ωτ.
+  function carrierResp(){
+    const m=mat(),w=omega();
+    if(m.type==='semiconductor'){
+      const s=siState(),re=w*s.tauE,rh=w*s.tauH,ae=(s.tauE/SI.e.m)/Math.sqrt(1+re*re),ah=(s.tauH/SI.h.m)/Math.sqrt(1+rh*rh),mx=Math.max(ae,ah);
+      return {e:{r:re,a:ae/mx},h:{r:rh,a:ah/mx}};
     }
-    ctx.stroke();ctx.globalAlpha=1;
+    return {e:{r:w*(m.tau||1e-14),a:1},h:{r:0,a:0}};
   }
-  function surfaceGeometry(w,h,left,right){
-    const o=surfaceOptics(),hitY=h*.48,ci=Math.cos(o.thetaI),si=Math.sin(o.thetaI);
-    let rayLen=230;
-    if(ci>.02)rayLen=Math.min(rayLen,(left-22)/ci);
-    if(si>.02)rayLen=Math.min(rayLen,(h-hitY-28)/si);
-    rayLen=Math.max(55,rayLen);
-    return {o:o,hitY:hitY,start:{x:left-ci*rayLen,y:hitY+si*rayLen},ref:{x:left-ci*rayLen,y:hitY-si*rayLen},rayLen:rayLen,span:right-left};
-  }
-  function drawClassicalField(w,h,left,right){
-    if(!root.getElementById('showField').checked)return;
-    const g=surfaceGeometry(w,h,left,right),o=g.o,amp=+root.getElementById('fieldAmp').value/100;
-    drawWaveSegment(g.start.x,g.start.y,left,g.hitY,8,30,'#8fd6ff',1,0);
-    if(o.R>1e-6)drawWaveSegment(left,g.hitY,g.ref.x,g.ref.y,8*Math.sqrt(o.R),30,'#f4c46c',Math.max(.3,Math.sqrt(o.R)),Math.PI*.35);
-
-    ctx.save();ctx.beginPath();ctx.rect(left,0,right-left,h);ctx.clip();
-    if(o.evanescent){
-      const px=Math.max(5,Math.min((right-left)*.28,(o.evPowerDepth/Math.max(viewDepth(),1e-30))*(right-left)*5));
-      const grad=ctx.createLinearGradient(left,g.hitY,left+px,g.hitY);
-      grad.addColorStop(0,'rgba(128,224,177,'+Math.min(.95,.3+.7*Math.sqrt(o.T))+')');grad.addColorStop(1,'rgba(128,224,177,0)');
-      ctx.fillStyle=grad;ctx.fillRect(left,g.hitY-55,px,110);
-      ctx.fillStyle='rgba(128,224,177,.9)';ctx.font='11px system-ui';ctx.fillText('evanescent yüzey alanı',left+8,g.hitY-64);
-    }else{
-      const ct=Math.max(.04,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=(right-left)/ct;
-      const ux=ct,uy=-st,nx=-uy,ny=ux,period=28,baseAmp=24*amp*Math.sqrt(o.T);
-      ctx.strokeStyle='rgba(128,224,177,.9)';ctx.lineWidth=2.2;ctx.beginPath();
-      for(let s=0;s<=L;s+=3){
-        const x=left+ux*s,y0=g.hitY+uy*s,frac=(x-left)/(right-left),env=fieldEnvelope(frac),off=Math.sin(s/period*Math.PI*2-time*3)*baseAmp*env;
-        const y=y0+ny*off,xx=x+nx*off;if(s===0)ctx.moveTo(xx,y);else ctx.lineTo(xx,y);
-      }
-      ctx.stroke();
-      ctx.fillStyle='rgba(128,224,177,.86)';ctx.font='11px system-ui';ctx.fillText('iç alan · kırılır ve derinlikle zayıflar',left+12,42);
+  // E=sin φ (φ=k·r−ωt) için yer değiştirme: sgn·(cos φ − r sin φ)/√(1+r²).
+  // ωτ≪1: hız E ile aynı fazda, konum 90° geride. ωτ≫1: konum kuvvete zıt fazda.
+  function carrierDisp(x,y,sgn,r){const ph=insidePhase(x,y);return sgn*(Math.cos(ph)-r*Math.sin(ph))/Math.sqrt(1+r*r)}
+  function drawCarriers(){
+    if(!$('showCarriers').checked)return;
+    const {left,span,h}=G,c=carrierCounts(),resp=carrierResp(),amp=ampScale(),dir=eDir(),xr=band==='xray',ip=inPlane();
+    for(let i=0;i<c.e;i++){
+      const baseX=left+35+((i*83)%Math.max(80,span-70)),baseY=68+((i*61)%Math.max(80,h-120)),env=fieldEnvelope((baseX-left)/span);
+      const d=xr?0:carrierDisp(baseX,baseY,-1,resp.e)*14*amp*resp.e.a*env,x=baseX+(ip?dir.x*d:0),y=baseY+Math.sin(time*2+i)*3+(ip?dir.y*d:0),rad=ip?4:Math.max(2,4*(1+.025*d));
+      ctx.fillStyle='rgba(117,201,255,.9)';ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',x-2,y+3);
     }
+    for(let i=0;i<c.h;i++){
+      const baseX=left+58+((i*97)%Math.max(80,span-85)),baseY=92+((i*73)%Math.max(80,h-145)),env=fieldEnvelope((baseX-left)/span);
+      const d=xr?0:carrierDisp(baseX,baseY,1,resp.h)*14*amp*resp.h.a*env,x=baseX+(ip?dir.x*d:0),y=baseY+Math.cos(time*2+i)*3+(ip?dir.y*d:0),rad=ip?5:Math.max(2.5,5*(1+.025*d));
+      ctx.strokeStyle='rgba(245,189,104,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,rad,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',x-2.5,y+3);
+    }
+  }
+  function insideMag(){return O.tAbs<.25?.25/Math.max(O.tAbs,1e-30):1}
+  function drawClassicalField(){
+    if(!$('showField').checked)return;
+    const {left,span,hitY,start,ref,rayLen}=G,o=O,amp=ampScale(),A0=12*amp,ci=o.cosI,si=o.sinI,t3=time*3;
+    // Faz sürekliliği: yüzeyde gelen −ωt, yansıyan −ωt+arg r, iletilen −ωt+arg t.
+    drawWavePath(start.x,start.y,ci,-si,rayLen,si,ci,()=>A0,(x,y)=>W.qd*(ci*(x-left)+si*(hitY-y))-t3,'#8fd6ff',1);
+    if(o.R>1e-6)drawWavePath(left,hitY,-ci,-si,rayLen,-si,ci,()=>A0*Math.sqrt(o.R),(x,y)=>W.qd*(-ci*(x-left)+si*(hitY-y))-t3+o.rArg,'#f4c46c',Math.max(.35,Math.sqrt(o.R)));
+    ctx.save();ctx.beginPath();ctx.rect(left,0,span,G.h);ctx.clip();
+    const ct=Math.max(.04,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=span/ct,mag=insideMag(),inA=A0*o.tAbs*mag;
+    drawWavePath(left,hitY,ct,-st,L,st,ct,x=>inA*fieldEnvelope((x-left)/span),insidePhase,'rgba(128,224,177,.95)',1,2.2);
+    ctx.fillStyle='rgba(128,224,177,.86)';ctx.font='11px system-ui';ctx.fillText('iç alan E_t=|t|E₀ · kırılır ve derinlikle zayıflar'+(mag>1.05?' · çizim ×'+fmtCount(mag)+' büyütüldü':''),left+12,42);
     ctx.restore();
-
-    ctx.fillStyle='rgba(143,214,255,.9)';ctx.font='11px system-ui';ctx.fillText('gelen',Math.max(12,g.start.x+8),Math.max(42,g.start.y-10));
-    if(o.R>.001){ctx.fillStyle='rgba(244,196,108,.95)';ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,g.ref.x+8),Math.max(42,g.ref.y-10))}
+    ctx.fillStyle='rgba(143,214,255,.9)';ctx.font='11px system-ui';ctx.fillText('gelen',Math.max(12,start.x+8),Math.max(42,start.y-10));
+    if(o.R>.001){ctx.fillStyle='rgba(244,196,108,.95)';ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,ref.x+8),Math.max(42,ref.y-10))}
   }
-  function drawXrayFlux(w,h,left,right){
-    if(!root.getElementById('showField').checked)return;
-    const g=surfaceGeometry(w,h,left,right),o=g.o,count=22,ci=Math.cos(o.thetaI),si=Math.sin(o.thetaI);
+  function drawXrayFlux(){
+    if(!$('showField').checked)return;
+    const {left,span,hitY,start,ref}=G,o=O,count=22;
     ctx.font='11px system-ui';
     for(let i=0;i<count;i++){
-      const q=(time*.12+i/count)%1,x=g.start.x+(left-g.start.x)*q,y=g.start.y+(g.hitY-g.start.y)*q;
+      const q=(time*.12+i/count)%1,x=start.x+(left-start.x)*q,y=start.y+(hitY-start.y)*q;
       ctx.globalAlpha=.45+.55*(1-q);ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
     }
     const reflected=Math.round(count*o.R);
     for(let i=0;i<reflected;i++){
-      const q=(time*.12+i/Math.max(1,reflected))%1,x=left+(g.ref.x-left)*q,y=g.hitY+(g.ref.y-g.hitY)*q;
+      const q=(time*.12+i/Math.max(1,reflected))%1,x=left+(ref.x-left)*q,y=hitY+(ref.y-hitY)*q;
       ctx.globalAlpha=.5+.5*(1-q);ctx.fillStyle='#f4c46c';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
     }
     ctx.globalAlpha=1;
-
-    ctx.save();ctx.beginPath();ctx.rect(left,0,right-left,h);ctx.clip();
+    ctx.save();ctx.beginPath();ctx.rect(left,0,span,G.h);ctx.clip();
     if(o.evanescent){
-      const frac=Math.max(.004,Math.min(.24,o.evPowerDepth/Math.max(viewDepth(),1e-30)*5)),px=(right-left)*frac;
-      const grad=ctx.createLinearGradient(left,0,left+px,0);
-      grad.addColorStop(0,'rgba(143,214,255,.48)');grad.addColorStop(1,'rgba(143,214,255,0)');
-      ctx.fillStyle=grad;ctx.fillRect(left,0,px,h);
-      ctx.fillStyle='rgba(143,214,255,.9)';ctx.fillText('total external reflection · evanescent alan',left+10,44);
+      fillDecay(.48,'143,214,255');
+      ctx.fillStyle='rgba(143,214,255,.9)';ctx.fillText('total external reflection · evanescent alan (L⊥≈'+fmtLen(o.Lperp)+')',left+10,62);
     }else{
-      const ct=Math.max(.025,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=(right-left)/ct,insideCount=Math.round(count*o.T);
+      const ct=Math.max(.025,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=span/ct,insideCount=Math.round(count*o.T);
       for(let i=0;i<insideCount;i++){
-        const q=(time*.10+i/Math.max(1,insideCount))%1,s=L*q,x=left+ct*s,y=g.hitY-st*s,frac=(x-left)/(right-left),prob=powerEnvelope(frac);
+        const q=(time*.10+i/Math.max(1,insideCount))%1,s=L*q,x=left+ct*s,y=hitY-st*s,prob=powerEnvelope((x-left)/span);
         if(((i*37)%100)/100<prob){ctx.globalAlpha=.16+.84*prob;ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3.1,0,Math.PI*2);ctx.fill()}
       }
-      ctx.globalAlpha=1;ctx.fillStyle='rgba(143,214,255,.8)';ctx.fillText('içeri giren X-foton akısı · Beer–Lambert zayıflaması',left+10,44);
+      ctx.globalAlpha=1;ctx.fillStyle='rgba(143,214,255,.8)';ctx.fillText('içeri giren X-foton akısı · Beer–Lambert zayıflaması',left+10,62);
     }
     ctx.restore();
-    ctx.fillStyle='rgba(244,196,108,.95)';if(o.R>.002)ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,g.ref.x+8),Math.max(42,g.ref.y-10));
+    ctx.fillStyle='rgba(244,196,108,.95)';if(o.R>.002)ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,ref.x+8),Math.max(42,ref.y-10));
   }
-  function eventX(i,count,left,right){
-    const o=surfaceOptics(),K=o.evanescent?viewDepth()/Math.max(o.evPowerDepth,1e-30):depthFactor()*o.pathFactor;
-    const u=(i+.55)/(count+.2),F=1-Math.exp(-K),zFrac=-Math.log(Math.max(1e-8,1-u*F))/Math.max(K,1e-9);
-    return left+Math.min(.98,zFrac)*(right-left);
+  // RF/mikrodalgada kayıp ayrık foton olayı değil, sürekli Joule/dielektrik ısınmadır: p(z) ∝ e^{-z/L⊥}.
+  function drawLossGlow(){
+    if(!$('showGeneration').checked||!lowFreq())return;
+    fillDecay(.2,'239,120,152');
+    ctx.fillStyle='rgba(239,120,152,.75)';ctx.font='10px system-ui';ctx.fillText('sürekli kayıp → ısı (Joule / dielektrik), ∝ e^(−z/L⊥)',G.left+12,G.h-34);
   }
-  function drawGeneration(w,h,left,right){
-    if(!root.getElementById('showGeneration').checked)return;
-    const m=mat(),p=photon(),span=right-left;
+  function eventX(i,count){
+    const K=depthFactor(),u=(i+.55)/(count+.2),F=1-Math.exp(-K),zFrac=-Math.log(Math.max(1e-8,1-u*F))/Math.max(K,1e-9);
+    return G.left+Math.min(.98,zFrac)*G.span;
+  }
+  function drawGeneration(){
+    if(!$('showGeneration').checked)return;
+    const {left,span,h}=G,m=mat(),p=photon();
     let events=0,kind='';
     if(band==='visible'){
       if(m.type==='semiconductor'&&p>=m.gap){events=7;kind='pair'}
-      else if(m.type==='metal'){events=8;kind='heat'}
-      else events=1;
+      else if(m.type==='metal'){events=8;kind=p>=m.interband?'interband':'heat'}
+      else{events=2;kind='heat'} // sub-gap: titreşim üst tonu (su) / safsızlık (cam) soğurması → ısı
     }else if(band==='xray'){events=m.type==='metal'?12:10;kind=m.type==='semiconductor'?'cascade':'ionize'}
-    const entry=surfaceOptics().T;events=Math.round(events*entry);
-    if(!events)return;
+    events=Math.round(events*O.T);
     for(let i=0;i<events;i++){
-      const x=eventX(i,events,left,right),frac=(x-left)/span,env=powerEnvelope(frac),y=65+((i*79)%Math.max(80,h-130)),pulse=.5+.5*Math.sin(time*5+i);
+      const x=eventX(i,events),env=powerEnvelope((x-left)/span),y=65+((i*79)%Math.max(80,h-130)),pulse=.5+.5*Math.sin(time*5+i);
       ctx.fillStyle='rgba(239,120,152,'+(.18+.65*pulse*env)+')';ctx.beginPath();ctx.arc(x,y,4+5*pulse,0,Math.PI*2);ctx.fill();
       if(kind==='pair'||kind==='cascade'){
         ctx.fillStyle='#75c9ff';ctx.beginPath();ctx.arc(x+10+pulse*5,y-10,3.5,0,Math.PI*2);ctx.fill();
         ctx.strokeStyle='#f5bd68';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x-8,y+8,4.5,0,Math.PI*2);ctx.stroke();
+      }else if(kind==='interband'){
+        ctx.fillStyle='#75c9ff';ctx.beginPath();ctx.arc(x+10+pulse*5,y-10,3.5,0,Math.PI*2);ctx.fill();
+        ctx.strokeStyle='#ad8dff';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x-8,y+8,4,0,Math.PI*2);ctx.stroke();
+        ctx.fillStyle='#ad8dff';ctx.font='9px system-ui';ctx.fillText('d',x-10.5,y+11);
+      }else if(kind==='heat'){
+        ctx.strokeStyle='rgba(239,120,152,'+(.25+.4*env)+')';ctx.lineWidth=1;
+        for(let j=1;j<=2;j++){ctx.beginPath();ctx.arc(x,y,6+j*5+pulse*3,0,Math.PI*2);ctx.stroke()}
       }else{
-        ctx.strokeStyle='rgba(117,201,255,.65)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+22,y-16);ctx.stroke();
+        ctx.strokeStyle='rgba(117,201,255,.65)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+22,y-16);ctx.stroke();
       }
-      if(band==='xray'&&kind==='cascade'){for(let j=0;j<3;j++){ctx.strokeStyle='rgba(239,120,152,.35)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+18+j*8,y-18+j*13);ctx.stroke()}}
+      if(kind==='cascade'){for(let j=0;j<3;j++){ctx.strokeStyle='rgba(239,120,152,.35)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+18+j*8,y-18+j*13);ctx.stroke()}}
     }
   }
-  function drawDepthAxis(w,h,left,right){
-    const D=viewDepth(),o=surfaceOptics();ctx.strokeStyle='rgba(220,232,248,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,h-24);ctx.lineTo(right,h-24);ctx.stroke();
+  function drawDepthAxis(){
+    const {left,right,span,h}=G,D=viewDepth(),o=O;ctx.strokeStyle='rgba(220,232,248,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,h-24);ctx.lineTo(right,h-24);ctx.stroke();
     ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';
-    ctx.fillText('0',left,h-9);ctx.fillText(fmtLen(D/2),left+(right-left)/2-18,h-9);ctx.fillText(fmtLen(D),right-42,h-9);
-    const normal1e=o.evanescent?o.evPowerDepth:attenuation()/o.pathFactor;
-    const lpX=left+(right-left)*normal1e/Math.max(D,1e-30);
-    if(lpX>left&&lpX<right){ctx.strokeStyle='rgba(245,189,104,.48)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(lpX,34);ctx.lineTo(lpX,h-28);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,189,104,.88)';ctx.fillText(o.evanescent?'evanescent 1/e':'yol boyunca Lₚ → normal 1/e',Math.min(right-130,lpX+5),h-34)}
+    ctx.fillText('0',left,h-9);ctx.fillText(fmtLen(D/2),left+span/2-18,h-9);ctx.fillText(fmtLen(D),right-42,h-9);
+    const lpX=left+span/depthFactor();
+    if(lpX>left&&lpX<right){ctx.strokeStyle='rgba(245,189,104,.48)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(lpX,34);ctx.lineTo(lpX,h-28);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,189,104,.88)';ctx.fillText(o.evanescent?'evanescent 1/e (L⊥)':'L⊥ · güç 1/e',Math.min(right-90,lpX+5),h-46)}
   }
   function drawScene(){
-    const r=nano.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),left=w*.27,right=w*.96;
+    const {w,h,left,right,hitY}=G,m=mat();
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
-    ctx.fillStyle='rgba(109,132,165,.13)';ctx.fillRect(left,0,right-left,h);ctx.strokeStyle='rgba(220,232,248,.5)';ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(left,h);ctx.stroke();
-    const geo=surfaceGeometry(w,h,left,right);ctx.strokeStyle='rgba(220,232,248,.22)';ctx.setLineDash([4,5]);ctx.beginPath();ctx.moveTo(left-75,geo.hitY);ctx.lineTo(left+75,geo.hitY);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';ctx.fillText(band==='xray'?('grazing '+grazingDeg().toFixed(3)+'°'):('normalden '+incidenceDeg().toFixed(1)+'°'),Math.max(8,left-112),geo.hitY-8);
-    if(band==='xray')drawXrayFlux(w,h,left,right);else drawClassicalField(w,h,left,right);
-    drawLattice(m,w,h,left,right);drawCarriers(w,h,left,right);drawGeneration(w,h,left,right);drawDepthAxis(w,h,left,right);
+    ctx.fillStyle='rgba(109,132,165,.13)';ctx.fillRect(left,0,right-left,h);ctx.strokeStyle='rgba(220,232,248,.5)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(left,h);ctx.stroke();
+    ctx.strokeStyle='rgba(220,232,248,.22)';ctx.setLineDash([4,5]);ctx.beginPath();ctx.moveTo(left-75,hitY);ctx.lineTo(left+75,hitY);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';ctx.fillText(band==='xray'?('grazing '+grazingDeg().toFixed(3)+'°'):('normalden '+incidenceDeg().toFixed(1)+'°'),Math.max(8,left-112),hitY-8);
+    drawLossGlow();
+    if(band==='xray')drawXrayFlux();else drawClassicalField();
+    drawLattice(m);drawCarriers();drawGeneration();drawDepthAxis();
     ctx.fillStyle='rgba(225,235,247,.8)';ctx.font='12px system-ui';ctx.fillText('vakum / hava',18,24);ctx.fillText(m.label,left+12,24);
   }
   function drawBands(){
     const r=bandCanvas.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),p=photon();bctx.clearRect(0,0,w,h);bctx.fillStyle='#fbfcfe';bctx.fillRect(0,0,w,h);
     const left=70,right=w-25,cy=58,vy=130;
     if(m.type==='metal'){
-      bctx.fillStyle='#31496a';bctx.fillRect(left,67,right-left,45);bctx.fillStyle='#fff';bctx.font='700 12px system-ui';bctx.fillText('kısmen dolu / örtüşen bantlar',left+12,93);
-      bctx.fillStyle='#5f7189';bctx.fillText(band==='xray'?'X-ışını: fotoelektrik soğurma/saçılma → hızlı elektronlar.':'Metal: bant aralığı yok; alan mevcut elektronları hızlandırır.',left,145);return;
+      const top=40,ef=80,x=w*.55;
+      bctx.fillStyle='#dbe5f2';bctx.fillRect(left,top,right-left,ef-top);
+      bctx.fillStyle='#31496a';bctx.fillRect(left,ef,right-left,24);
+      bctx.fillStyle='#6b5a9a';bctx.fillRect(left,130,right-left,14);
+      bctx.strokeStyle='#d18c31';bctx.lineWidth=1.5;bctx.setLineDash([5,4]);bctx.beginPath();bctx.moveTo(left-8,ef);bctx.lineTo(right,ef);bctx.stroke();bctx.setLineDash([]);
+      bctx.font='700 11px system-ui';bctx.fillStyle='#d18c31';bctx.fillText('E_F',left-34,ef+4);
+      bctx.fillStyle='#52667f';bctx.fillText('4s/p bandı · boş durumlar',left+8,top+14);
+      bctx.fillStyle='#fff';bctx.fillText('dolu 4s/p',left+8,ef+16);
+      bctx.fillStyle='#52667f';bctx.fillText('3d bandı · E_F − ≈'+m.interband.toFixed(1)+' eV',left+8,160);
+      bctx.font='700 12px system-ui';
+      if(band==='xray'){bctx.fillStyle='#ef7898';bctx.fillText('10 keV → iç kabuk fotoelektrik soğurma / saçılma → hızlı elektronlar',left,22)}
+      else if(band==='visible'&&p>=m.interband){
+        bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,134);bctx.lineTo(x,64);bctx.stroke();bctx.fillStyle='#ef7898';bctx.beginPath();bctx.moveTo(x,58);bctx.lineTo(x-5,67);bctx.lineTo(x+5,67);bctx.fill();
+        bctx.fillStyle='#75c9ff';bctx.beginPath();bctx.arc(x+12,62,4,0,Math.PI*2);bctx.fill();bctx.strokeStyle='#ad8dff';bctx.lineWidth=2;bctx.beginPath();bctx.arc(x-12,137,5,0,Math.PI*2);bctx.stroke();
+        bctx.fillStyle='#52667f';bctx.fillText('hν='+fmtE(p)+' ≥ '+m.interband.toFixed(1)+' eV → 3d → 4s/p bant-arası geçiş (bakırın rengi)',left,22);
+      }else{
+        bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,ef+6);bctx.lineTo(x+16,ef-6);bctx.stroke();
+        bctx.fillStyle='#52667f';bctx.fillText('hν='+fmtE(p)+' · bant-içi (Drude): E_F civarındaki elektronlar hızlanır',left,22);
+      }
+      return;
     }
     const Eg=m.gap||EgSi;
     bctx.strokeStyle='#506a8b';bctx.lineWidth=6;bctx.beginPath();bctx.moveTo(left,cy);bctx.lineTo(right,cy);bctx.stroke();bctx.beginPath();bctx.moveTo(left,vy);bctx.lineTo(right,vy);bctx.stroke();
     bctx.fillStyle='#52667f';bctx.font='700 12px system-ui';bctx.fillText('Üst elektronik durumlar',left,cy-10);bctx.fillText(m.type==='semiconductor'?'Valans bandı':'Dolu / bağlı durumlar',left,vy+20);bctx.fillText((m.type==='semiconductor'?'E_g':'elektronik eşik')+' ≈ '+Eg.toFixed(2)+' eV',right-145,95);
     if(band==='xray'){
-      bctx.fillStyle='#ef7898';bctx.font='700 12px system-ui';bctx.fillText(m.type==='semiconductor'?'10 keV → hızlı ikincil elektron → çoklu e–h üretimi':'10 keV → atomik iyonizasyon / ikincil elektronlar',left,22);
+      bctx.fillStyle='#ef7898';bctx.font='700 12px system-ui';bctx.fillText(m.type==='semiconductor'?'10 keV → ~8 keV fotoelektron → ≈'+Math.round(1e4/WehSi)+' e–h çifti (3.6 eV/çift)':'10 keV → atomik iyonizasyon / ikincil elektronlar',left,22);
       return;
     }
     if(m.type==='semiconductor'&&p>=Eg){
       const x=w*.55;bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,vy-4);bctx.lineTo(x,cy+5);bctx.stroke();bctx.fillStyle='#ef7898';bctx.beginPath();bctx.moveTo(x,cy);bctx.lineTo(x-5,cy+9);bctx.lineTo(x+5,cy+9);bctx.fill();bctx.fillStyle='#75c9ff';bctx.beginPath();bctx.arc(x+12,cy,4,0,Math.PI*2);bctx.fill();bctx.strokeStyle='#f5bd68';bctx.lineWidth=2;bctx.beginPath();bctx.arc(x-10,vy,5,0,Math.PI*2);bctx.stroke();bctx.fillStyle='#52667f';bctx.fillText('soğurulan foton → e⁻ + hol',x-62,24);
+      bctx.font='11px system-ui';bctx.fillStyle='#7a899b';bctx.fillText('hν − E_g ≈ '+(p-Eg).toFixed(2)+' eV fazla enerji → sıcak taşıyıcı → ısı (termalizasyon)',left,178);
     }else{
       bctx.fillStyle='#7a899b';bctx.font='12px system-ui';bctx.fillText('hν = '+fmtE(p)+(p<Eg?' < ':' ≥ ')+(m.type==='semiconductor'?'E_g':'elektronik eşik'),left,22);
+      if(band==='visible'&&m.type!=='semiconductor'){bctx.font='11px system-ui';bctx.fillText(m.type==='polar'?'Zayıf soğurma: O–H titreşim üst tonları → ısı (elektronik geçiş yok)':'Zayıf soğurma: safsızlık iyonları (ör. Fe) → ısı (elektronik geçiş yok)',left,178)}
     }
   }
   function updateUI(){
-    const m=mat(),p=photon(),gap=m.gap||0,ratio=gap?p/gap:Infinity,carr=carrierCounts(),Lp=attenuation(),D=viewDepth(),edge=powerEnvelope(1),o=surfaceOptics();
-    root.getElementById('dopingWrap').style.display=m.type==='semiconductor'?'block':'none';
-    root.getElementById('fieldOut').value=(+root.getElementById('fieldAmp').value/100).toFixed(2)+'×';
-    root.getElementById('densityOut').value=(+root.getElementById('density').value/10).toFixed(1)+'×';
-    root.getElementById('depthFactorOut').value=depthFactor().toFixed(1)+' × Lₚ';
-    root.getElementById('speedOut').value=(+root.getElementById('speed').value/10).toFixed(1)+'×';
-    root.getElementById('angleOut').value=incidenceDeg().toFixed(2)+'°';
-    root.getElementById('grazingOut').textContent=grazingDeg().toFixed(2)+'°';
-    root.getElementById('xrayFineWrap').style.display=band==='xray'?'block':'none';
+    const m=mat(),o=O,p=photon(),gap=m.gap||0,ratio=gap?p/gap:Infinity,carr=carrierCounts(),Lp=attenuation(),D=viewDepth(),edge=powerEnvelope(1),semi=m.type==='semiconductor',lf=lowFreq();
+    $('dopingWrap').style.display=semi?'block':'none';
+    $('dopingLevelWrap').style.display=semi&&$('doping').value!=='intrinsic'?'block':'none';
+    if(semi){const s=siState();$('dopingHint').textContent='n≈'+sci(s.n,1)+' cm⁻³ · p≈'+sci(s.p,1)+' cm⁻³ (n·p=nᵢ²) · ρ≈'+fmtRho(s.rho)+(lf?' · σ/(ωε)≈'+sci(s.sigma/(omega()*eps0*SI.epsL),1):'')}
+    $('fieldOut').value=ampScale().toFixed(2)+'×';
+    $('densityOut').value=(+$('density').value/10).toFixed(1)+'×';
+    $('depthFactorOut').value=depthFactor().toFixed(1)+' × L⊥';
+    $('speedOut').value=(+$('speed').value/10).toFixed(1)+'×';
+    $('angleOut').value=incidenceDeg().toFixed(2)+'°';
+    $('grazingOut').textContent=grazingDeg().toFixed(2)+'°';
+    $('xrayFineWrap').style.display=band==='xray'?'block':'none';
     if(band==='xray'&&grazingDeg()>=.05&&grazingDeg()<=5){
-      root.getElementById('xrayFine').value=Math.round(grazingDeg()*100);
-      root.getElementById('xrayFineOut').value=grazingDeg().toFixed(2)+'°';
+      $('xrayFine').value=Math.round(grazingDeg()*100);
+      $('xrayFineOut').value=grazingDeg().toFixed(2)+'°';
     }
-    root.getElementById('polAvg').classList.toggle('active',polarization==='avg');
-    root.getElementById('polS').classList.toggle('active',polarization==='s');
-    root.getElementById('polP').classList.toggle('active',polarization==='p');
+    $('polAvg').classList.toggle('active',polarization==='avg');
+    $('polS').classList.toggle('active',polarization==='s');
+    $('polP').classList.toggle('active',polarization==='p');
 
-    root.getElementById('photonVal').textContent=fmtE(p);
-    root.getElementById('gapVal').textContent=m.type==='metal'?'0 eV':gap.toFixed(2)+' eV';
-    root.getElementById('ratioVal').textContent=isFinite(ratio)?(ratio<.001?ratio.toExponential(2):ratio.toFixed(2)):'—';
-    root.getElementById('wavelengthVal').textContent=fmtLen(bnd().lambda);
-    root.getElementById('attenuationVal').textContent=fmtLen(Lp);
-    root.getElementById('viewDepthVal').textContent=fmtLen(D);
-    root.getElementById('edgePowerVal').textContent=(100*edge).toFixed(edge>.01?1:3)+'%';
-    root.getElementById('surfaceReflectVal').textContent=(100*o.R).toFixed(o.R>.001?1:4)+'%';
-    root.getElementById('surfaceEnterVal').textContent=(100*o.T).toFixed(o.T>.001?1:4)+'%';
-    root.getElementById('criticalVal').textContent=band==='xray'?(o.critical.toFixed(3)+'° grazing'):'—';
+    $('photonVal').textContent=fmtE(p);
+    $('gapVal').textContent=m.type==='metal'?'yok · d→sp ≈'+m.interband.toFixed(1)+' eV':gap.toFixed(2)+' eV';
+    $('ratioVal').textContent=isFinite(ratio)?(ratio<.001?ratio.toExponential(2):ratio.toFixed(2)):'—';
+    $('wavelengthVal').textContent=fmtLen(bnd().lambda);
+    $('attenuationVal').textContent=fmtLen(Lp);
+    $('lperpVal').textContent=fmtLen(o.Lperp);
+    $('viewDepthVal').textContent=fmtLen(D);
+    $('edgePowerVal').textContent=(100*edge).toFixed(edge>.01?1:3)+'%';
+    $('surfaceReflectVal').textContent=(100*o.R).toFixed(o.R>.001?1:4)+'%';
+    $('surfaceEnterVal').textContent=(100*o.T).toFixed(o.T>.001?1:4)+'%';
+    $('criticalVal').textContent=band==='xray'?(o.critical.toFixed(3)+'° grazing'):'—';
+    $('tVal').textContent=o.tAbs<1e-3?sci(o.tAbs,2):o.tAbs.toFixed(3);
+    $('ehVal').textContent=semi?(band==='visible'?'1':(band==='xray'?'≈'+Math.round(1e4/WehSi):'0')):'—';
 
-    let pair='Hayır',carrier='polarizasyon',status='',flow='',mech='polarization',attModel=band==='xray'?'Beer–Lambert / foton akısı':'E∝e⁻ᶻ/(²ᴸᵖ)';
-    if(m.type==='semiconductor'){
-      if(band==='rf'){carrier='mevcut taşıyıcı';status='RF foton enerjisi bant aralığından milyonlarca kat küçüktür. Yeni e–h çifti oluşmaz. Bu yüksek-özdirençli Si presetinde alan uzun mesafede yavaşça zayıflar; n/p seçimi tek başına zayıflamayı belirlemez.';flow='<strong>RF:</strong> E(t) → bağlı elektron polarizasyonu + mevcut taşıyıcı drift hareketi → saçılma/kayıp.';mech='drift + polarization'}
-      else if(band==='micro'){carrier='mevcut taşıyıcı';status='2.45 GHz foton enerjisi E_g’den çok küçüktür. Yeni e–h üretimi yoktur; AC taşıyıcı hareketi ve dielektrik/iletkenlik kaybı alanı zayıflatır.';flow='<strong>Mikrodalga:</strong> E(t) → AC taşıyıcı cevabı → saçılma / ısı.';mech='AC transport'}
-      else if(band==='visible'){pair=p>=gap?'Evet':'Hayır';carrier='e–h üretimi';status='550 nm ışık Si içinde güçlü biçimde soğurulur. Soğurulan foton e–h çifti oluşturabilir; yüzeyde ayrıca Fresnel yansıması vardır.';flow='<strong>Görünür:</strong> Fresnel yansıması + içeri giren foton → interband soğurma → e⁻ + hol.';mech='Fresnel + interband'}
-      else{pair='Çoklu';carrier='ikincil kaskat';status='10 keV X-ışını Si içinde sonsuza kadar gitmez; içeri giren foton akısı zayıflar ve soğurulan/saçılan fotonlar ikincil elektronlar ile çoklu e–h çiftleri oluşturabilir.';flow='<strong>X-ışını:</strong> yüzey Fresnel cevabı → azalan foton akısı → fotoelektrik/saçılma → iyonizasyon kaskadı.';mech='x-ray Fresnel + cascade'}
+    let pair='Hayır',carrier='polarizasyon',status='',flow='',mech='polarization',attModel=band==='xray'?'Beer–Lambert / foton akısı':'E∝e^(−z/2L⊥)';
+    if(semi){
+      const s=siState();
+      if(lf){
+        const ls=s.sigma/(omega()*eps0*SI.epsL),regime=ls>3?'iletken gibi (σ≫ωε): skin-depth tipi kayıp':(ls<.3?'düşük kayıplı dielektrik (σ≪ωε): yer değiştirme akımı baskın':'ara bölge (σ≈ωε)');
+        carrier='mevcut taşıyıcı';
+        status=(band==='rf'?'RF':'2.45 GHz')+' foton enerjisi E_g’den milyonlarca kat küçüktür; yeni e–h çifti oluşmaz. Kayıp mevcut taşıyıcıların sürüklenmesinden gelir: ρ≈'+fmtRho(s.rho)+' → '+regime+', Lₚ≈'+fmtLen(Lp)+'. Çarpışma baskın rejim (ωτ≈'+sci(omega()*s.tauE,1)+'): hız E ile aynı fazda, yer değiştirme 90° geride; elektron genliği holünkinin ≈'+(s.mue/s.muh).toFixed(1)+' katı (μₙ/μₚ).';
+        flow='<strong>'+(band==='rf'?'RF':'Mikrodalga')+':</strong> E(t) → bağlı elektron polarizasyonu + taşıyıcı drift akımı J=σE → Joule kaybı.';
+        mech=band==='rf'?'drift + polarization':'AC transport';
+      }else if(band==='visible'){
+        pair=p>=gap?'Evet':'Hayır';carrier='e–h üretimi';
+        status='550 nm (2.25 eV) ışık Si içinde güçlü soğurulur (dolaylı geçiş, fonon destekli). Soğurulan her foton bir e–h çifti üretir; E_g üstündeki ≈1.1 eV fazla enerji sıcak taşıyıcı olarak hızla ısıya dönüşür. Mevcut taşıyıcılar optik frekansta ataletle cevap verir (ωτ≫1): yer değiştirme kuvvete zıt fazdadır.';
+        flow='<strong>Görünür:</strong> Fresnel yansıması + içeri giren foton → interband soğurma → e⁻ + hol → termalizasyon.';mech='Fresnel + interband';
+      }else{
+        pair='Çoklu (≈'+Math.round(1e4/WehSi)+')';carrier='ikincil kaskat';
+        status='10 keV X-ışını Si içinde fotoelektrik soğurmayla ~8 keV’lik bir fotoelektron (+ Auger elektronu) üretir. Bu elektron ~1 µm menzilde durur ve 3.6 eV/çift ile ≈'+Math.round(1e4/WehSi)+' e–h çifti oluşturur. Foton akısı Beer–Lambert yasasıyla zayıflar.';
+        flow='<strong>X-ışını:</strong> yüzey Fresnel cevabı → azalan foton akısı → fotoelektrik/saçılma → iyonizasyon kaskadı.';mech='x-ray Fresnel + cascade';
+      }
     }else if(m.type==='metal'){
       pair='Uygulanmaz';carrier='serbest elektron';
       if(band==='xray'){status='10 keV X-ışını bakırda içeri girdikten sonra yaklaşık 5.2 µm 1/e güç uzunluğuyla zayıflar. Grazing geliş kritik açının altındaysa yüzey yansıması çok güçlü olabilir.';flow='<strong>Cu + X:</strong> grazing Fresnel yansıması → içeri giren fotonlarda fotoelektrik/saçılma → hızlı elektronlar.';mech='x-ray Fresnel + XCOM'}
-      else if(band==='visible'){status='Bakır görünür ışıkta hem güçlü Fresnel yansıması hem de yüzeye yakın optik soğurma gösterir. İçeri giren küçük bölüm yaklaşık onlarca nm içinde sönümlenir.';flow='<strong>Cu + görünür:</strong> güçlü yüzey yansıması → kalan alanın skin/optik soğurması.';mech='metal Fresnel + loss'}
-      else{status='Bakırda yüzey yansıması çok yüksektir; içeri giren küçük alan skin-depth ölçeğinde hızla söner.';flow='<strong>Metal:</strong> güçlü Fresnel/iletken yüzey cevabı → yüzey akımı → skin-depth kaybı.';mech='conductor reflection'}
+      else if(band==='visible'){pair='d→sp uyarımı';status='Bakırda 550 nm (2.25 eV) foton, ≈2.1 eV eşikli 3d → 4s/p bant-arası geçişi uyarır: d bandında bir hol, Fermi seviyesinin üstünde bir elektron. Bu soğurma mavi-yeşil ucu zayıflatır; bakırın kırmızımsı rengi buradan gelir. Serbest elektronların bant-içi (Drude) cevabı ayrıca güçlü yansıma verir; içeri giren kısım ~17 nm içinde söner.';flow='<strong>Cu + görünür:</strong> Drude yansıması + 3d → 4s/p bant-arası soğurma → sıcak elektron/hol → ısı.';mech='Drude + interband'}
+      else{status='İyi iletkende içeride E çok küçüktür (|t|≈'+sci(o.tAbs,1)+'): yüzey, gelen ve yansıyan dalganın duran dalgasının düğümüne çok yakındır. Buna karşın σ çok büyük olduğundan yüzey akımı güçlüdür ve skin derinliği δ=2Lₚ≈'+fmtLen(2*Lp)+' içinde Joule kaybı oluşur.';flow='<strong>Metal:</strong> güçlü Fresnel/iletken yüzey cevabı → yüzey akımı J=σE → skin-depth kaybı.';mech='conductor reflection'}
+    }else if(m.type==='polar'){
+      const rD=omega()*m.debye.tau,lag=Math.atan(rD)*180/Math.PI;
+      carrier=lf?'dipol yönelimi':'elektronik polarizasyon';
+      if(band==='xray'){status='Su için normal gelişte X-ışını yüzey yansıması çok küçüktür; çok küçük grazing açıda ise total external reflection ortaya çıkabilir. İçeri giren fotonlar atomik iyonizasyon ve saçılmayla zayıflar.';flow='<strong>X-ışını:</strong> açıya bağlı Fresnel yansıması → foton zayıflaması → atomik iyonizasyon / saçılma.';mech='x-ray Fresnel + attenuation';pair='İyonizasyon'}
+      else if(band==='rf'){status='Su dipolleri alanı neredeyse gecikmesiz izler (ωτ_D≈'+sci(rD,1)+', gecikme ≈'+lag.toFixed(2)+'°): yönelim polarizasyonu tamdır (ε′≈78) ve kayıp küçüktür, Lₚ≈'+fmtLen(Lp)+'. Moleküller rastgele yönelimlidir; alan yalnız küçük bir net hizalanma oluşturur.';flow='<strong>RF:</strong> E(t) → dipol yönelimi (gecikmesiz) → küçük dielektrik kayıp.';mech='Debye orientation'}
+      else if(band==='micro'){status='Su dipolleri alanı ≈'+lag.toFixed(1)+'° gecikmeyle izler (ωτ_D≈'+rD.toFixed(2)+'). Bu faz gecikmesi ε″≈9 kaybını, yani mikrodalga ısınmasını üretir; Lₚ≈'+fmtLen(Lp)+'.';flow='<strong>Mikrodalga:</strong> E(t) → gecikmeli dipol yönelimi → ε″ kaybı → ısı.';mech='Debye relaxation'}
+      else{status='Optik frekansta (ωτ_D≈'+sci(rD,1)+') moleküller dönemez: yönelim polarizasyonu donar, yalnız elektronik polarizasyon kalır (n²≈1.78 ≪ ε_s≈78). 2.25 eV elektronik eşiğin altındadır; zayıf soğurma O–H titreşim üst tonlarından gelir ve ısıya dönüşür.';flow='<strong>Su + görünür:</strong> Fresnel → elektronik polarizasyon → çok zayıf titreşimsel soğurma.';mech='electronic polarization'}
     }else{
-      pair='Uygulanmaz';carrier=m.type==='polar'?'dipol/bağlı yük':'bağlı elektron';
-      if(band==='xray'){status=(m.type==='polar'?'Su':'Cam')+' için normal gelişte X-ışını yüzey yansıması çok küçüktür; çok küçük grazing açıda ise total external reflection ortaya çıkabilir. İçeri giren fotonlar atomik iyonizasyon ve saçılmayla zayıflar.';flow='<strong>X-ışını:</strong> açıya bağlı Fresnel yansıması → foton zayıflaması → atomik iyonizasyon / saçılma.';mech='x-ray Fresnel + attenuation'}
-      else{status='Yüzeyde kırılma indisi farkından Fresnel yansıması oluşur; içeri giren alan malzemeye özgü polarizasyon ve kayıpla derinlik boyunca zayıflar.';flow='<strong>Dielektrik:</strong> Fresnel yansıması → kırılan alan → polarizasyon → kayıp.';mech='Fresnel + polarization'}
+      carrier='bağlı elektron';
+      if(band==='xray'){status='Cam için normal gelişte X-ışını yüzey yansıması çok küçüktür; çok küçük grazing açıda ise total external reflection ortaya çıkabilir. İçeri giren fotonlar atomik iyonizasyon ve saçılmayla zayıflar.';flow='<strong>X-ışını:</strong> açıya bağlı Fresnel yansıması → foton zayıflaması → atomik iyonizasyon / saçılma.';mech='x-ray Fresnel + attenuation';pair='İyonizasyon'}
+      else if(band==='visible'){status='2.25 eV foton ≈8.5 eV elektronik eşiğin çok altındadır: elektronik geçiş veya iyonlaşma yoktur. Bağlı elektronlar rezonans altında E’ye zıt yönde yer değiştirir (n≈1.52). Zayıf soğurma safsızlık iyonlarından (ör. Fe) gelir.';flow='<strong>Cam + görünür:</strong> Fresnel → bağlı elektron polarizasyonu → çok zayıf safsızlık soğurması.';mech='Fresnel + polarization'}
+      else{status='Cam: bağlı elektron ve iyon polarizasyonu (ε′≈4.6). Kayıp tanδ≈3.7×10⁻³ ile verilir → Lₚ≈'+fmtLen(Lp)+'.';flow='<strong>Dielektrik:</strong> Fresnel yansıması → kırılan alan → polarizasyon → tanδ kaybı.';mech='Fresnel + polarization'}
     }
 
     let surfaceSummary=' Yüzeyde gücün %'+(100*o.R).toFixed(1)+' kadarı yansır, %'+(100*o.T).toFixed(1)+' kadarı malzemeye girer.';
     if(band==='xray'){
       if(o.evanescent){
-        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'°, kritik açı '+o.critical.toFixed(3)+'°: total external reflection bölgesi; yüzeyde R≈%'+(100*o.R).toFixed(1)+'. İçeride yalnız kısa menzilli evanescent alan kalır.';
+        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'°, kritik açı '+o.critical.toFixed(3)+'°: total external reflection bölgesi; yüzeyde R≈%'+(100*o.R).toFixed(1)+'. İçeride yalnız L⊥≈'+fmtLen(o.Lperp)+' derinlikli evanescent alan kalır.';
         attModel='evanescent + absorption';
       }else{
-        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'° kritik '+o.critical.toFixed(3)+'° değerinin üzerinde; R≈%'+(100*o.R).toFixed(2)+' ve kalan foton akısı içeri girer.';
+        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'° kritik '+o.critical.toFixed(3)+'° değerinin üzerinde; R≈%'+(100*o.R).toFixed(2)+', kalan foton akısı içeri girer ve yüzey-normal 1/e derinliği L⊥≈'+fmtLen(o.Lperp)+' olur.';
       }
     }
     status+=surfaceSummary;
+    if(lf&&Lp>1e-3)status+=' Not: R yarı-sonsuz ortam içindir; numune Lₚ’den inceyse ('+(semi?'ör. 0.5 mm Si pul':'ör. ince bir levha')+'; içerideki dalga boyu ≈'+fmtLen(bnd().lambda/o.N.re)+') arka yüzey yansımalarıyla ince-levha (Fabry–Pérot) problemi oluşur.';
 
-    root.getElementById('pairVal').textContent=pair;
-    root.getElementById('carrierVal').textContent=carrier;
-    root.getElementById('statusText').textContent=status;
-    root.getElementById('flowText').innerHTML=flow;
-    root.getElementById('electronCount').textContent=carr.e;
-    root.getElementById('holeCount').textContent=carr.h;
-    root.getElementById('fieldPeriod').textContent=fmtTime(1/bnd().f);
-    root.getElementById('mechanism').textContent=mech;
-    root.getElementById('attenuationModel').textContent=attModel;
-    root.getElementById('sourceVal').textContent=m.source[band];
-    root.getElementById('sceneTitle').textContent=bnd().label+' · '+m.label+' · nano elektronik görünüm';
-    root.getElementById('sceneSubtitle').textContent='Yüzey yansıması + malzeme içi elektronik cevap ve zayıflama.';
+    $('pairVal').textContent=pair;
+    $('carrierVal').textContent=carrier;
+    $('statusText').textContent=status;
+    $('flowText').innerHTML=flow;
+    $('electronCount').textContent=carr.e;
+    $('holeCount').textContent=carr.h;
+    $('fieldPeriod').textContent=fmtTime(1/bnd().f);
+    $('mechanism').textContent=mech;
+    $('attenuationModel').textContent=attModel;
+    $('sourceVal').textContent=m.source[band];
+    $('sceneTitle').textContent=bnd().label+' · '+m.label+' · nano elektronik görünüm';
+    $('sceneSubtitle').textContent='Yüzey yansıması + malzeme içi elektronik cevap ve zayıflama.';
+    let drawNote='';
+    if(band!=='xray'){
+      drawNote=W.diluted?' <strong>Çizim:</strong> görüntü derinliğinde gerçekte ≈'+fmtCount(W.cycles)+' iç dalga boyu var; okunabilirlik için dalga boyları ×'+fmtCount(W.factor)+' uzatıldı (iç/dış dalga boyu oranı korunur).':' <strong>Çizim:</strong> dalga boyu ölçeklidir; görüntüde ≈'+fmtCount(W.cycles)+' iç dalga boyu var.';
+      if(insideMag()>1.05)drawNote+=' İç alan çizimi ×'+fmtCount(insideMag())+' büyütüldü.';
+    }
     const totalEdge=o.T*edge;
-    root.getElementById('overlayText').innerHTML=status+' <strong>Sağ kenar:</strong> gelen gücün yaklaşık %'+(100*totalEdge).toFixed(totalEdge>.001?1:3)+' kadarı bu derinliğe kadar ulaşır.';
+    $('overlayText').innerHTML=status+drawNote+' <strong>Sağ kenar:</strong> gelen gücün yaklaşık %'+(100*totalEdge).toFixed(totalEdge>.001?1:3)+' kadarı bu derinliğe kadar ulaşır.';
   }
-  function frame(ts){if(!last)last=ts;const sp=+root.getElementById('speed').value/10;if(running)time+=Math.min(.05,(ts-last)/1000)*sp;last=ts;updateUI();drawScene();drawBands();requestAnimationFrame(frame)}
+  function frame(ts){
+    if(!last)last=ts;const sp=+$('speed').value/10;if(running)time+=Math.min(.05,(ts-last)/1000)*sp;last=ts;
+    O=surfaceOptics();layout();W=waveScale(G.span);
+    updateUI();drawScene();drawBands();requestAnimationFrame(frame);
+  }
   root.querySelectorAll('[data-band]').forEach(btn=>btn.addEventListener('click',()=>{
     band=btn.dataset.band;
     root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b===btn));
-    if(band==='xray'){root.getElementById('angle').value=8990;root.getElementById('xrayFine').value=10}
-    else root.getElementById('angle').value=0;
+    if(band==='xray'){$('angle').value=8990;$('xrayFine').value=10}
+    else $('angle').value=0;
   }));
-  root.getElementById('angle').addEventListener('input',()=>{
-    if(band==='xray'){const g=grazingDeg();if(g>=.05&&g<=5)root.getElementById('xrayFine').value=Math.round(g*100)}
+  $('angle').addEventListener('input',()=>{
+    if(band==='xray'){const g=grazingDeg();if(g>=.05&&g<=5)$('xrayFine').value=Math.round(g*100)}
   });
-  root.getElementById('xrayFine').addEventListener('input',function(){root.getElementById('angle').value=Math.round((90-(+this.value/100))*100)});
-  root.getElementById('normalBtn').addEventListener('click',()=>{root.getElementById('angle').value=0});
-  root.getElementById('obliqueBtn').addEventListener('click',()=>{root.getElementById('angle').value=4500});
-  root.getElementById('xrayGrazingBtn').addEventListener('click',()=>{
+  $('xrayFine').addEventListener('input',function(){$('angle').value=Math.round((90-(+this.value/100))*100)});
+  $('normalBtn').addEventListener('click',()=>{$('angle').value=0});
+  $('obliqueBtn').addEventListener('click',()=>{$('angle').value=4500});
+  $('xrayGrazingBtn').addEventListener('click',()=>{
     band='xray';root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='xray'));
-    root.getElementById('angle').value=8990;root.getElementById('xrayFine').value=10;
+    $('angle').value=8990;$('xrayFine').value=10;
   });
-  root.getElementById('polAvg').addEventListener('click',()=>{polarization='avg'});
-  root.getElementById('polS').addEventListener('click',()=>{polarization='s'});
-  root.getElementById('polP').addEventListener('click',()=>{polarization='p'});
-  root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
-  root.getElementById('resetBtn').addEventListener('click',function(){
-    band='rf';polarization='avg';root.getElementById('material').value='silicon';root.getElementById('doping').value='intrinsic';
-    root.getElementById('fieldAmp').value=100;root.getElementById('density').value=10;root.getElementById('depthFactor').value=40;root.getElementById('speed').value=10;
-    root.getElementById('angle').value=0;root.getElementById('xrayFine').value=10;
-    ['showField','showBound','showCarriers','showGeneration'].forEach(id=>root.getElementById(id).checked=true);
+  $('polAvg').addEventListener('click',()=>{polarization='avg'});
+  $('polS').addEventListener('click',()=>{polarization='s'});
+  $('polP').addEventListener('click',()=>{polarization='p'});
+  $('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
+  $('resetBtn').addEventListener('click',function(){
+    band='rf';polarization='avg';$('material').value='silicon';$('doping').value='intrinsic';$('dopingLevel').value='1e15';
+    $('fieldAmp').value=100;$('density').value=10;$('depthFactor').value=40;$('speed').value=10;
+    $('angle').value=0;$('xrayFine').value=10;
+    ['showField','showBound','showCarriers','showGeneration'].forEach(id=>$(id).checked=true);
     root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='rf'));time=0;
   });
   window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
