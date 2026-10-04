@@ -182,6 +182,7 @@
     <article class="info"><h3>Yönlü anten değişince ne değişiyor?</h3><p>Daha büyük elektriksel açıklık daha dar ana lob ve daha yüksek tepe kazanç üretir.</p><ul><li>Model: 14 dBi tepe kazanç</li><li>HPBW ≈ 32°</li><li>Boyut ölçeği ≈ 2.0λ</li><li>Hizalama hatasına daha hassas</li></ul></article>
   </section>
 
+  <div class="note"><strong>Dalga yönü nasıl okunmalı?</strong> Uzak alanda bir antenin faz cepheleri kaynağın etrafında yaklaşık küresel yayılır. Antenin “yönlü” olması cepheyi bir tüpe çevirmekten çok, farklı açılardaki <strong>alan genliğini</strong> değiştirir. Bu nedenle 3B sahnede cephe kabukları TX merkezlidir; patch/yönlü/dipol pattern'i hangi bölgelerin güçlü görüneceğini belirler. Kesikli TX→RX çizgisi yalnız alıcının örneklediği doğrultudur.</div>
   <div class="note"><strong>İkinci TX eklenince:</strong> Aynı frekansta faz kilitli iki vericinin güçleri doğrudan toplanmaz; önce kompleks alanlar toplanır. RX'teki yol farkı ΔR bir faz farkı <strong>2πΔR/λ</strong> oluşturur. Başlangıç fazıyla birlikte alanlar aynı fazdaysa yapıcı, π kadar ters fazdaysa yıkıcı girişim oluşur. Kaynaklar bağımsızsa göreli faz zamanla kayar ve uzun zaman ortalamasında sabit girişim saçakları yerine yaklaşık güç toplamı görülür.</div>
   <div class="note"><strong>Güç değişince:</strong> Lineer bir antende besleme gücü değiştiğinde normalize edilmiş 3B lobun <strong>şekli değişmez</strong>. Uzak alandaki elektrik alan genliği yaklaşık <strong>E ∝ √P<sub>TX</sub></strong>, güç yoğunluğu ise <strong>S ∝ P<sub>TX</sub></strong> değişir. Bu nedenle sahnede lob geometrisi sabit kalır; alan göstergesi ve dalga cephelerinin parlaklığı değişir.</div>
   <div class="note"><strong>Frekans değişince:</strong> Bu simülasyon aynı anten tipinin <strong>λ ile ölçeklenmiş ideal ailesini</strong> kullanır. Bu nedenle normalize edilmiş kazanç deseni ve tepe dBi sabit tutulurken fiziksel anten boyutu λ ile, dalga cephesi aralığı doğrudan λ ile değişir. 3B anten sembolünün boyutu tüm frekanslarda görülebilmesi için sıkıştırılmış görsel ölçek kullanır; alttaki fiziksel boyut değeri gerçek λ oranıyla hesaplanır. Sabit fiziksel bir gerçek anteni frekanstan uzaklaştırmak ayrıca empedans, S11, verim ve desen değişimi gerektirir; bu ayrı bir detuning modelidir.</div>
@@ -332,23 +333,36 @@
   }
   function drawWavefront(P,s){
     if(!root.getElementById('showWavefronts').checked)return;
-    const nLambda=Math.max(.001,s.R/s.lam),maxFronts=200,stride=Math.max(1,Math.ceil(nLambda/maxFronts));
-    const visible=Math.max(1,Math.ceil(nLambda/stride)),b=basisFromAxis(s.u),phase=(time*.85)%1,pv=fieldVisualLevel(s.txP);
+    const nLambda=Math.max(.001,s.R/s.lam),maxShells=48,stride=Math.max(1,Math.ceil(nLambda/maxShells));
+    const visible=Math.max(1,Math.ceil(nLambda/stride)),phase=(time*.85)%1,pv=fieldVisualLevel(s.txP),axis=s.axis,type=s.type;
+    const basis=basisFromAxis(axis),circles=3,segs=20,sceneReach=s.sceneReach||3.0;
     for(let i=0;i<visible;i++){
-      const q=((i+phase)*stride)/nLambda;if(q>=1)continue;
-      const center=add(s.tx,mul(s.link,q)),rad=.055+.105*q,pts=32,alpha=(.08+.70*pv.display)*(.95-.55*q),width=.55+1.65*pv.display;
-      let prev=null;
-      for(let j=0;j<=pts;j++){const ph=j*2*Math.PI/pts,p=add(center,add(mul(b.v,rad*Math.cos(ph)),mul(b.w,rad*Math.sin(ph))));if(prev)line3(P,prev,p,s.color||'#f4bf6e',width,alpha);prev=p}
+      const q=((i+phase)*stride)/nLambda;if(q<=0||q>=1)continue;
+      const radius=q*sceneReach,baseAlpha=(.05+.62*pv.display)*(.96-.38*q),width=.45+1.35*pv.display;
+      for(let cidx=0;cidx<circles;cidx++){
+        const planeAngle=cidx*Math.PI/circles;
+        const e1=add(mul(basis.v,Math.cos(planeAngle)),mul(basis.w,Math.sin(planeAngle)));
+        const e2=norm(cross(axis,e1));
+        let prev=null,prevA=0;
+        for(let j=0;j<=segs;j++){
+          const t=j*2*Math.PI/segs,dirn=norm(add(mul(axis,Math.cos(t)),mul(e1,Math.sin(t))));
+          const theta=angle(axis,dirn),pat=antennaPattern(type,theta),amp=Math.sqrt(Math.max(0,pat));
+          const p=add(s.tx,mul(dirn,radius)),a=baseAlpha*(.03+.97*amp);
+          if(prev&&Math.max(prevA,a)>.035)line3(P,prev,p,s.color||'#f4bf6e',width,(prevA+a)*.5);
+          prev=p;prevA=a;
+        }
+      }
     }
   }
   function drawFieldVectors(P,s){
     if(!root.getElementById('showFieldVectors').checked)return;
-    const b=basisFromAxis(s.u),pv=fieldVisualLevel(s.txP),samples=6;
+    const b=basisFromAxis(s.u),pv=fieldVisualLevel(s.txP),samples=6,linkTheta=angle(s.axis,s.u),pat=Math.sqrt(Math.max(0,antennaPattern(s.type,linkTheta)));
     for(let i=1;i<=samples;i++){
-      const q=i/(samples+1),center=add(s.tx,mul(s.link,q)),fall=1/(.55+q*.85),osc=Math.sin(time*5-q*10*Math.PI),len=.22*pv.display*fall*osc;
-      line3(P,add(center,mul(b.w,-len)),add(center,mul(b.w,len)),s.color||'#82d5ff',1.2+1.4*pv.display,.26+.58*pv.display);
+      const q=i/(samples+1),center=add(s.tx,mul(s.link,q)),fall=1/(.55+q*.85),osc=Math.sin(time*5-q*10*Math.PI),len=.22*pv.display*fall*osc*pat;
+      line3(P,add(center,mul(b.w,-len)),add(center,mul(b.w,len)),s.color||'#82d5ff',1.1+1.5*pv.display,.12+.72*pv.display*pat);
     }
   }
+
   function interferenceRatioAt(s,xFrac,yMeters){
     if(!s.dual||!s.coherent)return 1;
     const x=s.tx.x+(s.rx.x-s.tx.x)*xFrac,p=vec(x,yMeters,0);
@@ -388,25 +402,26 @@
     }
     if(root.getElementById('showRxLobe').checked)drawLobe(P,rxp,rxAxis,s.rxType,.55,'#79dfb0',.14);
 
-    line3(P,txp,rxp,'#82d5ff',1+.9*pv.display,.30+.42*pv.display,[5,5]);
-    drawWavefront(P,{tx:txp,rx:rxp,link:sub(rxp,txp),u:link,R:s.R,lam:s.lam,txP:s.txP});
-    drawFieldVectors(P,{tx:txp,rx:rxp,link:sub(rxp,txp),u:link,R:s.R,lam:s.lam,txP:s.txP});
+    line3(P,txp,rxp,'#9fb1c6',1.1,.32,[5,6]);
+    drawWavefront(P,{tx:txp,R:s.R,lam:s.lam,txP:s.txP,axis:txAxis,type:s.txType,color:'#f4bf6e',sceneReach:3.0});
+    drawFieldVectors(P,{tx:txp,link:sub(rxp,txp),u:link,R:s.R,lam:s.lam,txP:s.txP,axis:txAxis,type:s.txType,color:'#82d5ff'});
 
     if(s.dual){
       const pv2=fieldVisualLevel(s.tx2P);
-      line3(P,tx2p,rxp,'#ef9c72',1+.9*pv2.display,.30+.42*pv2.display,[4,5]);
-      drawWavefront(P,{tx:tx2p,rx:rxp,link:sub(rxp,tx2p),u:link2,R:s.R2,lam:s.lam,txP:s.tx2P,color:'#ef9c72'});
-      drawFieldVectors(P,{tx:tx2p,rx:rxp,link:sub(rxp,tx2p),u:link2,R:s.R2,lam:s.lam,txP:s.tx2P,color:'#ef9c72'});
+      line3(P,tx2p,rxp,'#b9a291',1.1,.32,[4,6]);
+      drawWavefront(P,{tx:tx2p,R:s.R2,lam:s.lam,txP:s.tx2P,axis:s.tx2Dir,type:s.tx2Type,color:'#ef9c72',sceneReach:3.0});
+      drawFieldVectors(P,{tx:tx2p,link:sub(rxp,tx2p),u:link2,R:s.R2,lam:s.lam,txP:s.tx2P,axis:s.tx2Dir,type:s.tx2Type,color:'#ef9c72'});
     }
 
     drawAntenna(P,txp,txAxis,s.txType,s.lam,false);
     if(s.dual)drawAntenna(P,tx2p,s.tx2Dir,s.tx2Type,s.lam,false);
     drawAntenna(P,rxp,rxAxis,s.rxType,s.lam,true);
     point3(P,txp,5,'#82d5ff',1);if(s.dual)point3(P,tx2p,5,'#ef9c72',1);point3(P,rxp,5,'#80e3b4',1);
-    line3(P,txp,add(txp,mul(txAxis,.50)),'#82d5ff',2,.9);if(s.dual)line3(P,tx2p,add(tx2p,mul(s.tx2Dir,.50)),'#ef9c72',2,.9);line3(P,rxp,add(rxp,mul(rxAxis,.50)),'#80e3b4',2,.9);
+    line3(P,txp,add(txp,mul(txAxis,.82)),'#82d5ff',2,.9);if(s.dual)line3(P,tx2p,add(tx2p,mul(s.tx2Dir,.82)),'#ef9c72',2,.9);line3(P,rxp,add(rxp,mul(rxAxis,.50)),'#80e3b4',2,.9);
     const tq=P(txp),rq=P(rxp);ctx.fillStyle='#d8e7f7';ctx.font='700 12px system-ui';ctx.fillText('TX1',tq.x+8,tq.y-8);
     if(s.dual){const t2q=P(tx2p);ctx.fillStyle='#efb28f';ctx.fillText('TX2',t2q.x+8,t2q.y-8)}
     ctx.fillStyle='#d8e7f7';ctx.fillText('RX',rq.x+8,rq.y-8);
+    const mid=P(add(txp,mul(sub(rxp,txp),.56)));ctx.fillStyle='rgba(185,200,218,.65)';ctx.font='10px system-ui';ctx.fillText('RX ölçüm doğrultusu',mid.x+7,mid.y-7);
     ctx.fillStyle='rgba(216,231,247,.62)';ctx.font='10px system-ui';ctx.fillText('kamera: sürükle · tekerlek/+− ile yakınlaştır · zoom '+camZoom.toFixed(2)+'×',16,24);
     if(s.dual)ctx.fillText('TX2 yatay ayrımı görselde büyütülmüştür; girişim hesabı gerçek '+s.tx2Sep.toFixed(2)+' m ile yapılır.',16,40);
   }
