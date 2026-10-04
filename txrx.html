@@ -105,6 +105,10 @@
         <div class="metric"><strong id="delayVal">— ns</strong><span>yayılım gecikmesi</span></div>
         <div class="metric"><strong id="aeVal">— cm²</strong><span>RX etkin açıklığı Aₑ</span></div>
         <div class="metric"><strong id="ffVal">— m</strong><span>TX Fraunhofer sınırı 2D²/λ</span></div>
+        <div class="metric"><strong id="txSizeVal">— cm</strong><span>TX karakteristik fiziksel boyutu</span></div>
+        <div class="metric"><strong id="rxSizeVal">— cm</strong><span>RX karakteristik fiziksel boyutu</span></div>
+        <div class="metric"><strong id="wavesVal">— λ</strong><span>TX→RX arası dalga boyu sayısı</span></div>
+        <div class="metric"><strong id="frontStepVal">—</strong><span>3B'de çizilen cephe aralığı</span></div>
       </div>
     </section>
 
@@ -139,7 +143,8 @@
 
       <label class="switch"><input id="showTxLobe" type="checkbox" checked> TX 3B kazanç lobunu göster</label>
       <label class="switch"><input id="showRxLobe" type="checkbox" checked> RX kabul lobunu göster</label>
-      <label class="switch"><input id="showWavefronts" type="checkbox" checked> Temsilî dalga cephelerini göster</label>
+      <label class="switch"><input id="showWavefronts" type="checkbox" checked> λ'ya bağlı dalga cephelerini göster</label>
+      <label class="switch"><input id="showFieldVectors" type="checkbox" checked> Güce bağlı E-alan göstergesini göster</label>
       <label class="switch"><input id="showGrid" type="checkbox" checked> 3B referans düzlemini göster</label>
       <div class="status" id="statusText">Bağlantı far-field bölgesinde. Friis modeli uygundur.</div>
     </aside>
@@ -158,7 +163,9 @@
     <article class="info"><h3>Yönlü anten değişince ne değişiyor?</h3><p>Daha büyük elektriksel açıklık daha dar ana lob ve daha yüksek tepe kazanç üretir.</p><ul><li>Model: 14 dBi tepe kazanç</li><li>HPBW ≈ 32°</li><li>Boyut ölçeği ≈ 2.0λ</li><li>Hizalama hatasına daha hassas</li></ul></article>
   </section>
 
-  <div class="note"><strong>Model sınırı:</strong> Simülasyon serbest uzay, tek-yol ve far-field Friis modelidir. Anten desenleri gerçek bir üretici datasheet’i değil; yarım-dalga dipol/çubuk, patch ve dar-huzmeli yönlü anten fiziğini karşılaştırmak için normalize edilmiş öğretici 3B modellerdir. Dalga cepheleri çok sayıda gerçek dalga boyunu ekranda gösterebilmek için uzaysal olarak sıkıştırılmış temsilî faz yüzeyleridir. Yakın alan, çoklu yol, zemin yansıması, empedans/S11 ve gerçek anten verimi bu sürümde ayrı modellenmez.</div>
+  <div class="note"><strong>Güç değişince:</strong> Lineer bir antende besleme gücü değiştiğinde normalize edilmiş 3B lobun <strong>şekli değişmez</strong>. Uzak alandaki elektrik alan genliği yaklaşık <strong>E ∝ √P<sub>TX</sub></strong>, güç yoğunluğu ise <strong>S ∝ P<sub>TX</sub></strong> değişir. Bu nedenle sahnede lob geometrisi sabit kalır; alan göstergesi ve dalga cephelerinin parlaklığı değişir.</div>
+  <div class="note"><strong>Frekans değişince:</strong> Bu simülasyon aynı anten tipinin <strong>λ ile ölçeklenmiş ideal ailesini</strong> kullanır. Bu nedenle normalize edilmiş kazanç deseni ve tepe dBi sabit tutulurken fiziksel anten boyutu λ ile, dalga cephesi aralığı doğrudan λ ile değişir. 3B anten sembolünün boyutu tüm frekanslarda görülebilmesi için sıkıştırılmış görsel ölçek kullanır; alttaki fiziksel boyut değeri gerçek λ oranıyla hesaplanır. Sabit fiziksel bir gerçek anteni frekanstan uzaklaştırmak ayrıca empedans, S11, verim ve desen değişimi gerektirir; bu ayrı bir detuning modelidir.</div>
+  <div class="note"><strong>Model sınırı:</strong> Simülasyon serbest uzay, tek-yol ve far-field Friis modelidir. Anten desenleri gerçek bir üretici datasheet’i değil; yarım-dalga dipol/çubuk, patch ve dar-huzmeli yönlü anten fiziğini karşılaştırmak için normalize edilmiş öğretici 3B modellerdir. Dalga cepheleri fiziksel λ aralığına göre yerleştirilir; sahne çok fazla dalga boyu içerdiğinde performans için her N'inci λ çizilir ve N ekranda belirtilir. Alan parlaklığı geniş güç aralığını görünür tutmak için log-sıkıştırılmıştır; fiziksel alan hesabı E∝√P olarak yapılır. Yakın alan, çoklu yol, zemin yansıması, empedans/S11 ve gerçek anten verimi bu sürümde ayrı modellenmez.</div>
 </main>
 
 <script>
@@ -184,6 +191,8 @@
   function lambda(){return c0/freq}
   function fmtLen(m){if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=1e-2)return (m*100).toFixed(2)+' cm';if(m>=1e-3)return (m*1e3).toFixed(2)+' mm';return (m*1e6).toFixed(1)+' µm'}
   function fmtPowerDbm(v){return v.toFixed(1)+' dBm'}
+  function antennaVisualScale(lam){const ref=c0/2.45e9;return Math.max(.62,Math.min(1.55,Math.sqrt(lam/ref)))}
+  function fieldVisualLevel(txP){const physical=Math.sqrt(txP/1);return {physical:physical,display:Math.max(.08,Math.min(1,Math.pow(physical,.38)))}}
   function logDistance(){const t=+root.getElementById('distance').value/1000;return .5*Math.pow(200,t)}
   function vec(x,y,z){return {x:x,y:y,z:z}}
   function add(a,b){return vec(a.x+b.x,a.y+b.y,a.z+b.z)}
@@ -258,18 +267,18 @@
     }
   }
   function drawPatch(P,pos,axis,lam,isRx){
-    const b=basisFromAxis(axis),s=.20,hw=s*.55,hh=s*.40,c=isRx?'#80e3b4':'#82d5ff';
+    const b=basisFromAxis(axis),s=.20*antennaVisualScale(lam),hw=s*.55,hh=s*.40,c=isRx?'#80e3b4':'#82d5ff';
     const corners=[add(pos,add(mul(b.v,-hw),mul(b.w,-hh))),add(pos,add(mul(b.v,hw),mul(b.w,-hh))),add(pos,add(mul(b.v,hw),mul(b.w,hh))),add(pos,add(mul(b.v,-hw),mul(b.w,hh)))];
     for(let i=0;i<4;i++)line3(P,corners[i],corners[(i+1)%4],c,3,1);
     line3(P,pos,add(pos,mul(axis,.16)),c,2,1);
   }
   function drawDirectional(P,pos,axis,lam,isRx){
-    const b=basisFromAxis(axis),c=isRx?'#80e3b4':'#82d5ff',boom=.30;
+    const b=basisFromAxis(axis),c=isRx?'#80e3b4':'#82d5ff',vs=antennaVisualScale(lam),boom=.30*vs;
     line3(P,add(pos,mul(axis,-boom*.4)),add(pos,mul(axis,boom)),c,3,1);
-    for(let i=0;i<6;i++){const t=-.25+i*.20,center=add(pos,mul(axis,t)),half=.13*(1-i*.035);line3(P,add(center,mul(b.v,-half)),add(center,mul(b.v,half)),c,2,1)}
+    for(let i=0;i<6;i++){const t=(-.25+i*.20)*vs,center=add(pos,mul(axis,t)),half=.13*vs*(1-i*.035);line3(P,add(center,mul(b.v,-half)),add(center,mul(b.v,half)),c,2,1)}
   }
   function drawRod(P,pos,axis,lam,isRx){
-    const c=isRx?'#80e3b4':'#82d5ff',half=.23;
+    const c=isRx?'#80e3b4':'#82d5ff',half=.23*antennaVisualScale(lam);
     line3(P,add(pos,mul(axis,-half)),add(pos,mul(axis,-.018)),c,4,1);
     line3(P,add(pos,mul(axis,.018)),add(pos,mul(axis,half)),c,4,1);
     point3(P,pos,3,'#f4bf6e',1);
@@ -287,11 +296,21 @@
   }
   function drawWavefront(P,s){
     if(!root.getElementById('showWavefronts').checked)return;
-    const count=7,b=basisFromAxis(s.u),travel=(time*.45)%1;
-    for(let i=0;i<count;i++){
-      const q=(i+travel)/count;if(q>=1)continue;
-      const center=add(s.tx,mul(s.link,q)),rad=.07+.10*q,pts=40;let prev=null;
-      for(let j=0;j<=pts;j++){const ph=j*2*Math.PI/pts,p=add(center,add(mul(b.v,rad*Math.cos(ph)),mul(b.w,rad*Math.sin(ph))));if(prev)line3(P,prev,p,'#f4bf6e',1,.20+.45*(1-q));prev=p}
+    const nLambda=Math.max(.001,s.R/s.lam),maxFronts=200,stride=Math.max(1,Math.ceil(nLambda/maxFronts));
+    const visible=Math.max(1,Math.ceil(nLambda/stride)),b=basisFromAxis(s.u),phase=(time*.85)%1,pv=fieldVisualLevel(s.txP);
+    for(let i=0;i<visible;i++){
+      const q=((i+phase)*stride)/nLambda;if(q>=1)continue;
+      const center=add(s.tx,mul(s.link,q)),rad=.055+.105*q,pts=32,alpha=(.08+.70*pv.display)*(.95-.55*q),width=.55+1.65*pv.display;
+      let prev=null;
+      for(let j=0;j<=pts;j++){const ph=j*2*Math.PI/pts,p=add(center,add(mul(b.v,rad*Math.cos(ph)),mul(b.w,rad*Math.sin(ph))));if(prev)line3(P,prev,p,'#f4bf6e',width,alpha);prev=p}
+    }
+  }
+  function drawFieldVectors(P,s){
+    if(!root.getElementById('showFieldVectors').checked)return;
+    const b=basisFromAxis(s.u),pv=fieldVisualLevel(s.txP),samples=6;
+    for(let i=1;i<=samples;i++){
+      const q=i/(samples+1),center=add(s.tx,mul(s.link,q)),fall=1/(.55+q*.85),osc=Math.sin(time*5-q*10*Math.PI),len=.22*pv.display*fall*osc;
+      line3(P,add(center,mul(b.w,-len)),add(center,mul(b.w,len)),'#82d5ff',1.2+1.4*pv.display,.26+.58*pv.display);
     }
   }
   function drawScene(s){
@@ -299,11 +318,12 @@
     const worldSpan=3.0,scale=Math.min(w,h)/6.2,P=projector(w,h,scale);
     drawGrid(P,worldSpan);
     const txp=vec(-1.55,0,0),rxp=vec(1.55,0,Math.max(-.85,Math.min(.85,+root.getElementById('height').value/10))),link=norm(sub(rxp,txp));
-    const txAxis=s.txDir,rxAxis=s.rxDir;
-    if(root.getElementById('showTxLobe').checked)drawLobe(P,txp,txAxis,s.txType,.72,ANT[s.txType].color,.18);
+    const txAxis=s.txDir,rxAxis=s.rxDir,pv=fieldVisualLevel(s.txP);
+    if(root.getElementById('showTxLobe').checked)drawLobe(P,txp,txAxis,s.txType,.72,ANT[s.txType].color,.07+.22*pv.display);
     if(root.getElementById('showRxLobe').checked)drawLobe(P,rxp,rxAxis,s.rxType,.55,'#79dfb0',.14);
-    line3(P,txp,rxp,'#82d5ff',2,.60,[5,5]);
-    drawWavefront(P,{tx:txp,rx:rxp,link:sub(rxp,txp),u:link});
+    line3(P,txp,rxp,'#82d5ff',1+.9*pv.display,.30+.42*pv.display,[5,5]);
+    drawWavefront(P,{tx:txp,rx:rxp,link:sub(rxp,txp),u:link,R:s.R,lam:s.lam,txP:s.txP});
+    drawFieldVectors(P,{tx:txp,rx:rxp,link:sub(rxp,txp),u:link,R:s.R,lam:s.lam,txP:s.txP});
     drawAntenna(P,txp,txAxis,s.txType,s.lam,false);drawAntenna(P,rxp,rxAxis,s.rxType,s.lam,true);
     point3(P,txp,5,'#82d5ff',1);point3(P,rxp,5,'#80e3b4',1);
     line3(P,txp,add(txp,mul(txAxis,.50)),'#82d5ff',2,.9);line3(P,rxp,add(rxp,mul(rxAxis,.50)),'#80e3b4',2,.9);
@@ -336,13 +356,16 @@
       :rxA.label+' · '+rxA.gain+' dBi tepe · HPBW ≈ '+rxA.hpbw+'° · bu doğrultuda '+s.grDb.toFixed(1)+' dBi';
     root.getElementById('lambdaVal').textContent=fmtLen(s.lam);root.getElementById('fsplVal').textContent=s.fspl.toFixed(1)+' dB';root.getElementById('rxPowerVal').textContent=fmtPowerDbm(s.prxDbm);root.getElementById('snrVal').textContent=s.snr.toFixed(1)+' dB';
     root.getElementById('eFieldVal').textContent=s.Erms>=1?s.Erms.toFixed(2)+' V/m':(s.Erms*1000).toFixed(2)+' mV/m';root.getElementById('delayVal').textContent=(s.R/c0*1e9).toFixed(1)+' ns';root.getElementById('aeVal').textContent=(s.Ae*1e4).toFixed(1)+' cm²';root.getElementById('ffVal').textContent=s.Rff.toFixed(2)+' m';
+    const txSize=ANT[s.txType].sizeLambda*s.lam,rxSize=ANT[s.rxType].sizeLambda*s.lam,nWaves=s.R/s.lam,frontStride=Math.max(1,Math.ceil(nWaves/200));
+    root.getElementById('txSizeVal').textContent=fmtLen(txSize);root.getElementById('rxSizeVal').textContent=fmtLen(rxSize);root.getElementById('wavesVal').textContent=nWaves.toFixed(nWaves<100?1:0)+' λ';root.getElementById('frontStepVal').textContent=frontStride===1?'her λ':'her '+frontStride+'λ';
     root.getElementById('sceneTitle').textContent=(freq/1e9>=1?(freq/1e9).toFixed(2)+' GHz':(freq/1e6).toFixed(0)+' MHz')+' · '+txA.label+' TX → '+rxA.label+' RX';
     const far=s.R>=s.Rff,polLoss=s.polFactor>0?lin2db(s.polFactor):-99,txOff=s.txTheta*180/Math.PI,rxOff=s.rxTheta*180/Math.PI;
     let msg=(txA.omni?'TX link–çubuk açısı ':'TX boresight sapma ')+txOff.toFixed(1)+'°, '+(rxA.omni?'RX link–çubuk açısı ':'RX boresight sapma ')+rxOff.toFixed(1)+'°. ';
     msg+=far?'Bağlantı far-field bölgesinde; Friis yaklaşımı uygun. ':'Mesafe TX Fraunhofer sınırından küçük; Friis sonucu yalnız yaklaşık referanstır. ';
     if(+root.getElementById('polMismatch').value>0)msg+='Polarizasyon kaybı '+(-polLoss).toFixed(1)+' dB. ';
     if(s.snr<0)msg+='Sinyal gürültü tabanının altında.'; else if(s.snr<10)msg+='SNR düşük.'; else msg+='RX analizi için kullanılabilir SNR.';
-    root.getElementById('statusText').textContent=msg;root.getElementById('overlayText').innerHTML='<strong>Bağlantı:</strong> '+s.R.toFixed(1)+' m · G_TX='+s.gtDb.toFixed(1)+' dBi · G_RX='+s.grDb.toFixed(1)+' dBi · P_RX='+s.prxDbm.toFixed(1)+' dBm · SNR='+s.snr.toFixed(1)+' dB. <strong>Lob doluluğu:</strong> TX '+(100*txM).toFixed(0)+'%, RX '+(100*rxM).toFixed(0)+'%.';
+    msg+=' Anten geometrisi ideal λ-ölçekli modeldir; güç lob şeklini değiştirmez.';
+    root.getElementById('statusText').textContent=msg;root.getElementById('overlayText').innerHTML='<strong>Bağlantı:</strong> '+s.R.toFixed(1)+' m · λ='+fmtLen(s.lam)+' · '+(s.R/s.lam).toFixed(0)+' dalga boyu · G_TX='+s.gtDb.toFixed(1)+' dBi · P_TX='+s.txPdbm.toFixed(0)+' dBm · P_RX='+s.prxDbm.toFixed(1)+' dBm · E_RX='+(s.Erms>=1?s.Erms.toFixed(2)+' V/m':(s.Erms*1000).toFixed(2)+' mV/m')+'. <strong>3B:</strong> frekans cephe aralığını/anten boyutunu, güç ise alan parlaklığını değiştirir.';
     drawScene(s);drawAnalyzer(s);
   }
   function frame(ts){if(!last)last=ts;time+=Math.min(.05,(ts-last)/1000);last=ts;update();requestAnimationFrame(frame)}
