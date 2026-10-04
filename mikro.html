@@ -36,7 +36,7 @@
     .visual-head p{margin:3px 0 0;color:var(--muted);font-size:.8rem}
     .scale-tabs{display:flex;gap:7px;flex-wrap:wrap}.scale-btn{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-weight:800;color:#4e6179}.scale-btn.active{background:#553b93;color:#fff;border-color:#553b93}
     .canvas-wrap{position:relative;background:#071427}.canvas-wrap canvas{display:block;width:100%;height:590px;touch-action:none}
-    .overlay{position:absolute;left:14px;bottom:14px;max-width:min(520px,calc(100% - 28px));padding:8px 10px;border-radius:10px;background:rgba(7,20,39,.82);color:#e5edf8;font-size:.75rem;backdrop-filter:blur(5px)}
+    .overlay{position:absolute;left:14px;bottom:14px;max-width:min(560px,calc(100% - 28px));padding:8px 10px;border-radius:10px;background:rgba(7,20,39,.82);color:#e5edf8;font-size:.75rem;backdrop-filter:blur(5px)}.secondary-legend{position:absolute;right:14px;top:14px;display:flex;gap:8px;flex-wrap:wrap;max-width:390px;padding:7px 9px;border-radius:10px;background:rgba(7,20,39,.8);color:#e5edf8;font-size:.7rem;backdrop-filter:blur(5px)}.secondary-legend span{display:flex;align-items:center;gap:5px}.sec-dot{width:8px;height:8px;border-radius:50%;display:inline-block}.sec-fwd{background:#8fe3b9}.sec-back{background:#b99cff}.sec-net{background:#f4c46c}
     .depth-card{border-top:1px solid var(--line);background:#fbfcfe;padding:13px 16px}.depth-card canvas{display:block;width:100%;height:120px}
     .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line);background:#fff}.metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:1rem}.metric span{font-size:.69rem;color:var(--muted)}
     .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
@@ -96,6 +96,7 @@
         </div>
         <div class="canvas-wrap">
           <canvas id="microCanvas" aria-label="Mikro nano elektromanyetik malzeme etkileşimi simülasyonu"></canvas>
+          <div class="secondary-legend" id="secondaryLegend"><span><i class="sec-dot sec-fwd"></i>ileri ikincil alan → birleşir</span><span><i class="sec-dot sec-back"></i>geri ikincil alan → hacimde iptal</span><span><i class="sec-dot sec-net"></i>yüzeyde kalan net geri alan</span></div>
           <div class="overlay" id="overlayText">Mikro görünüm: atomlar tek tek çizilmez; çok sayıda atomun kolektif elektron cevabı hücreler halinde temsil edilir.</div>
         </div>
         <div class="depth-card">
@@ -131,6 +132,7 @@
 
         <label class="switch"><input id="showField" type="checkbox" checked> Gelen / yansıyan / içeride ilerleyen / çıkan alanı göster</label>
         <label class="switch"><input id="showElectrons" type="checkbox" checked> Elektron / dipol cevabını göster</label>
+        <label class="switch"><input id="showSecondary" type="checkbox" checked> İkincil alanları ve hacim içi iptali göster</label>
         <label class="switch"><input id="showPlanes" type="checkbox" checked> Kristal düzlemlerini göster</label>
         <label class="switch"><input id="showAbsorption" type="checkbox" checked> Soğurma olaylarını göster</label>
         <div class="actions"><button class="btn" id="pauseBtn" type="button">Duraklat</button><button class="btn alt" id="resetBtn" type="button">Sıfırla</button></div>
@@ -144,6 +146,8 @@
             <div class="mini"><strong id="braggVal">—</strong><span>Bragg durumu</span></div>
             <div class="mini"><strong id="crystalVal">Kristal</strong><span>uzun menzilli düzen</span></div>
             <div class="mini"><strong id="mechanismVal">Drude</strong><span>öğretici model</span></div>
+            <div class="mini"><strong id="bulkBackVal">≈ 0</strong><span>homojen hacimde net geri alan</span></div>
+            <div class="mini"><strong id="bulkForwardVal">koherent</strong><span>ileri ikincil alanların toplamı</span></div>
           </div>
           <div class="formula" id="formulaBox">J(ω) ≈ σ(ω)E(ω)<br>E(z) ∝ e<sup>−z/δ</sup></div>
         </div>
@@ -157,6 +161,7 @@
       <article class="ex-card"><h3>X-ışını · atom düzlemleri</h3><p>λ atomik aralıklarla karşılaştırılabilir. Kristalde farklı düzlemlerden saçılan alanlar uygun açıda yapıcı girişim yaparak Bragg tepeleri oluşturabilir.</p></article>
     </section>
 
+    <div class="note"><strong>Hacim içi yeniden yayım:</strong> Homojen bir dielektrik/yarıiletkende her indüklenmiş dipol hem ileri hem geri yönlere ikincil alan üretir. Hacmin içindeki geri yönlü katkılar faz ilişkileri nedeniyle büyük ölçüde birbirini söndürür; ileri katkılar ise koherent birleşerek malzeme içindeki dalgayı oluşturur. Sınırda bu simetri bozulduğu için net geri alan kalır ve makroskopik yansıma oluşur. Kusur, katman veya indis değişimi varsa hacim içi geri saçılma artık tam iptal olmayabilir.</div>
     <div class="note"><strong>Ölçek uyarısı:</strong> Nano görünümde atomlar ve elektron sapmaları görünür olması için büyütülür; gerçek elektron yer değiştirmeleri atom boyutundan çok daha küçüktür. Mikro görünüm ise milyonlarca atomu tek tek çizmek yerine kolektif hücrelerle temsil eder. X-ışını soğurma olayları olasılıksal süreçlerin şematik gösterimidir. “Su” modeli düşük iletkenlikli suyu temsil eder; tuzlu/iyonik su RF’de çok daha kuvvetli sönüm gösterebilir.</div>
   </main>
 
@@ -285,21 +290,56 @@
         root.getElementById('braggVal').textContent=r.bragg;
         root.getElementById('crystalVal').textContent=r.m.crystal?'Kristal':'Amorf / sıvı';
         root.getElementById('mechanismVal').textContent=r.mechanism;
+        const bulkDielectric=(r.m.type==='dielectric'||r.m.type==='semiconductor'||r.m.type==='ionic'||r.m.type==='polar')&&band!=='xray';
+        root.getElementById('bulkBackVal').textContent=band==='xray'?(r.m.crystal?'Bragg’a bağlı':'dağınık'):bulkDielectric?'≈ 0':'yüzeye yakın';
+        root.getElementById('bulkForwardVal').textContent=band==='xray'?'saçılma toplamı':bulkDielectric?'koherent':'sönümlü';
+        root.getElementById('secondaryLegend').style.display=(root.getElementById('showSecondary').checked&&band!=='xray'&&r.m.type!=='metal')?'flex':'none';
         root.getElementById('formulaBox').textContent=r.formula;
         root.getElementById('sceneTitle').textContent=r.b.label+' · '+r.m.label+' · '+(scale==='micro'?'mikro':'nano')+' görünüm';
         let sub='Kolektif alan cevabı ve nüfuz derinliği.';
         if(scale==='nano')sub='Atom/molekül ölçeğinde yük dağılımının anlık şematik cevabı.';
         root.getElementById('sceneSubtitle').textContent=sub;
         const transportText=' İlk yüzeyden '+(100*r.transport.entry).toFixed(0)+'% güç numuneye giriyor; bu kalınlıkta yaklaşık '+(100*r.transport.T).toFixed(0)+'% arka taraftan çıkıyor.';
+        const secondaryText=root.getElementById('showSecondary').checked&&band!=='xray'
+          ?' Mor geri ikincil katkılar hacim içinde fazca iptal olur; yeşil ileri katkılar birleşir. Sarı, sınırda iptal edilemeyen net geri alanı gösterir.'
+          :'';
         root.getElementById('overlayText').textContent=scale==='micro'
-          ?'Mikro görünüm: sol ve sağ bölgeler hava/vakum, orta bölge sonlu kalınlıktaki numunedir.'+transportText
-          :'Nano görünüm: atom/moleküller büyütülmüştür; içte ilerleyen alanın malzemeyi nasıl polarize ettiği gösterilir.'+transportText;
+          ?'Mikro görünüm: sol ve sağ bölgeler hava/vakum, orta bölge sonlu kalınlıktaki numunedir.'+transportText+secondaryText
+          :'Nano görünüm: her temsilî dipol iki yöne ikincil alan üretir; atom/molekül ölçeği görünürlük için büyütülmüştür.'+transportText+secondaryText;
       }
       function drawWave(x0,y0,x1,y1,amp,period,color,alpha,phaseOffset){
         const dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
         ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=2;ctx.beginPath();
         for(let s=0;s<=L;s+=3){const off=Math.sin(s/period*Math.PI*2-time*3+phaseOffset)*amp;const x=x0+ux*s+nx*off,y=y0+uy*s+ny*off;if(s===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}
         ctx.stroke();ctx.globalAlpha=1;
+      }
+
+      function drawArrow(x1,y1,x2,y2,color,alpha,width){
+        const a=Math.atan2(y2-y1,x2-x1),head=4.5;
+        ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=width||1.2;
+        ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-Math.cos(a-.55)*head,y2-Math.sin(a-.55)*head);ctx.lineTo(x2-Math.cos(a+.55)*head,y2-Math.sin(a+.55)*head);ctx.closePath();ctx.fill();
+        ctx.globalAlpha=1;
+      }
+      function secondaryDirections(theta2){
+        return {fx:Math.cos(theta2),fy:-Math.sin(theta2),bx:-Math.cos(theta2),by:Math.sin(theta2)};
+      }
+      function drawSecondaryPair(x,y,theta2,env,phaseVal,isSurface){
+        if(!root.getElementById('showSecondary').checked||band==='xray')return;
+        const d=secondaryDirections(theta2),pulse=.55+.45*Math.abs(Math.sin(phaseVal)),len=(isSurface?17:11)*pulse;
+        drawArrow(x,y,x+d.fx*len,y+d.fy*len,'#8fe3b9',(.16+.42*env)*pulse,isSurface?1.6:1.05);
+        drawArrow(x,y,x+d.bx*len,y+d.by*len,isSurface?'#f4c46c':'#b99cff',(isSurface?.62:.13+.24*env)*pulse,isSurface?1.8:1);
+      }
+      function drawCancellationSummary(front,back,h,theta2){
+        if(!root.getElementById('showSecondary').checked||band==='xray'||mat().type==='metal')return;
+        const y=h-55,d=secondaryDirections(theta2),mid=(front+back)/2;
+        ctx.font='11px system-ui';
+        ctx.fillStyle='rgba(143,227,185,.92)';ctx.fillText('Σ ileri ikincil alan → içerideki dalga',front+16,y-16);
+        drawArrow(mid-45,y,mid+42,y,'#8fe3b9',.9,2.2);
+        ctx.fillStyle='rgba(185,156,255,.88)';ctx.fillText('Σ geri hacim alanı ≈ 0',Math.max(front+12,back-150),y+25);
+        drawArrow(back-85,y+8,back-118,y+8,'#b99cff',.6,1.4);
+        drawArrow(back-124,y+8,back-91,y+8,'#b99cff',.6,1.4);
+        ctx.strokeStyle='rgba(235,235,255,.72)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(back-110,y);ctx.lineTo(back-98,y+16);ctx.moveTo(back-98,y);ctx.lineTo(back-110,y+16);ctx.stroke();
       }
       function drawMicro(r,w,h){
         const front=w*.28,back=w*.78,materialW=back-front,top=45,bottom=h-38;
@@ -317,6 +357,14 @@
           drawWave(front,hitY,front-Math.cos(theta)*Math.min(170,front-20),hitY-Math.sin(theta)*Math.min(170,front-20),5*r.field*Math.sqrt(r.transport.Rtot),30,'#f5c16a',.92,Math.PI*.25);
           drawWaveAttenuated(front,hitY,back,exitY,6*r.field*Math.sqrt(r.transport.entry),24,'#9be7c0',.95,r.depthMul);
           drawWave(back,exitY,outX,outY,6*r.field*Math.sqrt(r.transport.T),30,'#75dca8',Math.max(.08,Math.sqrt(r.transport.T)),0);
+        }
+        if(root.getElementById('showSecondary').checked&&band!=='xray'&&(r.m.type==='dielectric'||r.m.type==='semiconductor'||r.m.type==='ionic'||r.m.type==='polar')){
+          const sd=secondaryDirections(theta2);
+          for(let j=-2;j<=2;j++){
+            const sy=hitY+j*34,ph=time*3+j*.65,pulse=.65+.35*Math.abs(Math.sin(ph));
+            drawArrow(front+5,sy,front+5+sd.bx*28*pulse,sy+sd.by*28*pulse,'#f4c46c',.72,1.8);
+          }
+          ctx.fillStyle='rgba(244,196,108,.92)';ctx.font='11px system-ui';ctx.fillText('sınırda iptal eksik → net geri alan',Math.max(12,front-205),hitY+100);
         }
 
         const cols=9,rows=7,cellW=materialW/cols,cellH=(bottom-top)/rows;
@@ -337,7 +385,11 @@
               ctx.fillStyle='rgba(108,184,255,'+(.25+.65*env)+')';ctx.beginPath();ctx.arc(x+dip,y,3,0,Math.PI*2);ctx.fill();
             }
           }
+          if((r.m.type==='dielectric'||r.m.type==='semiconductor'||r.m.type==='ionic'||r.m.type==='polar') && iy%2===0){
+            drawSecondaryPair(x,y,theta2,env,time*3-ix*.48-iy*.11,ix===0);
+          }
         }
+        drawCancellationSummary(front,back,h,theta2);
         if(root.getElementById('showAbsorption').checked){
           const absorptionStrength=Math.max(.03,r.transport.A);
           for(let i=0;i<12;i++){
@@ -388,6 +440,14 @@
           drawWaveAttenuated(front,hitY,back,exitY,5.2*r.field*Math.sqrt(r.transport.entry),22,'#9be7c0',.95,r.depthMul);
           drawWave(back,exitY,outX,outY,5*r.field*Math.sqrt(r.transport.T),28,'#75dca8',Math.max(.08,Math.sqrt(r.transport.T)),0);
         }
+        if(root.getElementById('showSecondary').checked&&band!=='xray'&&r.m.type!=='metal'){
+          const sd=secondaryDirections(theta2);
+          for(let j=-2;j<=2;j++){
+            const sy=hitY+j*38,pulse=.65+.35*Math.abs(Math.sin(time*3+j*.7));
+            drawArrow(front+5,sy,front+5+sd.bx*30*pulse,sy+sd.by*30*pulse,'#f4c46c',.76,1.9);
+          }
+          ctx.fillStyle='rgba(244,196,108,.92)';ctx.font='11px system-ui';ctx.fillText('yüzey: geri katkı tam iptal olmaz',Math.max(12,front-190),hitY+110);
+        }
 
         if(band==='xray'&&r.m.crystal&&root.getElementById('showPlanes').checked){
           ctx.strokeStyle='rgba(196,174,255,.18)';ctx.lineWidth=1;
@@ -398,6 +458,7 @@
           const physical=(p.x-front)/materialW*r.thickness,env=Math.exp(-physical/Math.max(r.depth,1e-18));
           if(r.m.type==='polar'){
             drawWaterMolecule(p,env,r);
+            drawSecondaryPair(p.x,p.y,theta2,env,time*3-p.ix*.52-p.iy*.09,p.ix<1.2);
             return;
           }
           ctx.fillStyle='rgba(218,225,237,'+(.22+.62*env)+')';ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();
@@ -414,7 +475,11 @@
             ctx.fillStyle='rgba(102,190,255,'+(.26+.64*env)+')';ctx.beginPath();ctx.arc(p.x+d,p.y,3,0,Math.PI*2);ctx.fill();
             ctx.strokeStyle='rgba(102,190,255,'+(.12+.36*env)+')';ctx.beginPath();ctx.arc(p.x,p.y,10+Math.abs(d),0,Math.PI*2);ctx.stroke();
           }
+          if(r.m.type!=='metal'){
+            drawSecondaryPair(p.x,p.y,theta2,env,time*3-p.ix*.52-p.iy*.09,p.ix<1.2);
+          }
         });
+        if(r.m.type!=='metal')drawCancellationSummary(front,back,h,theta2);
 
         if(band==='xray'&&r.m.crystal&&r.m.d111&&r.braggAngle!==null&&root.getElementById('showPlanes').checked){
           const incoming=r.braggAngle*Math.PI/180,y0=h*.58,x0=front+110,len=Math.min(160,materialW*.42);
@@ -477,7 +542,7 @@
       root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
       root.getElementById('resetBtn').addEventListener('click',function(){
         root.getElementById('material').value='copper';root.getElementById('angle').value=350;root.getElementById('field').value=100;root.getElementById('thickness').value=-1;root.getElementById('speed').value=10;
-        root.getElementById('showField').checked=true;root.getElementById('showElectrons').checked=true;root.getElementById('showPlanes').checked=true;root.getElementById('showAbsorption').checked=true;setBand('rf',true);setScale('micro');time=0;
+        root.getElementById('showField').checked=true;root.getElementById('showElectrons').checked=true;root.getElementById('showSecondary').checked=true;root.getElementById('showPlanes').checked=true;root.getElementById('showAbsorption').checked=true;setBand('rf',true);setScale('micro');time=0;
       });
       window.addEventListener('resize',resize);
       resize();requestAnimationFrame(frame);
