@@ -39,7 +39,7 @@
     .metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:1rem}.metric span{font-size:.69rem;color:var(--muted)}
     .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
     .control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.82rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}
-    .control input[type=range]{width:100%;accent-color:var(--accent)}.control-hint{margin:-7px 0 13px;color:var(--muted);font-size:.71rem}.physics-note{padding:10px 11px;border-radius:11px;background:#f8fafc;border:1px solid var(--line);font-size:.75rem;color:#566980;margin:8px 0 14px}
+    .control input[type=range]{width:100%;accent-color:var(--accent)}.seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.seg3 button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 6px;font-size:.75rem;font-weight:800;color:#4d6078}.seg3 button.active{background:#17365f;color:#fff;border-color:#17365f}.angle-presets{display:flex;gap:6px;flex-wrap:wrap;margin:-5px 0 12px}.angle-presets button{border:1px solid var(--line);background:#f8fafc;border-radius:9px;padding:6px 8px;font-size:.7rem;font-weight:750;color:#52667f}.control-hint{margin:-7px 0 13px;color:var(--muted);font-size:.71rem}.physics-note{padding:10px 11px;border-radius:11px;background:#f8fafc;border:1px solid var(--line);font-size:.75rem;color:#566980;margin:8px 0 14px}
     select{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:#fff;color:#263a55}
     .switch{display:flex;align-items:center;gap:9px;font-size:.8rem;font-weight:750;margin:9px 0}.switch input{width:18px;height:18px;accent-color:var(--accent)}
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0 17px}.btn{border:0;border-radius:11px;padding:9px 12px;background:#553b93;color:#fff;font-weight:800}.btn.alt{background:#eef2f7;color:#39516e;border:1px solid var(--line)}
@@ -83,7 +83,7 @@
       <div class="visual-head"><div><strong id="sceneTitle">RF · Silisyum · atomik taşıyıcı görünümü</strong><p id="sceneSubtitle">İç elektromanyetik alan, bağlı elektron polarizasyonu ve mevcut taşıyıcıların hareketi.</p></div><a href="mikro.html" class="btn alt" style="text-decoration:none">← Mikro görünüme dön</a></div>
       <div class="canvas-wrap">
         <canvas id="nanoCanvas" aria-label="Nano elektromanyetik malzeme etkileşim simülasyonu"></canvas>
-        <div class="legend"><span><i class="dot field"></i>iç E alanı</span><span><i class="dot bound"></i>bağlı elektron polarizasyonu</span><span><i class="dot e"></i>serbest elektron</span><span><i class="dot h"></i>hol</span><span><i class="dot event"></i>soğurma / e–h üretimi</span></div>
+        <div class="legend"><span><i class="dot field"></i>iç E alanı</span><span><i class="dot" style="background:#f4c46c"></i>yansıyan alan / foton</span><span><i class="dot bound"></i>bağlı elektron polarizasyonu</span><span><i class="dot e"></i>serbest elektron</span><span><i class="dot h"></i>hol</span><span><i class="dot event"></i>soğurma / e–h üretimi</span></div>
         <div class="overlay" id="overlayText">RF: hν ≪ E<sub>g</sub>. Yeni e–h çifti oluşmaz; mevcut taşıyıcılar ve bağlı elektronlar alan tarafından sürülür/polarize edilir.</div>
       </div>
       <div class="band-card"><canvas id="bandCanvas" aria-label="Silisyum enerji bant diyagramı"></canvas></div>
@@ -97,6 +97,9 @@
         <div class="metric"><strong id="attenuationVal">—</strong><span>1/e güç zayıflama uzunluğu Lₚ</span></div>
         <div class="metric"><strong id="viewDepthVal">—</strong><span>gösterilen fiziksel derinlik</span></div>
         <div class="metric"><strong id="edgePowerVal">—</strong><span>sağ kenarda kalan güç / içeri giren</span></div>
+        <div class="metric"><strong id="surfaceReflectVal">—</strong><span>yüzeyde yansıyan güç</span></div>
+        <div class="metric"><strong id="surfaceEnterVal">—</strong><span>malzemeye giren güç</span></div>
+        <div class="metric"><strong id="criticalVal">—</strong><span>X-ışını kritik grazing açı</span></div>
       </div>
     </section>
 
@@ -113,6 +116,11 @@
         <option value="n">n-tipi · elektron çoğunluk</option>
         <option value="p">p-tipi · hol çoğunluk</option>
       </select></div>
+      <div class="control"><label>Geliş açısı · yüzey normaline göre <output id="angleOut">0.00°</output></label><input id="angle" type="range" min="0" max="8995" step="5" value="0"></div>
+      <div class="control-hint">Yüzeye göre grazing açı: <strong id="grazingOut">90.00°</strong>. X-ışınında güçlü yansıma özellikle grazing açı çok küçükken görülür.</div>
+      <div class="angle-presets"><button id="normalBtn" type="button">Dik · 0°</button><button id="obliqueBtn" type="button">45°</button><button id="xrayGrazingBtn" type="button">X-grazing · 0.10°</button></div>
+      <div class="control" id="xrayFineWrap" style="display:none"><label>X-ışını grazing ince ayar <output id="xrayFineOut">0.10°</output></label><input id="xrayFine" type="range" min="5" max="500" step="5" value="10"></div>
+      <div class="control"><label>Polarizasyon</label><div class="seg3"><button id="polAvg" class="active" type="button">Ortalama</button><button id="polS" type="button">s / TE</button><button id="polP" type="button">p / TM</button></div></div>
       <div class="control"><label>Görsel alan ölçeği <output id="fieldOut">1.00×</output></label><input id="fieldAmp" type="range" min="20" max="180" value="100"></div>
       <div class="control-hint">Lineer modelde bu kontrol yalnız çizim genliğini değiştirir; malzemenin zayıflama uzunluğunu değiştirmez.</div>
       <div class="control"><label>Görsel taşıyıcı sayısı <output id="densityOut">1.0×</output></label><input id="density" type="range" min="4" max="20" value="10"></div>
@@ -147,7 +155,7 @@
   </section>
 
   <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
-  <div class="note"><strong>Yüzey normalizasyonu:</strong> Nano sayfa yüzeyde ne kadar gücün yansıdığını tekrar hesaplamaz. Malzeme içine geçmiş alan/güç <strong>z=0⁺ noktasında 1'e normalize edilir</strong> ve bundan sonraki iç zayıflama gösterilir. Fresnel/yüzey yansıması Mikro ve Yüzey & Frekans sayfalarının konusudur.</div>
+  <div class="note"><strong>Yüzey + iç ortam birlikte:</strong> Nano sayfa artık hava/vakum → malzeme sınırındaki Fresnel yansımasını da gösterir. Yüzeyde yansıyan güç kompleks kırılma indisi ve polarizasyondan hesaplanır; içeri giren kısım daha sonra malzemeye özgü zayıflama uzunluğuyla ilerler. X-ışınında normal gelişte yansıma genellikle çok küçüktür, fakat yüzeye çok küçük grazing açıda kırılma indisi 1'in biraz altında olduğu için total external reflection oluşabilir.</div>
   <div class="note"><strong>Zayıflama modeli:</strong> Nano sahnedeki yatay eksen artık fiziksel derinliğe bağlıdır. <strong>Lₚ</strong>, güç/şiddetin 1/e'ye düştüğü karakteristik uzunluktur: I(z)=I₀e<sup>−z/Lₚ</sup>. Klasik alan çizildiğinde genlik bunun karekökü gibi, E(z)=E₀e<sup>−z/(2Lₚ)</sup>, azalır. X-ışını modunda sinüzoidal alan yerine azalan foton akısı ve etkileşim olayları gösterilir.</div>
   <div class="note"><strong>Uzaysal ölçek:</strong> Yatay eksen zayıflama hesabı için fiziksel derinliği temsil eder; atom/molekül sembolleri bu eksende gerçek atom aralıklarıyla çizilmez, yalnız etkileşen maddeyi örnekleyen şematik işaretlerdir. Bu nedenle metre ölçeğindeki düşük-kayıplı bir ortamda bile atom simgeleri görünür kalabilir.</div>
   <div class="note"><strong>Silisyum görünür ışık:</strong> hν &gt; E<sub>g</sub> enerji bakımından e–h üretimine izin verir; ancak kristal silisyum dolaylı bant aralıklı olduğundan gerçek optik geçiş olasılıkları bant yapısı ve fonon momentumuyla belirlenir. 550 nm’de soğurma yine güçlüdür ve burada ölçülmüş soğurma katsayısı ölçeği kullanılır.</div>
