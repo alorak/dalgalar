@@ -56,8 +56,8 @@
 </div></header>
 <main>
   <section class="intro">
-    <div><span class="badge">Kanal ölçümü</span><h1>RSSI · tek sayı ile alınan güç</h1><p>RSSI'nin mesafe, yol kaybı, gölgelenme ve çoklu yol girişimi nedeniyle neden değiştiğini zaman alanında inceleyin.</p></div>
-    <div class="intro-note"><strong>Önemli:</strong> RSSI çoğu cihazda bir paket/ölçüm penceresi için alınan toplam gücü özetleyen tek skaler değerdir. Fazı, alt taşıyıcıları ve tek tek çoklu yol bileşenlerini göstermez.</div>
+    <div><span class="badge">Kanal ölçümü</span><h1>RSSI · tek sayı ile sinyal seviyesi</h1><p>RSSI'nin mesafe, yol kaybı, gölgelenme ve çoklu yol girişimi nedeniyle neden değiştiğini zaman alanında inceleyin.</p></div>
+    <div class="intro-note"><strong>Önemli:</strong> RSSI tek skaler bir sinyal-seviyesi göstergesidir; ancak 802.11 cihazlarında bunun mutlak dBm’e eşlenmesi ve hangi filtre/ölçüm penceresinden üretildiği donanım ve sürücüye göre değişebilir. Fazı, alt taşıyıcıları ve tek tek çoklu yol bileşenlerini göstermez.</div>
   </section>
 
   <div class="freqs">
@@ -77,7 +77,7 @@
       </div>
       <div class="chart"><canvas id="chart" aria-label="RSSI zaman serisi"></canvas></div>
       <div class="metrics">
-        <div class="metric"><strong id="rssiVal">— dBm</strong><span>anlık RSSI</span></div>
+        <div class="metric"><strong id="rssiVal">— dBm</strong><span>model alınan sinyal seviyesi / RSSI-benzeri</span></div>
         <div class="metric"><strong id="directVal">— dBm</strong><span>yalnız doğrudan yol</span></div>
         <div class="metric"><strong id="fadeVal">— dB</strong><span>çoklu yol kazanç / fade</span></div>
         <div class="metric"><strong id="lambdaVal">—</strong><span>dalga boyu λ</span></div>
@@ -91,9 +91,9 @@
     <aside class="panel">
       <h2>RSSI koşulları</h2>
       <div class="control"><label>TX güç <output id="txPowerOut">10 dBm</output></label><input id="txPower" type="range" min="-10" max="30" step="1" value="10"></div>
-      <div class="control"><label>TX–RX mesafesi <output id="distanceOut">8.0 m</output></label><input id="distance" type="range" min="10" max="500" step="1" value="151"></div>
+      <div class="control"><label>TX–RX mesafesi <output id="distanceOut">8.0 m</output></label><input id="distance" type="range" min="1" max="30" step=".1" value="8"></div>
       <div class="control"><label>Yol kaybı üssü n <output id="nOut">2.20</output></label><input id="pathN" type="range" min="16" max="45" step="1" value="22"></div>
-      <div class="control"><label>Ek gölgelenme / engel kaybı <output id="shadowOut">3.0 dB</output></label><input id="shadow" type="range" min="0" max="200" step="5" value="30"></div>
+      <div class="control"><label>Ek büyük-ölçek kaybı <output id="shadowOut">3.0 dB</output></label><input id="shadow" type="range" min="0" max="200" step="5" value="30"></div>
       <div class="control"><label>Yansıtıcı yan konumu <output id="reflectorOut">1.20 m</output></label><input id="reflector" type="range" min="5" max="400" step="1" value="120"></div>
       <div class="control"><label>Yansıma alan katsayısı |Γ| <output id="gammaOut">0.55</output></label><input id="gamma" type="range" min="0" max="90" step="1" value="55"></div>
       <div class="control"><label>Yansıma fazı ∠Γ <output id="reflPhaseOut">180°</output></label><input id="reflPhase" type="range" min="-180" max="180" step="1" value="180"></div>
@@ -112,12 +112,12 @@
   </section>
 
   <section class="infos">
-    <article class="info"><h3>RSSI ne için iyidir?</h3><p>Bağlantı seviyesi, kapsama, yakınlık eğilimi ve kaba hareket/gölgeleme değişimini izlemek için basittir.</p><ul><li>tek değer → düşük veri hacmi</li><li>çoğu RF/Wi-Fi cihazında erişilebilir</li><li>zaman serisi olarak değişim takibi kolay</li></ul></article>
-    <article class="info"><h3>RSSI neyi söylemez?</h3><p>Aynı toplam güç çok farklı çoklu yol geometrilerinden oluşabilir. Faz ve frekans-seçici kanal bilgisi kaybolmuştur.</p><ul><li>tek tek yansıma yolları ayrılmaz</li><li>alt taşıyıcı genlik/fazı yoktur</li><li>cihazlar arası kalibrasyon farklı olabilir</li><li>dBm benzeri raporlama her chipset'te aynı doğrulukta değildir</li></ul></article>
+    <article class="info"><h3>RSSI ne için iyidir?</h3><p>Bağlantı seviyesi, kapsama, yakınlık eğilimi ve kaba hareket/gölgeleme değişimini izlemek için basittir. Aynı cihaz/aynı kalibrasyon koşulunda göreli değişimler genellikle mutlak mesafe tahmininden daha güvenilirdir.</p><ul><li>tek değer → düşük veri hacmi</li><li>çoğu RF/Wi-Fi cihazında erişilebilir</li><li>zaman serisi olarak değişim takibi kolay</li></ul></article>
+    <article class="info"><h3>RSSI neyi söylemez?</h3><p>Aynı toplam güç çok farklı çoklu yol geometrilerinden oluşabilir. Faz ve frekans-seçici kanal bilgisi kaybolmuştur.</p><ul><li>tek tek yansıma yolları ayrılmaz</li><li>alt taşıyıcı genlik/fazı yoktur</li><li>cihazlar arası kalibrasyon farklı olabilir</li><li>RSSI→dBm eşlemesi ve filtreleme chipset/driver’a göre değişebilir</li></ul></article>
   </section>
 
   <div class="note"><strong>Yansıma katsayısı:</strong> Gerçekte Γ kompleks bir sayıdır; büyüklüğü yansıyan alanın genliğini, açısı ise yansıma fazını belirler. Fazın 180° olması yalnız belirli sınır/polarizasyon durumlarının sonucudur; bu nedenle simülasyonda |Γ| ve ∠Γ ayrı kontrol edilir.</div>
-  <div class="note"><strong>Simülasyon sınırı:</strong> Bu sayfa öğretici iki-yol + log-distance modelidir. Gerçek ortamda duvarlar, çok sayıda saçıcı, anten polarizasyonu, AGC, alıcının RSSI filtresi, cihaz kalibrasyonu ve paket başına ölçüm yöntemi sonucu değiştirir. RSSI'yi tek başına kesin mesafe ölçeri gibi yorumlamak genellikle doğru değildir.</div>
+  <div class="note"><strong>Büyük-ölçek ve küçük-ölçek ayrımı:</strong> Yol kaybı üssü <strong>n</strong> ve ek kayıp burada ortalama/büyük-ölçek zayıflamayı temsil eder; iki-yol faz toplamı ise küçük-ölçek fading’i temsil eder. Gerçek log-normal shadowing stokastiktir; bu sayfadaki ek kayıp deterministik bir kontrol olarak kullanılır.</div><div class="note"><strong>RSSI ve dBm:</strong> Simülasyondaki sayı fiziksel alınan sinyal gücünün dBm karşılığıdır. Gerçek bir Wi-Fi cihazının “RSSI” alanı her zaman aynı biçimde kalibre edilmiş mutlak dBm ölçümü değildir; üretici/driver tanımı ve AGC/ölçüm zinciri önemlidir.</div><div class="note"><strong>Simülasyon sınırı:</strong> Bu sayfa öğretici iki-yol + log-distance modelidir. Gerçek ortamda duvarlar, çok sayıda saçıcı, anten polarizasyonu, gürültü/girişim, AGC, alıcının RSSI filtresi, cihaz kalibrasyonu ve paket başına ölçüm yöntemi sonucu değiştirir. RSSI'yi tek başına kesin mesafe ölçeri gibi yorumlamak genellikle doğru değildir.</div>
 </main>
 
 <script>
@@ -129,9 +129,9 @@
   function resize(){resizeOne(scene,ctx,parseFloat(getComputedStyle(scene).height));resizeOne(chart,g,205)}
   function dbm2w(v){return Math.pow(10,(v-30)/10)} function w2dbm(v){return 10*Math.log10(Math.max(v,1e-30))+30}
   function lambda(){return c0/freq}
-  function distance(){const x=+root.getElementById('distance').value/500;return .5*Math.pow(100,x)}
+  function distance(){return +root.getElementById('distance').value}
   function fmtLen(m){if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=.01)return (m*100).toFixed(1)+' cm';return (m*1000).toFixed(1)+' mm'}
-  function pathLoss(r,n){const lam=lambda(),pl1=20*Math.log10(4*Math.PI/lam);return pl1+10*n*Math.log10(Math.max(r,1))}
+  function pathLoss(r,n){const d0=1,lam=lambda(),pl0=20*Math.log10(4*Math.PI*d0/lam);return pl0+10*n*Math.log10(Math.max(r,d0)/d0)}
   function calc(time){
     const d=distance(),n=+root.getElementById('pathN').value/10,txDbm=+root.getElementById('txPower').value,extra=+root.getElementById('shadow').value/10,gamma=+root.getElementById('gamma').value/100;
     const y0=+root.getElementById('reflector').value/100,motion=+root.getElementById('motion').value/100,speed=+root.getElementById('speed').value/100,reflPhase=+root.getElementById('reflPhase').value*Math.PI/180;
@@ -172,7 +172,7 @@
   function frame(ts){if(!last)last=ts;const dt=Math.min(.05,(ts-last)/1000);last=ts;if(running)t+=dt;const s=calc(t);if(ts-lastSample>80){history.push({t:t,v:s.rssi});while(history.length>100)history.shift();lastSample=ts}update(s);drawScene(s);drawChart();requestAnimationFrame(frame)}
   root.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{freq=+b.dataset.f;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x===b));history=[]}));
   root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
-  root.getElementById('resetBtn').addEventListener('click',()=>{freq=2.45e9;root.getElementById('txPower').value=10;root.getElementById('distance').value=151;root.getElementById('pathN').value=22;root.getElementById('shadow').value=30;root.getElementById('reflector').value=120;root.getElementById('gamma').value=55;root.getElementById('reflPhase').value=180;root.getElementById('motion').value=20;root.getElementById('speed').value=35;history=[];t=0;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x.dataset.f==='2.45e9'))});
+  root.getElementById('resetBtn').addEventListener('click',()=>{freq=2.45e9;root.getElementById('txPower').value=10;root.getElementById('distance').value=8;root.getElementById('pathN').value=22;root.getElementById('shadow').value=30;root.getElementById('reflector').value=120;root.getElementById('gamma').value=55;root.getElementById('reflPhase').value=180;root.getElementById('motion').value=20;root.getElementById('speed').value=35;history=[];t=0;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x.dataset.f==='2.45e9'))});
   window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
 })();
 </script>
