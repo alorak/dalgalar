@@ -40,7 +40,7 @@
     .depth-card{border-top:1px solid var(--line);background:#fbfcfe;padding:13px 16px}.depth-card canvas{display:block;width:100%;height:120px}
     .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line);background:#fff}.metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:1rem}.metric span{font-size:.69rem;color:var(--muted)}
     .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
-    .control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.82rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}.control input[type=range]{width:100%;accent-color:var(--accent)}
+    .control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.82rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}.control input[type=range]{width:100%;accent-color:var(--accent)}.control-hint{margin:-7px 0 13px;color:var(--muted);font-size:.71rem}.thickness-summary{margin:2px 0 15px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.thickness-summary strong{display:block;font-size:.82rem;margin-bottom:5px}.thickness-summary p{margin:0;color:#566980;font-size:.76rem;line-height:1.5}
     select{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:#fff;color:#263a55}
     .switch{display:flex;align-items:center;gap:9px;font-size:.8rem;font-weight:750;margin:9px 0}.switch input{width:18px;height:18px;accent-color:var(--accent)}
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0 17px}.btn{border:0;border-radius:11px;padding:9px 12px;background:#553b93;color:#fff;font-weight:800}.btn.alt{background:#eef2f7;color:#39516e;border:1px solid var(--line)}
@@ -112,6 +112,9 @@
           <div class="metric"><strong id="enterVal">—</strong><span>ilk yüzeyden numuneye giren</span></div>
           <div class="metric"><strong id="absorbVal">—</strong><span>numunede soğurulan güç</span></div>
           <div class="metric"><strong id="transmitVal">—</strong><span>arka taraftan çıkan güç</span></div>
+          <div class="metric"><strong id="depthRatioVal">—</strong><span>d / δ · kalınlık / sönüm mesafesi</span></div>
+          <div class="metric"><strong id="backFieldVal">—</strong><span>arka yüzeye ulaşan alan / giriş alanı</span></div>
+          <div class="metric"><strong id="backPowerVal">—</strong><span>arka yüzeye ulaşan güç / giriş gücü</span></div>
         </div>
       </section>
 
@@ -128,6 +131,11 @@
         <div class="control"><label>Geliş açısı · yüzey normaline göre <output id="angleOut">35°</output></label><input id="angle" type="range" min="0" max="895" value="350"></div>
         <div class="control"><label>Alan genliği <output id="fieldOut">1.00×</output></label><input id="field" type="range" min="20" max="180" value="100"></div>
         <div class="control"><label>Numune kalınlığı <output id="thicknessOut">10.0 cm</output></label><input id="thickness" type="range" min="-9" max="1" step="0.05" value="-1"></div>
+        <div class="control-hint">Çizimde numune genişliği logaritmik ölçekle değişir; nm–m aralığını aynı sahnede görünür tutar.</div>
+        <div class="thickness-summary">
+          <strong id="thicknessState">d/δ = 0.20 · ince / geçirgen</strong>
+          <p id="thicknessExplain">Kalınlık karakteristik sönüm mesafesinden küçük; alan arka yüzeye güçlü biçimde ulaşabiliyor.</p>
+        </div>
         <div class="control"><label>Animasyon hızı <output id="speedOut">1.0×</output></label><input id="speed" type="range" min="0" max="20" value="10"></div>
 
         <label class="switch"><input id="showField" type="checkbox" checked> Gelen / yansıyan / içeride ilerleyen / çıkan alanı göster</label>
@@ -161,6 +169,7 @@
       <article class="ex-card"><h3>X-ışını · atom düzlemleri</h3><p>λ atomik aralıklarla karşılaştırılabilir. Kristalde farklı düzlemlerden saçılan alanlar uygun açıda yapıcı girişim yaparak Bragg tepeleri oluşturabilir.</p></article>
     </section>
 
+    <div class="note"><strong>Numune kalınlığı:</strong> Slider fiziksel kalınlık <em>d</em>’yi değiştirir. Çizimde arka yüzey logaritmik ölçekle sağa-sola hareket eder. Asıl fiziksel ölçüt <strong>d/δ</strong> oranıdır: d ≪ δ ise alan arka yüzeye rahat ulaşır; d ≳ δ olduğunda belirgin sönüm; d ≫ δ olduğunda numune pratik olarak opak davranır. “Arka yüzeye ulaşan” değerler yalnız malzeme içindeki sönümü, “arka taraftan çıkan” değer ise buna iki yüzeydeki yansımaları da dahil eder.</div>
     <div class="note"><strong>Hacim içi yeniden yayım:</strong> Homojen bir dielektrik/yarıiletkende her indüklenmiş dipol hem ileri hem geri yönlere ikincil alan üretir. Hacmin içindeki geri yönlü katkılar faz ilişkileri nedeniyle büyük ölçüde birbirini söndürür; ileri katkılar ise koherent birleşerek malzeme içindeki dalgayı oluşturur. Sınırda bu simetri bozulduğu için net geri alan kalır ve makroskopik yansıma oluşur. Kusur, katman veya indis değişimi varsa hacim içi geri saçılma artık tam iptal olmayabilir.</div>
     <div class="note"><strong>Ölçek uyarısı:</strong> Nano görünümde atomlar ve elektron sapmaları görünür olması için büyütülür; gerçek elektron yer değiştirmeleri atom boyutundan çok daha küçüktür. Mikro görünüm ise milyonlarca atomu tek tek çizmek yerine kolektif hücrelerle temsil eder. X-ışını soğurma olayları olasılıksal süreçlerin şematik gösterimidir. “Su” modeli düşük iletkenlikli suyu temsil eder; tuzlu/iyonik su RF’de çok daha kuvvetli sönüm gösterebilir.</div>
   </main>
@@ -203,6 +212,21 @@
         return (e/1e3).toFixed(1)+' keV';
       }
 
+      function visualSampleBounds(w,thickness){
+        const minLog=-9,maxLog=1,logT=Math.log10(Math.max(1e-12,thickness));
+        const t=Math.max(0,Math.min(1,(logT-minLog)/(maxLog-minLog)));
+        const front=w*.24;
+        const sampleW=w*(.18+.42*t);
+        return {front:front,back:front+sampleW,width:sampleW,t:t};
+      }
+      function thicknessState(r){
+        const x=r.depthMul;
+        if(x<.1)return {label:'çok ince / düşük sönüm',text:'Kalınlık karakteristik sönüm mesafesinin %10’undan küçük; içeri giren alan arka yüzeye neredeyse genliği korunmuş halde ulaşır.'};
+        if(x<.5)return {label:'ince / geçirgen',text:'Kalınlık sönüm mesafesinden küçük; alan arka yüzeye güçlü biçimde ulaşır, fakat ölçülebilir sönüm oluşur.'};
+        if(x<1.5)return {label:'orta kalınlık',text:'Numune kalınlığı sönüm mesafesiyle aynı mertebede; arka yüzeye ulaşan alan belirgin biçimde azalmıştır.'};
+        if(x<4)return {label:'kalın / güçlü sönüm',text:'Alan numune içinde birkaç sönüm mesafesi ilerliyor; arka yüzeye yalnız küçük bir bölüm ulaşır.'};
+        return {label:'çok kalın / pratikte opak',text:'Numune birçok sönüm mesafesi kalınlığında; arka yüzeye ulaşan alan ve güç çok küçüktür.'};
+      }
       function surfaceReflectance(m,b,angleDeg){
         if(m.R && m.R[band]!==undefined){
           if(band==='xray'){
@@ -243,6 +267,7 @@
       function response(){
         const m=mat(),b=bnd(),angle=+root.getElementById('angle').value/10,field=+root.getElementById('field').value/100,thickness=Math.pow(10,+root.getElementById('thickness').value);
         const depth=m.depth[band], depthMul=thickness/Math.max(depth,1e-18), ratio=b.lambda/m.a, photon=hEV*b.f,transport=slabTransport(m,b,angle,thickness,depth);
+        const backFieldRatio=Math.exp(-depthMul),backPowerRatio=Math.exp(-2*depthMul);
         let title,text,flow,mechanism,lag,formula;
         if(band==='rf' && m.type==='metal'){
           title='Baskın yanıt: kolektif yüzey akımı';text='İletim elektronları alanla sürüklenir. Çok sayıdaki elektronun koherent akımı yüzeye yakın bölgede yeniden alan üretir ve güçlü yansımaya neden olur.';flow='E alanı → serbest elektron sürüklenmesi → yüzey akımı → geri yayılan alan';mechanism='Drude';lag='≈ 90°';formula='J(ω) ≈ σ(ω)E(ω)\nE(z) ∝ e^(−z/δ)';
@@ -267,7 +292,7 @@
             bragg=braggMatch?'uyumlu · θᴮ ≈ '+braggAngle.toFixed(1)+'°':'θᴮ ≈ '+braggAngle.toFixed(1)+'°';
           }
         }
-        return {m:m,b:b,angle:angle,field:field,thickness:thickness,depthMul:depthMul,depth:depth,ratio:ratio,photon:photon,transport:transport,title:title,text:text,flow:flow,mechanism:mechanism,lag:lag,formula:formula,bragg:bragg,braggAngle:braggAngle,braggMatch:braggMatch};
+        return {m:m,b:b,angle:angle,field:field,thickness:thickness,depthMul:depthMul,depth:depth,ratio:ratio,photon:photon,transport:transport,backFieldRatio:backFieldRatio,backPowerRatio:backPowerRatio,title:title,text:text,flow:flow,mechanism:mechanism,lag:lag,formula:formula,bragg:bragg,braggAngle:braggAngle,braggMatch:braggMatch};
       }
       function updateUI(r){
         root.getElementById('angleOut').value=r.angle.toFixed(1)+'°';
@@ -283,6 +308,12 @@
         root.getElementById('enterVal').textContent=(100*r.transport.entry).toFixed(1)+'%';
         root.getElementById('absorbVal').textContent=(100*r.transport.A).toFixed(1)+'%';
         root.getElementById('transmitVal').textContent=(100*r.transport.T).toFixed(1)+'%';
+        root.getElementById('depthRatioVal').textContent=r.depthMul<.01?r.depthMul.toExponential(2):r.depthMul.toFixed(r.depthMul<10?2:1);
+        root.getElementById('backFieldVal').textContent=(100*r.backFieldRatio).toFixed(r.backFieldRatio>.01?1:3)+'%';
+        root.getElementById('backPowerVal').textContent=(100*r.backPowerRatio).toFixed(r.backPowerRatio>.01?1:3)+'%';
+        const ts=thicknessState(r);
+        root.getElementById('thicknessState').textContent='d/δ = '+(r.depthMul<.01?r.depthMul.toExponential(2):r.depthMul.toFixed(r.depthMul<10?2:1))+' · '+ts.label;
+        root.getElementById('thicknessExplain').textContent=ts.text;
         root.getElementById('responseTitle').textContent=r.title;
         root.getElementById('responseText').textContent=r.text;
         root.getElementById('responseFlow').innerHTML='<strong>Akış:</strong> '+r.flow;
@@ -342,7 +373,7 @@
         ctx.strokeStyle='rgba(235,235,255,.72)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(back-110,y);ctx.lineTo(back-98,y+16);ctx.moveTo(back-98,y);ctx.lineTo(back-110,y+16);ctx.stroke();
       }
       function drawMicro(r,w,h){
-        const front=w*.28,back=w*.78,materialW=back-front,top=45,bottom=h-38;
+        const vb=visualSampleBounds(w,r.thickness),front=vb.front,back=vb.back,materialW=vb.width,top=45,bottom=h-38;
         ctx.fillStyle='rgba(109,132,165,.14)';ctx.fillRect(front,0,materialW,h);
         ctx.strokeStyle='rgba(220,232,248,.52)';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(front,0);ctx.lineTo(front,h);ctx.moveTo(back,0);ctx.lineTo(back,h);ctx.stroke();
 
@@ -404,10 +435,10 @@
         ctx.fillStyle='rgba(245,193,106,.9)';ctx.fillText('yansıyan',Math.max(14,front-120),Math.max(42,hitY-78));
         ctx.fillStyle='rgba(155,231,192,.92)';ctx.fillText('malzeme içinde ilerleyen',front+18,Math.max(42,hitY-34));
         ctx.fillStyle='rgba(117,220,168,.92)';ctx.fillText('çıkan',back+12,Math.max(42,exitY-18));
-        ctx.fillStyle='rgba(224,235,249,.58)';ctx.fillText('numune: '+fmtLen(r.thickness),front+12,h-14);
+        ctx.fillStyle='rgba(224,235,249,.58)';ctx.fillText('numune: '+fmtLen(r.thickness)+' · görsel genişlik log ölçekli',front+12,h-14);
       }
       function atomPositions(r,w,h){
-        const front=w*.28,back=w*.78,pts=[],spacing=44;
+        const vb=visualSampleBounds(w,r.thickness),front=vb.front,back=vb.back,pts=[],spacing=44;
         for(let x=front+22;x<back-16;x+=spacing)for(let y=42;y<h-28;y+=spacing){
           let xx=x,yy=y;
           if(!r.m.crystal){xx+=Math.sin(x*.21+y*.17)*8;yy+=Math.cos(x*.14-y*.19)*7}
@@ -500,6 +531,7 @@
         ctx.fillStyle='rgba(245,193,106,.9)';ctx.fillText('yansıyan',Math.max(14,front-112),Math.max(42,hitY-70));
         ctx.fillStyle='rgba(155,231,192,.92)';ctx.fillText('içeride ilerleyen alan',front+14,Math.max(42,hitY-30));
         ctx.fillStyle='rgba(117,220,168,.92)';ctx.fillText('çıkan',back+10,Math.max(42,exitY-18));
+        ctx.fillStyle='rgba(224,235,249,.58)';ctx.fillText('numune: '+fmtLen(r.thickness)+' · log görsel ölçek',front+12,h-14);
       }
       function drawScene(r){
         const rect=canvas.getBoundingClientRect(),w=rect.width,h=rect.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
@@ -509,7 +541,11 @@
         const rect=depthCanvas.getBoundingClientRect(),w=rect.width,h=rect.height;dctx.clearRect(0,0,w,h);dctx.fillStyle='#fbfcfe';dctx.fillRect(0,0,w,h);
         const left=50,right=20,top=12,bottom=27,plotW=w-left-right,plotH=h-top-bottom;
         dctx.strokeStyle='#cfd9e7';dctx.beginPath();dctx.moveTo(left,top);dctx.lineTo(left,h-bottom);dctx.lineTo(w-right,h-bottom);dctx.stroke();
-        dctx.fillStyle='#61728a';dctx.font='11px system-ui';dctx.fillText('giriş',left-9,h-7);dctx.fillText('arka yüzey',w-76,h-7);
+        dctx.fillStyle='#61728a';dctx.font='11px system-ui';
+        dctx.fillText('0',left-3,h-7);
+        dctx.fillText(fmtLen(r.thickness/2),left+plotW/2-22,h-7);
+        dctx.fillText(fmtLen(r.thickness),w-right-46,h-7);
+        dctx.fillText('fiziksel derinlik z →',left+6,h-21);
         const entryAmp=Math.sqrt(r.transport.entry);
         dctx.strokeStyle='#6d4bd1';dctx.lineWidth=2.2;dctx.beginPath();
         for(let i=0;i<=plotW;i++){
@@ -522,7 +558,8 @@
           const y=top+(1-Math.min(1,I))*plotH,x=left+i;if(i===0)dctx.moveTo(x,y);else dctx.lineTo(x,y);
         }dctx.stroke();
         dctx.fillStyle='#6d4bd1';dctx.fillText('malzeme içi alan |E|',left+7,20);dctx.fillStyle='#b56b29';dctx.fillText('içeride kalan güç',left+125,20);
-        dctx.fillStyle='#4f6178';dctx.fillText('numune = '+fmtLen(r.thickness)+' · δ ≈ '+fmtLen(r.depth),Math.max(left+10,w-245),20);
+        dctx.fillStyle='#4f6178';dctx.fillText('d = '+fmtLen(r.thickness)+' · δ ≈ '+fmtLen(r.depth)+' · d/δ = '+(r.depthMul<.01?r.depthMul.toExponential(2):r.depthMul.toFixed(2)),Math.max(left+10,w-330),20);
+        dctx.fillText('arka yüzey: |E| ≈ '+(100*r.backFieldRatio).toFixed(1)+'% · güç ≈ '+(100*r.backPowerRatio).toFixed(1)+'%',Math.max(left+10,w-285),h-7);
       }
       function frame(ts){
         if(!last)last=ts;const speed=+root.getElementById('speed').value/10;if(running)time+=Math.min(.05,(ts-last)/1000)*speed;last=ts;
