@@ -88,7 +88,7 @@
     <section class="card visual-card">
       <div class="visual-head">
         <div><strong id="sceneTitle">2.45 GHz · Patch TX → Patch RX</strong><p>Fare/parmakla döndür, tekerlek ile yakınlaştır. Anten lobları açıya bağlı kazanç modelinden çizilir.</p></div>
-        <div class="view-actions"><button id="viewIso" type="button">İzometrik</button><button id="viewTop" type="button">Üstten</button><button id="viewSide" type="button">Yandan</button></div>
+        <div class="view-actions"><button id="viewIso" type="button">İzometrik</button><button id="viewTop" type="button">Üstten</button><button id="viewSide" type="button">Yandan</button><button id="zoomOut" type="button">−</button><button id="zoomReset" type="button">1:1</button><button id="zoomIn" type="button">+</button></div>
       </div>
       <div class="canvas-wrap">
         <canvas id="scene" aria-label="3 boyutlu TX RX anten bağlantısı simülasyonu"></canvas>
@@ -407,7 +407,7 @@
     const tq=P(txp),rq=P(rxp);ctx.fillStyle='#d8e7f7';ctx.font='700 12px system-ui';ctx.fillText('TX1',tq.x+8,tq.y-8);
     if(s.dual){const t2q=P(tx2p);ctx.fillStyle='#efb28f';ctx.fillText('TX2',t2q.x+8,t2q.y-8)}
     ctx.fillStyle='#d8e7f7';ctx.fillText('RX',rq.x+8,rq.y-8);
-    ctx.fillStyle='rgba(216,231,247,.62)';ctx.font='10px system-ui';ctx.fillText('kamera: sürükle / yakınlaştır',16,24);
+    ctx.fillStyle='rgba(216,231,247,.62)';ctx.font='10px system-ui';ctx.fillText('kamera: sürükle · tekerlek/+− ile yakınlaştır · zoom '+camZoom.toFixed(2)+'×',16,24);
     if(s.dual)ctx.fillText('TX2 yatay ayrımı görselde büyütülmüştür; girişim hesabı gerçek '+s.tx2Sep.toFixed(2)+' m ile yapılır.',16,40);
   }
 
@@ -507,10 +507,13 @@
   root.getElementById('viewIso').addEventListener('click',()=>{camYaw=-.72;camPitch=.38;camZoom=1});
   root.getElementById('viewTop').addEventListener('click',()=>{camYaw=-Math.PI/2;camPitch=1.45;camZoom=.95});
   root.getElementById('viewSide').addEventListener('click',()=>{camYaw=0;camPitch=.03;camZoom=1});
+  root.getElementById('zoomOut').addEventListener('click',()=>{camZoom=Math.max(.35,camZoom/1.22)});
+  root.getElementById('zoomReset').addEventListener('click',()=>{camZoom=1});
+  root.getElementById('zoomIn').addEventListener('click',()=>{camZoom=Math.min(5,camZoom*1.22)});
   scene.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;scene.setPointerCapture(e.pointerId)});
   scene.addEventListener('pointermove',e=>{if(!drag)return;camYaw+=(e.clientX-lastX)*.008;camPitch=Math.max(-1.35,Math.min(1.35,camPitch+(e.clientY-lastY)*.006));lastX=e.clientX;lastY=e.clientY});
   scene.addEventListener('pointerup',()=>{drag=false});scene.addEventListener('pointercancel',()=>{drag=false});
-  scene.addEventListener('wheel',e=>{e.preventDefault();camZoom=Math.max(.55,Math.min(1.8,camZoom*(e.deltaY>0?.92:1.08)))},{passive:false});
+  scene.addEventListener('wheel',e=>{e.preventDefault();camZoom=Math.max(.35,Math.min(5,camZoom*(e.deltaY>0?.90:1.11)))},{passive:false});
   window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
 })();
 </script>
