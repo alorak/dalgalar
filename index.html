@@ -83,6 +83,16 @@
     .energy-box strong{display:block;font-size:1.2rem;letter-spacing:-.03em}
     .energy-box span{font-size:.78rem;color:var(--muted)}
     .formula-table td:first-child{font-family:"SFMono-Regular",Consolas,monospace;font-weight:700;color:#253c5f;white-space:nowrap}
+    .worked-example{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff}
+    .worked-head{padding:18px 20px;background:#f4f7fb;border-bottom:1px solid var(--line)}
+    .worked-body{padding:20px}
+    .calc-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+    .calc-step{padding:13px;border:1px solid var(--line);border-radius:14px;background:#fbfcfe}
+    .calc-step b{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:#60728a;margin-bottom:5px}
+    .calc-step strong{display:block;font-size:1.1rem;letter-spacing:-.02em}
+    .calc-step span{display:block;font-size:.78rem;color:var(--muted);margin-top:3px}
+    .example-result{padding:14px 16px;border-radius:14px;background:#eef6ff;border:1px solid #cddff3;margin-top:12px}
+    .example-result strong{color:#173f70}
     .lab-head{display:flex;justify-content:space-between;gap:18px;align-items:center;padding:18px 22px;border-bottom:1px solid var(--line)}
     .lab-head p{margin:0;color:var(--muted);font-size:.9rem}
     .canvas-wrap{position:relative;background:#071427;min-height:330px}
@@ -172,7 +182,7 @@
       .topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}
       main{padding-inline:14px}.hero-copy{padding:22px}.grid-3,.grid-4{grid-template-columns:1fr}
       .spectrum{grid-template-columns:1fr 1fr}.compare{overflow:auto}.compare-grid{min-width:650px}
-      .concept-strip,.dimension-rule,.energy-output{grid-template-columns:1fr}.lab-head{align-items:flex-start;flex-direction:column}
+      .concept-strip,.dimension-rule,.energy-output,.calc-flow{grid-template-columns:1fr}.lab-head{align-items:flex-start;flex-direction:column}
       .energy-row{grid-template-columns:92px 1fr 58px}
       canvas{height:290px}.canvas-wrap{min-height:290px} canvas.dim-canvas{height:220px}
     }
@@ -444,6 +454,67 @@
             <tr><td>E<sub>foton</sub>=hf</td><td>Tek fotonun kuantum enerjisi</td><td>Frekans arttıkça foton başına enerji artar</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="section-head" style="margin-top:30px;margin-bottom:16px">
+        <div><span class="tag">Somut örnekler</span><h2 style="font-size:1.75rem">Aynı üç kavramı iki gerçek sistemde izleyelim</h2></div>
+        <p>Bir titreşen mekanik kaynakta enerji önce hareket ve esneklik biçimindedir; antende ise vericinin elektriksel gücü elektromanyetik alana aktarılır. Her iki durumda da şiddet, gücün uzayda nasıl dağıldığını söyler.</p>
+      </div>
+
+      <div class="grid-2">
+        <article class="worked-example">
+          <div class="worked-head">
+            <span class="tag mech">Titreşim örneği · 440 Hz diyapazon</span>
+            <h3 style="margin-top:7px">Titreşim enerjisinden ses şiddetine</h3>
+          </div>
+          <div class="worked-body">
+            <p>Öğretici bir yaklaşık model kuralım: diyapazonun etkin titreşen kütlesi <strong>10 g</strong>, frekansı <strong>440 Hz</strong> ve uç genliği <strong>0,10 mm</strong> olsun.</p>
+            <div class="equation" style="font-size:.9rem;margin:12px 0">E ≈ ½ m<sub>eff</sub>(2πf)²A²</div>
+            <div class="calc-flow">
+              <div class="calc-step"><b>1 · Titreşim enerjisi</b><strong>≈ 0,38 mJ</strong><span>mekanik enerji</span></div>
+              <div class="calc-step"><b>2 · Sese dönüşen</b><strong>≈ 0,038 mJ</strong><span>örnek olarak %10 kabulü</span></div>
+              <div class="calc-step"><b>3 · Ortalama güç</b><strong>≈ 19 µW</strong><span>2 saniyede yayılırsa</span></div>
+              <div class="calc-step"><b>4 · 1 m'de şiddet</b><strong>≈ 1,5 µW/m²</strong><span>ideal küresel yayılım</span></div>
+            </div>
+            <p>Burada <strong>enerji</strong> diyapazonun titreşiminde depolanır. Bunun yalnız bir kısmı havaya ses olarak aktarılır; kalan kısım iç sürtünme, bağlantı ve diğer kayıplarla ısıya dönüşebilir.</p>
+            <div class="example-result"><strong>Genlik 2 katına çıkarsa:</strong> aynı etkin kütle ve frekansta titreşim enerjisi yaklaşık <strong>4 katına</strong> çıkar. Çünkü <span class="key">E ∝ A²</span>.</div>
+            <div class="example-result"><strong>Uzaklık 1 m → 2 m olursa:</strong> ideal 3B yayılımda ses şiddeti yaklaşık <strong>1/4'e</strong>, yani ≈ 0,38 µW/m²'ye düşer. Toplam yayılan güç dörtte bire düşmez; aynı güç daha büyük küre yüzeyine yayılır.</div>
+            <p class="tiny">Bu sayılar gerçek bir diyapazon için ölçülmüş sabitler değil, kavramları birbirine bağlamak için kullanılan basitleştirilmiş bir hesap örneğidir. Gerçek akustik verim, yönlülük ve sönüm farklıdır.</p>
+          </div>
+        </article>
+
+        <article class="worked-example">
+          <div class="worked-head">
+            <span class="tag em">Anten örneği · 1 W RF verici</span>
+            <h3 style="margin-top:7px">Verici gücünden elektromanyetik şiddete</h3>
+          </div>
+          <div class="worked-body">
+            <p><strong>1 W</strong> RF gücünün kayıpsız biçimde ideal izotropik bir referans anten tarafından yayıldığını düşünelim. İzotropik anten gerçek bir anten değildir; hesap için her yöne eşit ışıyan referans modelidir.</p>
+            <div class="equation" style="font-size:.9rem;margin:12px 0">I(r) = P<sub>t</sub> / (4πr²)</div>
+            <div class="calc-flow">
+              <div class="calc-step"><b>1 · Verici gücü</b><strong>1 W</strong><span>1 J/s enerji aktarımı</span></div>
+              <div class="calc-step"><b>2 · 10 saniye</b><strong>10 J</strong><span>toplam yayılan enerji</span></div>
+              <div class="calc-step"><b>3 · 1 m'de şiddet</b><strong>≈ 0,080 W/m²</strong><span>ideal izotropik</span></div>
+              <div class="calc-step"><b>4 · 2 m'de şiddet</b><strong>≈ 0,020 W/m²</strong><span>1/r² nedeniyle 1/4</span></div>
+            </div>
+            <p>Burada <strong>1 W güç</strong>, vericinin her saniye yaklaşık 1 joule enerjiyi EM dalgaya aktardığını söyler. <strong>Şiddet</strong> ise bu gücün belirli uzaklıkta birim alana ne kadar düştüğünü gösterir.</p>
+            <div class="example-result"><strong>10 m'de:</strong> ideal izotropik modelde şiddet ≈ <strong>7,96×10⁻⁴ W/m²</strong> olur. Uzaklık 10 kat artarken şiddet 100 kat azalır.</div>
+            <div class="example-result"><strong>Anten kazancı G:</strong> belirli bir yönde yaklaşık <span class="key">I ≈ P<sub>t</sub>G/(4πr²)</span>. Kazanç enerji üretmez; mevcut yayılan gücü bazı yönlerde yoğunlaştırıp başka yönlerde azaltır.</div>
+            <p class="tiny">Gerçek sistemlerde kablo/anten kayıpları, empedans uyumu, yakın alan, çok yollu yayılım, yansıma ve anten deseni hesaba katılır. Bu bağıntı uzak alan için temel öğretici modeldir.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="grid-2" style="margin-top:18px">
+        <article class="card">
+          <h3>İki örnekte ortak olan ne?</h3>
+          <p><strong>Enerji</strong> toplam miktardır, <strong>güç</strong> bunun saniyedeki aktarım hızıdır, <strong>şiddet</strong> ise uzayın belirli bir noktasında alan başına düşen güçtür.</p>
+          <div class="equation" style="font-size:.9rem;margin-top:12px">Enerji → zamanla böl → Güç → yayılım alanına böl → Şiddet</div>
+        </article>
+        <article class="card">
+          <h3>Temel fark ne?</h3>
+          <p>Diyapazonda başlangıç enerjisi <strong>mekanik titreşim</strong> olarak depolanır ve havaya basınç dalgası olarak aktarılır. Antende enerji, vericinin sağladığı <strong>elektriksel güçten elektromanyetik alana</strong> aktarılır; hava zorunlu değildir ve dalga boşlukta da ilerler.</p>
+        </article>
       </div>
 
       <div class="callout"><strong>Enerji kayboluyor mu?</strong> İdeal kayıpsız yayılımda enerji korunur; yalnızca daha geniş bir alana dağıldığı için yerel şiddet azalır. Gerçek ortamda soğurulan dalga enerjisi çoğunlukla ısı, titreşim veya başka iç enerji biçimlerine dönüşür.</div>

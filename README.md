@@ -7,6 +7,7 @@ Teknoloji bağımsız, etkileşimli fizik eğitim sayfaları.
 - Dalga nasıl oluşur?
 - 1B, 2B ve 3B dalga yayılımı ve dalga cepheleri
 - Dalga enerjisi, güç ve şiddet; genlik/frekans/uzaklık ilişkileri
+- Diyapazon ve anten için sayısal enerji → güç → şiddet örnekleri
 - Mekanik dalgalar ve kaynakları
 - Diyapazon
 - Sesin gaz, sıvı ve katıda yayılması
