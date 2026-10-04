@@ -43,7 +43,7 @@
     .control{margin-bottom:12px}.control:last-child{margin-bottom:0}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.79rem;font-weight:750;margin-bottom:5px}.control output{color:#526984}
     .control input[type=range]{width:100%;accent-color:var(--accent)}
     select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#263a55}
-    .control-hint{font-size:.68rem;color:var(--muted);margin-top:4px}
+    .control-hint{font-size:.68rem;color:var(--muted);margin-top:4px}.angle-presets{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 10px}.angle-presets button{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 8px;font-size:.69rem;font-weight:750;color:#52667f}
     .switch{display:flex;align-items:center;gap:8px;font-size:.77rem;font-weight:750;margin:8px 0}.switch input{width:17px;height:17px;accent-color:var(--accent)}
     .status{padding:11px 12px;border-radius:12px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.78rem;margin-top:11px}
     .chain{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.step b{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:#152d52;color:#fff;font-size:.75rem;margin-bottom:8px}.step h3{font-size:.92rem;margin:0 0 6px}.step p{font-size:.8rem;color:#586b82;margin:0}.formula{margin-top:9px;padding:8px 9px;border-radius:9px;background:#101f37;color:#dce7f5;font:600 .7rem "SFMono-Regular",Consolas,monospace}
@@ -135,6 +135,7 @@
         <div class="control"><label>TX2 güç <output id="tx2PowerOut">20 dBm · 100 mW</output></label><input id="tx2Power" type="range" min="-10" max="30" step="1" value="20"></div>
         <div class="control"><label>TX1'e yatay ayrım <output id="tx2SepOut">50 cm</output></label><input id="tx2Sep" type="range" min="0" max="300" step="1" value="50"></div>
         <div class="control"><label>Başlangıç fazı <output id="tx2PhaseOut">0°</output></label><input id="tx2Phase" type="range" min="0" max="360" step="1" value="0"></div>
+        <div class="angle-presets"><button id="phase0Btn" type="button">Aynı faz · 0°</button><button id="phase180Btn" type="button">Ters faz · 180°</button></div>
         <div class="control"><label for="txRelation">Kaynak ilişkisi</label><select id="txRelation"><option value="coherent">Faz kilitli · coherent</option><option value="incoherent">Bağımsız · incoherent</option></select></div>
         <div class="control"><label>Azimut <output id="tx2AzOut">0°</output></label><input id="tx2Az" type="range" min="-180" max="180" step="1" value="0"></div>
         <div class="control"><label>Elevasyon <output id="tx2ElOut">0°</output></label><input id="tx2El" type="range" min="-90" max="90" step="1" value="0"></div>
@@ -350,7 +351,7 @@
   }
   function interferenceRatioAt(s,xFrac,yMeters){
     if(!s.dual||!s.coherent)return 1;
-    const x=-s.R/2+s.R*xFrac,p=vec(x,yMeters,0);
+    const x=s.tx.x+(s.rx.x-s.tx.x)*xFrac,p=vec(x,yMeters,0);
     const r1v=sub(p,s.tx),r2v=sub(p,s.tx2),r1=Math.max(.02,Math.hypot(r1v.x,r1v.y,r1v.z)),r2=Math.max(.02,Math.hypot(r2v.x,r2v.y,r2v.z));
     const g1=db2lin(gainAt(s.txType,angle(s.txDir,norm(r1v)))),g2=db2lin(gainAt(s.tx2Type,angle(s.tx2Dir,norm(r2v))));
     const a1=Math.sqrt(s.txP*g1)/r1,a2=Math.sqrt(s.tx2P*g2)/r2,den=a1*a1+a2*a2;
@@ -501,6 +502,8 @@
   root.getElementById('tx2Enabled').addEventListener('change',function(){
     root.getElementById('tx2Group').classList.toggle('off',!this.checked);
   });
+  root.getElementById('phase0Btn').addEventListener('click',()=>{root.getElementById('tx2Enabled').checked=true;root.getElementById('txRelation').value='coherent';root.getElementById('tx2Phase').value=0});
+  root.getElementById('phase180Btn').addEventListener('click',()=>{root.getElementById('tx2Enabled').checked=true;root.getElementById('txRelation').value='coherent';root.getElementById('tx2Phase').value=180});
   root.getElementById('viewIso').addEventListener('click',()=>{camYaw=-.72;camPitch=.38;camZoom=1});
   root.getElementById('viewTop').addEventListener('click',()=>{camYaw=-Math.PI/2;camPitch=1.45;camZoom=.95});
   root.getElementById('viewSide').addEventListener('click',()=>{camYaw=0;camPitch=.03;camZoom=1});
