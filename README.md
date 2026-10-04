@@ -33,12 +33,20 @@ Tüm sayfalar vanilla HTML/CSS/JavaScript ile çalışır ve harici kütüphane 
 
 ## Nano fizik modeli
 
-`nano.html` frekans ve malzemeye bağlı zayıflamayı içerir. Görünümde güç/şiddet için
-`I(z)=I0 exp(-z/Lp)`, klasik alan genliği için `E(z)=E0 exp(-z/(2Lp))` kullanılır.
-10 keV X-ışını modu klasik sinüzoidal alan yerine azalan foton akısı ve etkileşim olayları
-olarak gösterilir. 10 keV X-ışını zayıflama değerleri NIST XCOM tabanlıdır; diğer
-presetler öğretici temsilî değerler olarak arayüzde etiketlenir.
+`nano.html` frekans ve malzemeye bağlı yüzey yansımasını ve zayıflamayı içerir.
 
+- RF/mikrodalgada kırılma indisi kompleks dielektrik fonksiyonundan hesaplanır (`N=√ε`):
+  Si için `ε=11.7+iσ/(ωε0)`, `σ=q(nμn+pμp)` (kütle-etki yasası + Caughey–Thomas mobilite,
+  katkı tipi ve yoğunluğu seçilebilir), Cu için `ε=1+iσ/(ωε0)`, cam için `ε′≈4.6, tanδ≈3.7e-3`,
+  su için Debye modeli (25 °C, τ=8.27 ps). Görünür ve 10 keV X-ışını değerleri ölçülmüş
+  `n` ve 1/e güç uzunluğu `Lp`'den (`κ=λ/4πLp`) gelir; X-ışını zayıflaması NIST XCOM tabanlıdır.
+- Yüzeyde Fresnel `rs, rp, ts, tp` hesaplanır. İçerideki dalganın normal bileşeni
+  `kz=k0√(N²−sin²θ)` ile güç `I(z)=I0 exp(-z/L⊥)`, `L⊥=λ/(4π Im(kz/k0))` olarak azalır; bu
+  ifade X-ışını total external reflection bölgesindeki evanescent alanı da süreksizlik olmadan verir.
+- İç alan `|t|` ile çizilir, faz yüzeyde süreklidir (yansıyan `arg r`, iletilen `arg t`) ve dalga boyu
+  fiziksel derinlik eksenine bağlıdır (çok sıksa n oranı korunarak seyreltilir).
+- Yükler alanın enine yönünde salınır: serbest taşıyıcılar Drude (`ωτ` ile faz), bağlı elektronlar
+  rezonans altı Lorentz, su dipolleri Debye gecikmesiyle (görünürde yönelim donar).
 
 - `rssi.html` — RSSI, log-distance path loss, iki-yol fading ve zaman serisi simülasyonu
 - `csi.html` — OFDM CSI kompleks kanal cevabı, alt taşıyıcı genlik/fazı ve gecikme profili simülasyonu
