@@ -24,6 +24,7 @@ Teknoloji bağımsız, etkileşimli fizik eğitim sayfaları.
 - `2d.html` — iki koherent kaynağın 2B girişim, bileşke genlik ve göreli şiddet simülasyonu
 - `3d.html` — iki koherent küresel kaynağın 3B hacim girişim simülasyonu
 - `yuzey.html` — RF, mikrodalga, görünür ve X-ışını için makroskopik yüzey/kalınlık/yansıma simülasyonu
-- `mikro.html` — farklı malzeme ve frekanslarda elektron, dipol, atom ve kristal düzlemi etkileşimlerini mikro/nano ölçekte gösteren simülasyon
+- `mikro.html` — farklı malzeme ve frekanslarda kolektif alan, yansıma, yeniden yayım ve sönümü mikro ölçekte gösteren simülasyon
+- `nano.html` — silisyum ağırlıklı elektron/hol, bağlı elektron polarizasyonu, iç EM alan ve bant geçişlerini nano ölçekte gösteren simülasyon
 
 Tüm sayfalar vanilla HTML/CSS/JavaScript ile çalışır ve harici kütüphane gerektirmez.

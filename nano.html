@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>Nano EM Etkileşimi — Dalgalar</title>
+  <meta name="description" content="Silisyum ve diğer malzemelerde elektron, hol, bağlı elektron polarizasyonu, iç elektromanyetik alan ve foton soğurmasını nano ölçekte inceleyin.">
+  <style>
+    :root{--bg:#f6f8fc;--surface:#fff;--text:#142033;--muted:#607087;--line:#dbe3ef;--nav:#0f1f3d;--nav2:#15305d;--accent:#6946c7;--shadow:0 18px 45px rgba(20,32,51,.09);--radius:20px}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+    button,input,select{font:inherit}button{cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--nav),var(--nav2));color:#fff;box-shadow:0 8px 24px rgba(15,31,61,.18)}
+    .topbar-inner{max-width:1360px;margin:auto;display:flex;gap:18px;align-items:center;padding:12px 20px}
+    .brand{font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+    .nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+    .nav a{text-decoration:none;font-size:.9rem;padding:8px 11px;border-radius:999px;color:#dce7fb;white-space:nowrap}
+    .nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff}.nav a[aria-current="page"]{background:rgba(255,255,255,.18);color:#fff}
+    main{max-width:1360px;margin:auto;padding:26px 20px 56px}
+    .intro{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:end;margin-bottom:18px}
+    .intro h1{font-size:clamp(2rem,4.2vw,3.8rem);line-height:.98;letter-spacing:-.05em;margin:0 0 12px}.intro p{margin:0;color:var(--muted);font-size:1.01rem}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eee9ff;color:#5f4998;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .intro-note{padding:17px 18px;border-radius:17px;background:#fff;border:1px solid var(--line);color:#4d5f76}
+    .bands{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 0}
+    .band{border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px;text-align:left;color:#41536b}
+    .band strong{display:block;font-size:.98rem}.band span{display:block;color:var(--muted);font-size:.74rem;margin-top:3px}
+    .band.active{background:#142a4d;color:#fff;border-color:#142a4d}.band.active span{color:#d9e5f7}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 355px;gap:18px;align-items:start}
+    .card,.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .visual-card{overflow:hidden}.visual-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 17px;border-bottom:1px solid var(--line)}
+    .visual-head p{margin:3px 0 0;color:var(--muted);font-size:.8rem}
+    .canvas-wrap{position:relative;background:#071427}.canvas-wrap canvas{display:block;width:100%;height:575px}
+    .legend{position:absolute;right:14px;top:14px;display:flex;gap:9px;flex-wrap:wrap;max-width:430px;padding:7px 9px;border-radius:10px;background:rgba(7,20,39,.82);color:#e7eef8;font-size:.7rem;backdrop-filter:blur(5px)}
+    .legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.e{background:#75c9ff}.h{background:#f5bd68}.bound{background:#ad8dff}.field{background:#80e0b1}.event{background:#ef7898}
+    .overlay{position:absolute;left:14px;bottom:14px;max-width:min(620px,calc(100% - 28px));padding:8px 10px;border-radius:10px;background:rgba(7,20,39,.83);color:#e5edf8;font-size:.75rem;backdrop-filter:blur(5px)}
+    .band-card{border-top:1px solid var(--line);padding:13px 16px;background:#fbfcfe}.band-card canvas{display:block;width:100%;height:195px}
+    .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line)}
+    .metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:1rem}.metric span{font-size:.69rem;color:var(--muted)}
+    .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
+    .control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.82rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}
+    .control input[type=range]{width:100%;accent-color:var(--accent)}
+    select{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:#fff;color:#263a55}
+    .switch{display:flex;align-items:center;gap:9px;font-size:.8rem;font-weight:750;margin:9px 0}.switch input{width:18px;height:18px;accent-color:var(--accent)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0 17px}.btn{border:0;border-radius:11px;padding:9px 12px;background:#553b93;color:#fff;font-weight:800}.btn.alt{background:#eef2f7;color:#39516e;border:1px solid var(--line)}
+    .status{padding:12px;border-radius:12px;background:#f2efff;border:1px solid #ddd4f7;color:#4d3c7e;font-size:.82rem;margin:13px 0}
+    .flow{padding:11px 12px;border-radius:12px;background:#0f1f37;color:#dce8f7;font-size:.77rem;line-height:1.65}.flow strong{color:#fff}
+    .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.mini{padding:10px;border:1px solid var(--line);border-radius:11px;background:#f8fafc}.mini strong{display:block;font-size:.92rem}.mini span{font-size:.69rem;color:var(--muted)}
+    .explain{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.ex{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px}.ex h3{font-size:.96rem;margin:0 0 8px}.ex p{margin:0;color:#566980;font-size:.83rem}
+    .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.83rem}
+    @media(max-width:1000px){.intro,.layout{grid-template-columns:1fr}.bands{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr 1fr}.explain{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.bands{grid-template-columns:1fr}.canvas-wrap canvas{height:440px}.metrics{grid-template-columns:1fr 1fr}.explain{grid-template-columns:1fr}.legend{left:12px;right:12px;top:12px}}
+  </style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">dalgalar</div>
+  <nav class="nav" aria-label="Sayfalar">
+    <a href="index.html">Altyapı</a>
+    <a href="2d.html">2B Girişim</a>
+    <a href="3d.html">3B Girişim</a>
+    <a href="yuzey.html">Yüzey & Frekans</a>
+    <a href="mikro.html">Mikro</a>
+    <a href="nano.html" aria-current="page">Nano</a>
+  </nav>
+</div></header>
+
+<main>
+  <section class="intro">
+    <div><span class="badge">Nano / elektronik görünüm</span><h1>Silisyumun içinde alan elektronları ve holleri nasıl etkiliyor?</h1><p>Bu sayfa yüzey yansımasını değil, malzemenin içinde gerçekleşen elektronik cevabı gösterir: bağlı elektron polarizasyonu, serbest taşıyıcı sürüklenmesi, elektron–hol çiftleri ve frekansa bağlı soğurma.</p></div>
+    <div class="intro-note"><strong>Önemli ayrım:</strong> RF ve mikrodalga fotonları silisyumun bant aralığından çok düşük enerjilidir; yeni e–h çifti üretmez. Görünür ışıkta uygun fotonlar valans bandından iletim bandına elektron çıkarabilir. X-ışınında ise yüksek enerjili ikincil elektronlar çok sayıda e–h çifti üretebilir.</div>
+  </section>
+
+  <div class="bands">
+    <button class="band active" data-band="rf" type="button"><strong>RF</strong><span>100 MHz · taşıyıcı sürüklenmesi</span></button>
+    <button class="band" data-band="micro" type="button"><strong>Mikrodalga</strong><span>2.45 GHz · hızlı alan cevabı</span></button>
+    <button class="band" data-band="visible" type="button"><strong>Görünür</strong><span>550 nm · e–h üretimi mümkün</span></button>
+    <button class="band" data-band="xray" type="button"><strong>X-ışını</strong><span>10 keV · ikincil taşıyıcı kaskadı</span></button>
+  </div>
+
+  <div class="layout">
+    <section class="card visual-card">
+      <div class="visual-head"><div><strong id="sceneTitle">RF · Silisyum · atomik taşıyıcı görünümü</strong><p id="sceneSubtitle">İç elektromanyetik alan, bağlı elektron polarizasyonu ve mevcut taşıyıcıların hareketi.</p></div><a href="mikro.html" class="btn alt" style="text-decoration:none">← Mikro görünüme dön</a></div>
+      <div class="canvas-wrap">
+        <canvas id="nanoCanvas" aria-label="Silisyum nano elektromanyetik etkileşim simülasyonu"></canvas>
+        <div class="legend"><span><i class="dot field"></i>iç E alanı</span><span><i class="dot bound"></i>bağlı elektron polarizasyonu</span><span><i class="dot e"></i>serbest elektron</span><span><i class="dot h"></i>hol</span><span><i class="dot event"></i>soğurma / e–h üretimi</span></div>
+        <div class="overlay" id="overlayText">RF: hν ≪ E<sub>g</sub>. Yeni e–h çifti oluşmaz; mevcut taşıyıcılar ve bağlı elektronlar alan tarafından sürülür/polarize edilir.</div>
+      </div>
+      <div class="band-card"><canvas id="bandCanvas" aria-label="Silisyum enerji bant diyagramı"></canvas></div>
+      <div class="metrics">
+        <div class="metric"><strong id="photonVal">4.14×10⁻⁷ eV</strong><span>foton enerjisi hν</span></div>
+        <div class="metric"><strong id="gapVal">1.12 eV</strong><span>silisyum bant aralığı E<sub>g</sub></span></div>
+        <div class="metric"><strong id="ratioVal">3.7×10⁻⁷</strong><span>hν / E<sub>g</sub></span></div>
+        <div class="metric"><strong id="pairVal">Hayır</strong><span>tek fotonla e–h üretimi</span></div>
+        <div class="metric"><strong id="carrierVal">mevcut taşıyıcı</strong><span>baskın elektronik cevap</span></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>Malzeme ve taşıyıcılar</h2>
+      <div class="control"><label for="material">Malzeme</label><select id="material">
+        <option value="silicon">Silisyum · yarıiletken</option>
+        <option value="copper">Bakır · metal</option>
+        <option value="glass">Cam · dielektrik</option>
+        <option value="water">Su · polar moleküler</option>
+      </select></div>
+      <div class="control" id="dopingWrap"><label for="doping">Silisyum tipi</label><select id="doping">
+        <option value="intrinsic">Saf / intrinsik</option>
+        <option value="n">n-tipi · elektron çoğunluk</option>
+        <option value="p">p-tipi · hol çoğunluk</option>
+      </select></div>
+      <div class="control"><label>İç alan genliği <output id="fieldOut">1.00×</output></label><input id="fieldAmp" type="range" min="20" max="180" value="100"></div>
+      <div class="control"><label>Taşıyıcı görünürlük yoğunluğu <output id="densityOut">1.0×</output></label><input id="density" type="range" min="4" max="20" value="10"></div>
+      <div class="control"><label>Animasyon hızı <output id="speedOut">1.0×</output></label><input id="speed" type="range" min="0" max="20" value="10"></div>
+
+      <label class="switch"><input id="showField" type="checkbox" checked> İç elektromanyetik alanı göster</label>
+      <label class="switch"><input id="showBound" type="checkbox" checked> Bağlı elektron polarizasyonunu göster</label>
+      <label class="switch"><input id="showCarriers" type="checkbox" checked> Serbest elektron / hol taşıyıcılarını göster</label>
+      <label class="switch"><input id="showGeneration" type="checkbox" checked> Foton soğurma / e–h üretim olaylarını göster</label>
+      <div class="actions"><button class="btn" id="pauseBtn" type="button">Duraklat</button><button class="btn alt" id="resetBtn" type="button">Sıfırla</button></div>
+
+      <div class="status" id="statusText">RF foton enerjisi bant aralığından milyonlarca kat küçüktür. Alan yeni taşıyıcı üretmek yerine mevcut taşıyıcıları ileri–geri sürükler.</div>
+      <div class="flow" id="flowText"><strong>RF akışı:</strong> iç E(t) → bağlı elektron bulutu küçük polarizasyon → mevcut elektron/hol sürüklenmesi → iletkenlik ve dielektrik kayıp.</div>
+      <div class="mini-grid">
+        <div class="mini"><strong id="electronCount">6</strong><span>gösterilen serbest elektron</span></div>
+        <div class="mini"><strong id="holeCount">6</strong><span>gösterilen hol</span></div>
+        <div class="mini"><strong id="fieldPeriod">10 ns</strong><span>alan periyodu</span></div>
+        <div class="mini"><strong id="mechanism">drift + polarization</strong><span>baskın mekanizma</span></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="explain">
+    <article class="ex"><h3>RF · 100 MHz</h3><p>Silisyum için hν yaklaşık 4×10⁻⁷ eV’dir; 1.12 eV bant aralığından çok küçüktür. Yeni elektron–hol çifti oluşturmaz. Mevcut taşıyıcılar salınan alanla sürüklenir.</p></article>
+    <article class="ex"><h3>Mikrodalga · 2.45 GHz</h3><p>Foton enerjisi yine bant aralığından çok küçüktür. Taşıyıcı hareketi ve dielektrik polarizasyon önemlidir; soğurma taşıyıcı saçılması ve kayıplardan gelir.</p></article>
+    <article class="ex"><h3>Görünür · 550 nm</h3><p>Foton enerjisi yaklaşık 2.25 eV’dir ve Si bant aralığından büyüktür. Soğurulan foton valans bandından bir elektronu iletim bandına çıkarıp geride hol bırakabilir.</p></article>
+    <article class="ex"><h3>X-ışını · 10 keV</h3><p>Soğurulan X-ışını yüksek enerjili bir elektron oluşturabilir; bu elektron malzeme içinde enerji kaybederek çok sayıda ikincil elektron–hol çifti meydana getirebilir.</p></article>
+  </section>
+
+  <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
+  <div class="note"><strong>Simülasyon sınırı:</strong> Taşıyıcı sayıları ve atom ölçeği görsel anlaşılabilirlik için ölçeklendirilmiştir. Gerçek taşıyıcı yoğunluğu doping, sıcaklık, saflık, mobilite ve yaşam süresine bağlıdır. Bu sayfa TDDFT/Monte Carlo yarıiletken transport hesabı değildir.</div>
+</main>
+
+<script>
+(function(){
+  const root=document,nano=root.getElementById('nanoCanvas'),ctx=nano.getContext('2d'),bandCanvas=root.getElementById('bandCanvas'),bctx=bandCanvas.getContext('2d');
+  const dpr=Math.min(window.devicePixelRatio||1,2),hEV=4.135667696e-15,c0=299792458,EgSi=1.12;
+  let band='rf',running=true,time=0,last=0;
+  const bands={
+    rf:{label:'RF',f:1e8,lambda:c0/1e8},
+    micro:{label:'Mikrodalga',f:2.45e9,lambda:c0/2.45e9},
+    visible:{label:'Görünür',f:c0/550e-9,lambda:550e-9},
+    xray:{label:'X-ışını',f:c0/0.12398e-9,lambda:0.12398e-9}
+  };
+  const materials={
+    silicon:{label:'Silisyum',type:'semiconductor',gap:EgSi,lattice:true},
+    copper:{label:'Bakır',type:'metal',gap:0,lattice:true},
+    glass:{label:'Cam',type:'dielectric',gap:8.5,lattice:false},
+    water:{label:'Su',type:'polar',gap:6.5,lattice:false}
+  };
+  function bnd(){return bands[band]} function mat(){return materials[root.getElementById('material').value]}
+  function photon(){return hEV*bnd().f}
+  function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
+  function resize(){resizeOne(nano,ctx,parseFloat(getComputedStyle(nano).height));resizeOne(bandCanvas,bctx,195)}
+  function fmtE(e){if(e<1e-3)return e.toExponential(2)+' eV';if(e<1e3)return e.toFixed(e<10?2:1)+' eV';return (e/1e3).toFixed(1)+' keV'}
+  function fieldVal(x){return Math.sin(time*3-x*.022)}
+  function drawArrow(x,y,dx,dy,color,a){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=a;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke();const ang=Math.atan2(dy,dx),h=4;ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.lineTo(x+dx-Math.cos(ang-.55)*h,y+dy-Math.sin(ang-.55)*h);ctx.lineTo(x+dx-Math.cos(ang+.55)*h,y+dy-Math.sin(ang+.55)*h);ctx.fill();ctx.globalAlpha=1}
+  function drawLattice(m,w,h,left,right){
+    const pts=[]; const gap=56;
+    for(let x=left+25;x<right-20;x+=gap)for(let y=55;y<h-35;y+=gap){
+      let xx=x,yy=y;
+      if(!m.lattice){xx+=Math.sin(x*.13+y*.17)*10;yy+=Math.cos(x*.19-y*.11)*8}
+      pts.push({x:xx,y:yy});
+    }
+    ctx.strokeStyle='rgba(162,183,214,.12)';ctx.lineWidth=1;
+    if(m.lattice){for(const p of pts){for(const q of pts){const d=Math.hypot(p.x-q.x,p.y-q.y);if(d>45&&d<66){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke()}}}}
+    pts.forEach((p,i)=>{
+      if(root.getElementById('showBound').checked){
+        const off=fieldVal(p.x)*4*(+root.getElementById('fieldAmp').value/100);
+        ctx.strokeStyle='rgba(173,141,255,.34)';ctx.beginPath();ctx.arc(p.x,p.y,11+Math.abs(off),0,Math.PI*2);ctx.stroke();
+        ctx.fillStyle='rgba(111,197,255,.75)';ctx.beginPath();ctx.arc(p.x+off,p.y,3,0,Math.PI*2);ctx.fill();
+      }
+      ctx.fillStyle='rgba(223,230,240,.75)';ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(247,193,99,.9)';ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,Math.PI*2);ctx.fill();
+    });
+    return pts;
+  }
+  function carrierCounts(){
+    const m=mat(); if(m.type!=='semiconductor') return {e:m.type==='metal'?12:0,h:0};
+    const d=root.getElementById('doping').value,dens=+root.getElementById('density').value/10;
+    if(d==='n')return {e:Math.round(12*dens),h:Math.max(1,Math.round(2*dens))};
+    if(d==='p')return {e:Math.max(1,Math.round(2*dens)),h:Math.round(12*dens)};
+    return {e:Math.round(6*dens),h:Math.round(6*dens)};
+  }
+  function drawCarriers(w,h,left,right){
+    if(!root.getElementById('showCarriers').checked)return;
+    const c=carrierCounts(),E=fieldVal((left+right)/2),amp=+root.getElementById('fieldAmp').value/100;
+    for(let i=0;i<c.e;i++){const baseX=left+35+((i*83)%Math.max(80,right-left-70)),baseY=68+((i*61)%Math.max(80,h-120)),drift=-E*14*amp;ctx.fillStyle='#75c9ff';ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.sin(time*2+i)*4,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',baseX+drift-2,baseY+3)}
+    for(let i=0;i<c.h;i++){const baseX=left+58+((i*97)%Math.max(80,right-left-85)),baseY=92+((i*73)%Math.max(80,h-145)),drift=E*11*amp;ctx.strokeStyle='#f5bd68';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.cos(time*2+i)*4,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',baseX+drift-2.5,baseY+3)}
+  }
+  function drawField(w,h,left,right){
+    if(!root.getElementById('showField').checked)return;
+    const amp=+root.getElementById('fieldAmp').value/100;
+    ctx.strokeStyle='rgba(128,224,177,.85)';ctx.lineWidth=2.2;ctx.beginPath();
+    for(let x=left;x<=right;x+=3){const y=h*.46+Math.sin((x-left)*.055-time*3)*24*amp;if(x===left)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
+    for(let x=left+25;x<right;x+=70){const e=fieldVal(x);drawArrow(x,h*.46-58,0,e*30*amp,'#80e0b1',.52)}
+    ctx.fillStyle='rgba(128,224,177,.85)';ctx.font='11px system-ui';ctx.fillText('iç elektromanyetik alan E(t)',left+12,h*.46-72);
+  }
+  function drawGeneration(w,h,left,right){
+    if(!root.getElementById('showGeneration').checked)return;
+    const m=mat(),p=photon(); if(m.type!=='semiconductor')return;
+    let events=0;
+    if(band==='visible'&&p>=m.gap)events=5;
+    if(band==='xray')events=10;
+    if(!events)return;
+    for(let i=0;i<events;i++){
+      const phase=(time*.22+i*.137)%1,x=left+40+phase*(right-left-80),y=65+((i*79)%Math.max(80,h-130));
+      const pulse=.5+.5*Math.sin(time*5+i);
+      ctx.fillStyle='rgba(239,120,152,'+(.25+.55*pulse)+')';ctx.beginPath();ctx.arc(x,y,5+5*pulse,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#75c9ff';ctx.beginPath();ctx.arc(x+10+pulse*5,y-10,3.5,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#f5bd68';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x-8,y+8,4.5,0,Math.PI*2);ctx.stroke();
+      if(band==='xray'){ctx.strokeStyle='rgba(239,120,152,.55)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+28,y-22);ctx.stroke()}
+    }
+  }
+  function drawScene(){
+    const r=nano.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),left=w*.27,right=w*.96;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
+    ctx.fillStyle='rgba(109,132,165,.13)';ctx.fillRect(left,0,right-left,h);ctx.strokeStyle='rgba(220,232,248,.5)';ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(left,h);ctx.stroke();
+    if(root.getElementById('showField').checked){ctx.strokeStyle='#8fd6ff';ctx.lineWidth=2;ctx.beginPath();for(let x=35;x<=left;x+=3){const y=h*.46+Math.sin(x*.055-time*3)*22;if(x===35)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke()}
+    drawField(w,h,left,right);drawLattice(m,w,h,left,right);drawCarriers(w,h,left,right);drawGeneration(w,h,left,right);
+    ctx.fillStyle='rgba(225,235,247,.8)';ctx.font='12px system-ui';ctx.fillText('vakum / hava',18,24);ctx.fillText(m.label,left+12,24);
+  }
+  function drawBands(){
+    const r=bandCanvas.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),p=photon();bctx.clearRect(0,0,w,h);bctx.fillStyle='#fbfcfe';bctx.fillRect(0,0,w,h);
+    const left=70,right=w-25,top=30,bottom=h-35;
+    if(m.type==='metal'){
+      bctx.fillStyle='#31496a';bctx.fillRect(left,67,right-left,45);bctx.fillStyle='#fff';bctx.font='700 12px system-ui';bctx.fillText('kısmen dolu / örtüşen bantlar',left+12,93);bctx.fillStyle='#5f7189';bctx.fillText('Metal: bant aralığı yok; alan mevcut elektronları hızlandırır.',left,145);return;
+    }
+    const Eg=m.gap||EgSi,cy=58,vy=130;
+    bctx.strokeStyle='#506a8b';bctx.lineWidth=6;bctx.beginPath();bctx.moveTo(left,cy);bctx.lineTo(right,cy);bctx.stroke();bctx.beginPath();bctx.moveTo(left,vy);bctx.lineTo(right,vy);bctx.stroke();
+    bctx.fillStyle='#52667f';bctx.font='700 12px system-ui';bctx.fillText('İletim bandı',left,cy-10);bctx.fillText('Valans bandı',left,vy+20);bctx.fillText('E_g ≈ '+Eg.toFixed(2)+' eV',right-90,95);
+    if(m.type==='semiconductor'){
+      if(p>=Eg&&band!=='xray'){
+        const x=w*.55;bctx.strokeStyle='#ef7898';bctx.lineWidth=2;bctx.beginPath();bctx.moveTo(x,vy-4);bctx.lineTo(x,cy+5);bctx.stroke();bctx.fillStyle='#ef7898';bctx.beginPath();bctx.moveTo(x,cy);bctx.lineTo(x-5,cy+9);bctx.lineTo(x+5,cy+9);bctx.fill();bctx.fillStyle='#75c9ff';bctx.beginPath();bctx.arc(x+12,cy,4,0,Math.PI*2);bctx.fill();bctx.strokeStyle='#f5bd68';bctx.lineWidth=2;bctx.beginPath();bctx.arc(x-10,vy,5,0,Math.PI*2);bctx.stroke();bctx.fillStyle='#52667f';bctx.fillText('foton soğurulur → e⁻ + hol',x-62,24);
+      }else if(band==='xray'){
+        bctx.fillStyle='#ef7898';bctx.font='700 12px system-ui';bctx.fillText('10 keV → yüksek enerjili ikincil elektron → çoklu e–h üretimi',left,22);
+        for(let i=0;i<6;i++){const x=left+160+i*55;bctx.fillStyle='#75c9ff';bctx.beginPath();bctx.arc(x,cy,3.5,0,Math.PI*2);bctx.fill();bctx.strokeStyle='#f5bd68';bctx.beginPath();bctx.arc(x-12,vy,4.5,0,Math.PI*2);bctx.stroke()}
+      }else{
+        bctx.fillStyle='#7a899b';bctx.font='12px system-ui';bctx.fillText('hν = '+fmtE(p)+' < E_g → tek fotonla bant geçişi yok',left,22);
+      }
+    }else{
+      bctx.fillStyle='#7a899b';bctx.font='12px system-ui';bctx.fillText('Geniş bant aralığı: bu şema yalnız öğretici elektronik yapı gösterimidir.',left,22);
+    }
+  }
+  function updateUI(){
+    const m=mat(),p=photon(),gap=m.gap||0,ratio=gap?p/gap:Infinity,d=root.getElementById('doping').value,c=carrierCounts();
+    root.getElementById('dopingWrap').style.display=m.type==='semiconductor'?'block':'none';
+    root.getElementById('fieldOut').value=(+root.getElementById('fieldAmp').value/100).toFixed(2)+'×';
+    root.getElementById('densityOut').value=(+root.getElementById('density').value/10).toFixed(1)+'×';
+    root.getElementById('speedOut').value=(+root.getElementById('speed').value/10).toFixed(1)+'×';
+    root.getElementById('photonVal').textContent=fmtE(p);root.getElementById('gapVal').textContent=m.type==='metal'?'0 eV':(gap.toFixed(2)+' eV');
+    root.getElementById('ratioVal').textContent=isFinite(ratio)?(ratio<.001?ratio.toExponential(2):ratio.toFixed(2)):'—';
+    let pair='Hayır',carrier='polarizasyon',status='',flow='',mech='polarization';
+    if(m.type==='semiconductor'){
+      if(band==='rf'){carrier='mevcut taşıyıcı';status='RF foton enerjisi bant aralığından milyonlarca kat küçüktür. Yeni e–h çifti oluşmaz; mevcut elektron ve holler alanla ileri–geri sürüklenir.';flow='<strong>RF akışı:</strong> E(t) → bağlı elektron polarizasyonu + mevcut taşıyıcı drift hareketi → iletkenlik / dielektrik kayıp.';mech='drift + polarization'}
+      else if(band==='micro'){carrier='mevcut taşıyıcı';status='2.45 GHz mikrodalga fotonu da Si bant aralığını aşamaz. Yeni taşıyıcı üretimi yerine mevcut taşıyıcı hareketi ve kayıplar önemlidir.';flow='<strong>Mikrodalga akışı:</strong> hızlı E(t) → taşıyıcı sürüklenmesi + saçılma → kayıp / ısı.';mech='AC transport'}
+      else if(band==='visible'){pair=p>=gap?'Evet':'Hayır';carrier='e–h üretimi';status='550 nm foton enerjisi Si bant aralığından büyüktür. Soğurulan foton bir elektronu iletim bandına çıkarabilir ve valans bandında hol bırakır.';flow='<strong>Optik akış:</strong> foton soğurulur → valans elektronu iletim bandına çıkar → e⁻ + hol → drift / difüzyon / rekombinasyon.';mech='interband absorption'}
+      else{pair='Çoklu';carrier='ikincil kaskat';status='10 keV X-ışını bant aralığından çok daha enerjiktir. Soğurma sonrası oluşan yüksek enerjili elektron enerji kaybederek çok sayıda ikincil e–h çifti üretebilir.';flow='<strong>X-ışını akışı:</strong> fotoelektrik/saçılma → hızlı elektron → iyonizasyon kaskadı → çoklu e⁻/hol çiftleri.';mech='ionization cascade'}
+    }else if(m.type==='metal'){pair='Uygulanmaz';carrier='serbest elektron';status='Metalde bant aralığı resmi uygun değildir; çok sayıda serbest elektron alanla hızlanır ve saçılmalarla enerji kaybedebilir.';flow='<strong>Metal:</strong> E(t) → serbest elektron akımı → yeniden yayım + Joule kaybı.';mech='free-electron response'}
+    else{pair='Genelde hayır';carrier=m.type==='polar'?'dipol cevabı':'bağlı elektron';status='Bu malzemede temel nano cevap bağlı yüklerin veya moleküler dipollerin polarizasyonudur; bant geçişleri frekans ve malzeme yapısına bağlıdır.';flow='<strong>Dielektrik:</strong> E(t) → bağlı yük polarizasyonu → yeniden yayılan alan + olası soğurma.';mech='bound polarization'}
+    root.getElementById('pairVal').textContent=pair;root.getElementById('carrierVal').textContent=carrier;root.getElementById('statusText').textContent=status;root.getElementById('flowText').innerHTML=flow;
+    root.getElementById('electronCount').textContent=c.e;root.getElementById('holeCount').textContent=c.h;root.getElementById('fieldPeriod').textContent=(1/bnd().f>=1e-9?((1/bnd().f)*1e9).toPrecision(3)+' ns':((1/bnd().f)*1e15).toPrecision(3)+' fs');root.getElementById('mechanism').textContent=mech;
+    root.getElementById('sceneTitle').textContent=bnd().label+' · '+m.label+' · nano elektronik görünüm';
+    root.getElementById('sceneSubtitle').textContent=m.type==='semiconductor'?'İç alan, bağlı elektron polarizasyonu, serbest elektron/holler ve bant geçişleri.':'Atomik/moleküler alan cevabı.';
+    root.getElementById('overlayText').innerHTML=status;
+  }
+  function frame(ts){if(!last)last=ts;const sp=+root.getElementById('speed').value/10;if(running)time+=Math.min(.05,(ts-last)/1000)*sp;last=ts;updateUI();drawScene();drawBands();requestAnimationFrame(frame)}
+  root.querySelectorAll('[data-band]').forEach(btn=>btn.addEventListener('click',()=>{band=btn.dataset.band;root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b===btn))}));
+  root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
+  root.getElementById('resetBtn').addEventListener('click',function(){band='rf';root.getElementById('material').value='silicon';root.getElementById('doping').value='intrinsic';root.getElementById('fieldAmp').value=100;root.getElementById('density').value=10;root.getElementById('speed').value=10;['showField','showBound','showCarriers','showGeneration'].forEach(id=>root.getElementById(id).checked=true);root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='rf'));time=0});
+  window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
