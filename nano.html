@@ -39,7 +39,7 @@
     .metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:1rem}.metric span{font-size:.69rem;color:var(--muted)}
     .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
     .control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.82rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}
-    .control input[type=range]{width:100%;accent-color:var(--accent)}.control-hint{margin:-7px 0 13px;color:var(--muted);font-size:.71rem}.physics-note{padding:10px 11px;border-radius:11px;background:#f8fafc;border:1px solid var(--line);font-size:.75rem;color:#566980;margin:8px 0 14px}
+    .control input[type=range]{width:100%;accent-color:var(--accent)}.seg3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.seg3 button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 6px;font-size:.75rem;font-weight:800;color:#4d6078}.seg3 button.active{background:#17365f;color:#fff;border-color:#17365f}.angle-presets{display:flex;gap:6px;flex-wrap:wrap;margin:-5px 0 12px}.angle-presets button{border:1px solid var(--line);background:#f8fafc;border-radius:9px;padding:6px 8px;font-size:.7rem;font-weight:750;color:#52667f}.control-hint{margin:-7px 0 13px;color:var(--muted);font-size:.71rem}.physics-note{padding:10px 11px;border-radius:11px;background:#f8fafc;border:1px solid var(--line);font-size:.75rem;color:#566980;margin:8px 0 14px}
     select{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:#fff;color:#263a55}
     .switch{display:flex;align-items:center;gap:9px;font-size:.8rem;font-weight:750;margin:9px 0}.switch input{width:18px;height:18px;accent-color:var(--accent)}
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin:13px 0 17px}.btn{border:0;border-radius:11px;padding:9px 12px;background:#553b93;color:#fff;font-weight:800}.btn.alt{background:#eef2f7;color:#39516e;border:1px solid var(--line)}
@@ -83,7 +83,7 @@
       <div class="visual-head"><div><strong id="sceneTitle">RF · Silisyum · atomik taşıyıcı görünümü</strong><p id="sceneSubtitle">İç elektromanyetik alan, bağlı elektron polarizasyonu ve mevcut taşıyıcıların hareketi.</p></div><a href="mikro.html" class="btn alt" style="text-decoration:none">← Mikro görünüme dön</a></div>
       <div class="canvas-wrap">
         <canvas id="nanoCanvas" aria-label="Nano elektromanyetik malzeme etkileşim simülasyonu"></canvas>
-        <div class="legend"><span><i class="dot field"></i>iç E alanı</span><span><i class="dot bound"></i>bağlı elektron polarizasyonu</span><span><i class="dot e"></i>serbest elektron</span><span><i class="dot h"></i>hol</span><span><i class="dot event"></i>soğurma / e–h üretimi</span></div>
+        <div class="legend"><span><i class="dot field"></i>iç E alanı</span><span><i class="dot" style="background:#f4c46c"></i>yansıyan alan / foton</span><span><i class="dot bound"></i>bağlı elektron polarizasyonu</span><span><i class="dot e"></i>serbest elektron</span><span><i class="dot h"></i>hol</span><span><i class="dot event"></i>soğurma / e–h üretimi</span></div>
         <div class="overlay" id="overlayText">RF: hν ≪ E<sub>g</sub>. Yeni e–h çifti oluşmaz; mevcut taşıyıcılar ve bağlı elektronlar alan tarafından sürülür/polarize edilir.</div>
       </div>
       <div class="band-card"><canvas id="bandCanvas" aria-label="Silisyum enerji bant diyagramı"></canvas></div>
@@ -95,8 +95,11 @@
         <div class="metric"><strong id="carrierVal">mevcut taşıyıcı</strong><span>baskın elektronik cevap</span></div>
         <div class="metric"><strong id="wavelengthVal">3.00 m</strong><span>vakumdaki dalga boyu λ</span></div>
         <div class="metric"><strong id="attenuationVal">—</strong><span>1/e güç zayıflama uzunluğu Lₚ</span></div>
-        <div class="metric"><strong id="viewDepthVal">—</strong><span>gösterilen fiziksel derinlik</span></div>
+        <div class="metric"><strong id="viewDepthVal">—</strong><span>gösterilen yüzey-normal derinlik</span></div>
         <div class="metric"><strong id="edgePowerVal">—</strong><span>sağ kenarda kalan güç / içeri giren</span></div>
+        <div class="metric"><strong id="surfaceReflectVal">—</strong><span>yüzeyde yansıyan güç</span></div>
+        <div class="metric"><strong id="surfaceEnterVal">—</strong><span>malzemeye giren güç</span></div>
+        <div class="metric"><strong id="criticalVal">—</strong><span>X-ışını kritik grazing açı</span></div>
       </div>
     </section>
 
@@ -113,6 +116,11 @@
         <option value="n">n-tipi · elektron çoğunluk</option>
         <option value="p">p-tipi · hol çoğunluk</option>
       </select></div>
+      <div class="control"><label>Geliş açısı · yüzey normaline göre <output id="angleOut">0.00°</output></label><input id="angle" type="range" min="0" max="8995" step="5" value="0"></div>
+      <div class="control-hint">Yüzeye göre grazing açı: <strong id="grazingOut">90.00°</strong>. X-ışınında güçlü yansıma özellikle grazing açı çok küçükken görülür.</div>
+      <div class="angle-presets"><button id="normalBtn" type="button">Dik · 0°</button><button id="obliqueBtn" type="button">45°</button><button id="xrayGrazingBtn" type="button">X-grazing · 0.10°</button></div>
+      <div class="control" id="xrayFineWrap" style="display:none"><label>X-ışını grazing ince ayar <output id="xrayFineOut">0.10°</output></label><input id="xrayFine" type="range" min="5" max="500" step="5" value="10"></div>
+      <div class="control"><label>Polarizasyon</label><div class="seg3"><button id="polAvg" class="active" type="button">Ortalama</button><button id="polS" type="button">s / TE</button><button id="polP" type="button">p / TM</button></div></div>
       <div class="control"><label>Görsel alan ölçeği <output id="fieldOut">1.00×</output></label><input id="fieldAmp" type="range" min="20" max="180" value="100"></div>
       <div class="control-hint">Lineer modelde bu kontrol yalnız çizim genliğini değiştirir; malzemenin zayıflama uzunluğunu değiştirmez.</div>
       <div class="control"><label>Görsel taşıyıcı sayısı <output id="densityOut">1.0×</output></label><input id="density" type="range" min="4" max="20" value="10"></div>
@@ -147,7 +155,7 @@
   </section>
 
   <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
-  <div class="note"><strong>Yüzey normalizasyonu:</strong> Nano sayfa yüzeyde ne kadar gücün yansıdığını tekrar hesaplamaz. Malzeme içine geçmiş alan/güç <strong>z=0⁺ noktasında 1'e normalize edilir</strong> ve bundan sonraki iç zayıflama gösterilir. Fresnel/yüzey yansıması Mikro ve Yüzey & Frekans sayfalarının konusudur.</div>
+  <div class="note"><strong>Yüzey + iç ortam birlikte:</strong> Nano sayfa artık hava/vakum → malzeme sınırındaki Fresnel yansımasını da gösterir. Yüzeyde yansıyan güç kompleks kırılma indisi ve polarizasyondan hesaplanır; içeri giren kısım daha sonra malzemeye özgü zayıflama uzunluğuyla ilerler. X-ışınında normal gelişte yansıma genellikle çok küçüktür, fakat yüzeye çok küçük grazing açıda kırılma indisi 1'in biraz altında olduğu için total external reflection oluşabilir.</div>
   <div class="note"><strong>Zayıflama modeli:</strong> Nano sahnedeki yatay eksen artık fiziksel derinliğe bağlıdır. <strong>Lₚ</strong>, güç/şiddetin 1/e'ye düştüğü karakteristik uzunluktur: I(z)=I₀e<sup>−z/Lₚ</sup>. Klasik alan çizildiğinde genlik bunun karekökü gibi, E(z)=E₀e<sup>−z/(2Lₚ)</sup>, azalır. X-ışını modunda sinüzoidal alan yerine azalan foton akısı ve etkileşim olayları gösterilir.</div>
   <div class="note"><strong>Uzaysal ölçek:</strong> Yatay eksen zayıflama hesabı için fiziksel derinliği temsil eder; atom/molekül sembolleri bu eksende gerçek atom aralıklarıyla çizilmez, yalnız etkileşen maddeyi örnekleyen şematik işaretlerdir. Bu nedenle metre ölçeğindeki düşük-kayıplı bir ortamda bile atom simgeleri görünür kalabilir.</div>
   <div class="note"><strong>Silisyum görünür ışık:</strong> hν &gt; E<sub>g</sub> enerji bakımından e–h üretimine izin verir; ancak kristal silisyum dolaylı bant aralıklı olduğundan gerçek optik geçiş olasılıkları bant yapısı ve fonon momentumuyla belirlenir. 550 nm’de soğurma yine güçlüdür ve burada ölçülmüş soğurma katsayısı ölçeği kullanılır.</div>
@@ -159,7 +167,7 @@
 (function(){
   const root=document,nano=root.getElementById('nanoCanvas'),ctx=nano.getContext('2d'),bandCanvas=root.getElementById('bandCanvas'),bctx=bandCanvas.getContext('2d');
   const dpr=Math.min(window.devicePixelRatio||1,2),hEV=4.135667696e-15,c0=299792458,EgSi=1.12;
-  let band='rf',running=true,time=0,last=0;
+  let band='rf',polarization='avg',running=true,time=0,last=0;
   const bands={
     rf:{label:'RF',f:1e8,lambda:c0/1e8},
     micro:{label:'Mikrodalga',f:2.45e9,lambda:c0/2.45e9},
@@ -173,17 +181,74 @@
   // Water 550 nm: alpha≈0.0563 m^-1 => ≈17.8 m.
   // 2.45 GHz: representative penetration depths, strongly material/temperature dependent.
   const materials={
-    silicon:{label:'Silisyum',type:'semiconductor',gap:EgSi,lattice:true,powerDepth:{rf:20,micro:4,visible:1.56e-6,xray:126.6e-6},source:{rf:'yüksek-özdirençli Si preset',micro:'yüksek-özdirençli Si preset',visible:'Si 550 nm α≈6406 cm⁻¹',xray:'NIST XCOM 10 keV'}},
-    copper:{label:'Bakır',type:'metal',gap:0,lattice:true,powerDepth:{rf:3.3e-6,micro:0.67e-6,visible:17e-9,xray:5.17e-6},source:{rf:'Cu skin depth /2',micro:'Cu skin depth /2',visible:'optik k için temsilî preset',xray:'NIST XCOM 10 keV'}},
-    glass:{label:'Cam',type:'dielectric',gap:8.5,lattice:false,powerDepth:{rf:100,micro:15.7,visible:0.1,xray:263e-6},source:{rf:'düşük-kayıplı cam preset',micro:'borosilikat ~15.7 m',visible:'şeffaf borosilikat preset',xray:'NIST XCOM Pyrex 10 keV'}},
-    water:{label:'Su',type:'polar',gap:6.5,lattice:false,powerDepth:{rf:10,micro:0.018,visible:17.8,xray:1.88e-3},source:{rf:'saf su Debye ölçek preset',micro:'25 °C su ~1.8 cm',visible:'saf su 550 nm α≈0.056 m⁻¹',xray:'NIST XCOM 10 keV'}}
+    silicon:{
+      label:'Silisyum',type:'semiconductor',gap:EgSi,lattice:true,
+      nReal:{rf:3.42,micro:3.42,visible:3.9766},
+      xrayDelta:4.82e-6,
+      powerDepth:{rf:20,micro:4,visible:1.56e-6,xray:126.6e-6},
+      source:{rf:'yüksek-özdirençli Si preset',micro:'yüksek-özdirençli Si preset',visible:'Aspnes/Si optik sabitleri + α',xray:'NIST XCOM 10 keV'}
+    },
+    copper:{
+      label:'Bakır',type:'metal',gap:0,lattice:true,
+      nReal:{rf:null,micro:null,visible:.395},sigma:5.8e7,xrayDelta:1.67e-5,
+      powerDepth:{rf:3.3e-6,micro:0.67e-6,visible:17e-9,xray:5.17e-6},
+      source:{rf:'Cu skin depth',micro:'Cu skin depth',visible:'Querry/Cu optik sabitleri',xray:'NIST XCOM 10 keV'}
+    },
+    glass:{
+      label:'Cam',type:'dielectric',gap:8.5,lattice:false,
+      nReal:{rf:2.0,micro:2.05,visible:1.52},xrayDelta:4.4e-6,
+      powerDepth:{rf:100,micro:15.7,visible:0.1,xray:263e-6},
+      source:{rf:'düşük-kayıplı cam preset',micro:'borosilikat ~15.7 m',visible:'n≈1.52 şeffaf cam preset',xray:'NIST XCOM Pyrex 10 keV'}
+    },
+    water:{
+      label:'Su',type:'polar',gap:6.5,lattice:false,
+      nReal:{rf:8.94,micro:8.6,visible:1.3325},xrayDelta:2.30e-6,
+      powerDepth:{rf:10,micro:0.018,visible:17.8,xray:1.88e-3},
+      source:{rf:'saf su Debye ölçek preset',micro:'25 °C su ~1.8 cm',visible:'Hale–Querry su optik sabitleri',xray:'NIST XCOM 10 keV'}
+    }
   };
   function bnd(){return bands[band]} function mat(){return materials[root.getElementById('material').value]}
   function photon(){return hEV*bnd().f}
   function attenuation(){return mat().powerDepth[band]}
   function depthFactor(){return +root.getElementById('depthFactor').value/10}
   function viewDepth(){return attenuation()*depthFactor()}
-  function powerEnvelope(frac){return Math.exp(-Math.max(0,frac)*depthFactor())}
+  function C(re,im){return {re:re,im:im||0}}
+  function cadd(a,b){return C(a.re+b.re,a.im+b.im)}
+  function csub(a,b){return C(a.re-b.re,a.im-b.im)}
+  function cmul(a,b){return C(a.re*b.re-a.im*b.im,a.re*b.im+a.im*b.re)}
+  function cdiv(a,b){const d=b.re*b.re+b.im*b.im||1e-30;return C((a.re*b.re+a.im*b.im)/d,(a.im*b.re-a.re*b.im)/d)}
+  function cabs2(a){return a.re*a.re+a.im*a.im}
+  function csqrt(z){const r=Math.hypot(z.re,z.im),re=Math.sqrt(Math.max(0,(r+z.re)/2)),im=(z.im<0?-1:1)*Math.sqrt(Math.max(0,(r-z.re)/2));return C(re,im)}
+  function incidenceDeg(){return +root.getElementById('angle').value/100}
+  function grazingDeg(){return 90-incidenceDeg()}
+  function complexIndex(){
+    const m=mat(),b=bnd(),Lp=attenuation(),kappa=b.lambda/(4*Math.PI*Math.max(Lp,1e-30));
+    if(band==='xray')return C(1-m.xrayDelta,kappa);
+    if(m.type==='metal'&&(band==='rf'||band==='micro'))return C(kappa,kappa);
+    return C(m.nReal[band]||1,kappa);
+  }
+  function surfaceOptics(){
+    const m=mat(),N=complexIndex(),theta=incidenceDeg()*Math.PI/180,s=Math.sin(theta),c=Math.cos(theta);
+    const sinT=cdiv(C(s,0),N),cosT=csqrt(csub(C(1,0),cmul(sinT,sinT))),Ncos=cmul(N,cosT);
+    const rs=cdiv(csub(C(c,0),Ncos),cadd(C(c,0),Ncos));
+    const rp=cdiv(csub(C(N.re*c,N.im*c),cosT),cadd(C(N.re*c,N.im*c),cosT));
+    const Rs=Math.max(0,Math.min(1,cabs2(rs))),Rp=Math.max(0,Math.min(1,cabs2(rp)));
+    const R=polarization==='s'?Rs:(polarization==='p'?Rp:(Rs+Rp)/2);
+    let thetaT=0;
+    if(Math.abs(N.re)>1e-9){const st=Math.max(-.999999,Math.min(.999999,s/N.re));thetaT=Math.asin(st)}
+    if(m.type==='metal'&&band!=='xray')thetaT=0;
+    const critical=band==='xray'?Math.sqrt(2*m.xrayDelta)*180/Math.PI:null;
+    const evanescent=band==='xray'&&critical!==null&&grazingDeg()<critical;
+    const kz=cmul(N,cosT);
+    const evPowerDepth=band==='xray'&&Math.abs(kz.im)>1e-12?bnd().lambda/(4*Math.PI*Math.abs(kz.im)):Infinity;
+    const pathFactor=1/Math.max(.03,Math.abs(Math.cos(thetaT)));
+    return {N:N,thetaI:theta,thetaT:thetaT,cosT:cosT,Rs:Rs,Rp:Rp,R:R,T:1-R,critical:critical,evanescent:evanescent,evPowerDepth:evPowerDepth,pathFactor:pathFactor};
+  }
+  function powerEnvelope(frac){
+    const o=surfaceOptics(),f=Math.max(0,frac);
+    if(o.evanescent)return Math.exp(-f*viewDepth()/Math.max(o.evPowerDepth,1e-30));
+    return Math.exp(-f*depthFactor()*o.pathFactor);
+  }
   function fieldEnvelope(frac){return Math.sqrt(powerEnvelope(frac))}
   function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
   function resize(){resizeOne(nano,ctx,parseFloat(getComputedStyle(nano).height));resizeOne(bandCanvas,bctx,195)}
@@ -191,6 +256,10 @@
   function fmtLen(m){if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=1e-2)return (m*100).toFixed(2)+' cm';if(m>=1e-3)return (m*1e3).toFixed(2)+' mm';if(m>=1e-6)return (m*1e6).toFixed(2)+' µm';if(m>=1e-9)return (m*1e9).toFixed(2)+' nm';return (m*1e12).toFixed(2)+' pm'}
   function fmtTime(s){if(s>=1e-9)return (s*1e9).toPrecision(3)+' ns';if(s>=1e-12)return (s*1e12).toPrecision(3)+' ps';if(s>=1e-15)return (s*1e15).toPrecision(3)+' fs';return (s*1e18).toPrecision(3)+' as'}
   function phaseAt(frac){return time*3-frac*8*Math.PI}
+  function phaseAtPoint(x,y,left,right,h){
+    const o=surfaceOptics(),ux=Math.cos(o.thetaT),uy=-Math.sin(o.thetaT),s=((x-left)*ux+(y-h*.48)*uy)/Math.max(1,right-left);
+    return time*3-s*8*Math.PI;
+  }
   function drawArrow(x,y,dx,dy,color,a){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=a;ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+dx,y+dy);ctx.stroke();const ang=Math.atan2(dy,dx),hh=4;ctx.beginPath();ctx.moveTo(x+dx,y+dy);ctx.lineTo(x+dx-Math.cos(ang-.55)*hh,y+dy-Math.sin(ang-.55)*hh);ctx.lineTo(x+dx-Math.cos(ang+.55)*hh,y+dy-Math.sin(ang+.55)*hh);ctx.fill();ctx.globalAlpha=1}
   function drawLattice(m,w,h,left,right){
     const pts=[],gap=56,span=right-left;
@@ -202,7 +271,7 @@
     pts.forEach(p=>{
       const env=fieldEnvelope(p.frac);
       if(m.type==='polar'){
-        const orient=band==='xray'?0:Math.sin(phaseAt(p.frac))*.45*(+root.getElementById('fieldAmp').value/100)*env;
+        const orient=band==='xray'?0:Math.sin(phaseAtPoint(p.x,p.y,left,right,h))*.45*(+root.getElementById('fieldAmp').value/100)*env;
         const arm=10,half=.91;
         ctx.fillStyle='rgba(104,188,255,.9)';ctx.beginPath();ctx.arc(p.x,p.y,4.2,0,Math.PI*2);ctx.fill();
         [-half,half].forEach(a=>{const aa=orient+a,hx=p.x+Math.cos(aa)*arm,hy=p.y+Math.sin(aa)*arm;ctx.strokeStyle='rgba(210,226,246,.5)';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(hx,hy);ctx.stroke();ctx.fillStyle='rgba(244,205,126,.9)';ctx.beginPath();ctx.arc(hx,hy,2.4,0,Math.PI*2);ctx.fill()});
@@ -213,7 +282,7 @@
         if(band==='xray'){
           ctx.strokeStyle='rgba(173,141,255,'+(.12+.22*env)+')';ctx.beginPath();ctx.arc(p.x,p.y,10,0,Math.PI*2);ctx.stroke();
         }else{
-          const off=Math.sin(phaseAt(p.frac))*4*(+root.getElementById('fieldAmp').value/100)*env;
+          const off=Math.sin(phaseAtPoint(p.x,p.y,left,right,h))*4*(+root.getElementById('fieldAmp').value/100)*env;
           ctx.strokeStyle='rgba(173,141,255,.28)';ctx.beginPath();ctx.arc(p.x,p.y,11+Math.abs(off),0,Math.PI*2);ctx.stroke();
           ctx.fillStyle='rgba(111,197,255,.78)';ctx.beginPath();ctx.arc(p.x+off,p.y,3,0,Math.PI*2);ctx.fill();
         }
@@ -233,31 +302,91 @@
   function drawCarriers(w,h,left,right){
     if(!root.getElementById('showCarriers').checked)return;
     const c=carrierCounts(),amp=+root.getElementById('fieldAmp').value/100,span=right-left;
-    for(let i=0;i<c.e;i++){const baseX=left+35+((i*83)%Math.max(80,span-70)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=68+((i*61)%Math.max(80,h-120)),drift=band==='xray'?0:-E*14*amp*env;ctx.fillStyle='rgba(117,201,255,.9)';ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.sin(time*2+i)*3,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',baseX+drift-2,baseY+3)}
-    for(let i=0;i<c.h;i++){const baseX=left+58+((i*97)%Math.max(80,span-85)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=92+((i*73)%Math.max(80,h-145)),drift=band==='xray'?0:E*11*amp*env;ctx.strokeStyle='rgba(245,189,104,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.cos(time*2+i)*3,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',baseX+drift-2.5,baseY+3)}
+    for(let i=0;i<c.e;i++){const baseX=left+35+((i*83)%Math.max(80,span-70)),frac=(baseX-left)/span,env=fieldEnvelope(frac),baseY=68+((i*61)%Math.max(80,h-120)),E=Math.sin(phaseAtPoint(baseX,baseY,left,right,h)),drift=band==='xray'?0:-E*14*amp*env;ctx.fillStyle='rgba(117,201,255,.9)';ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.sin(time*2+i)*3,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',baseX+drift-2,baseY+3)}
+    for(let i=0;i<c.h;i++){const baseX=left+58+((i*97)%Math.max(80,span-85)),frac=(baseX-left)/span,env=fieldEnvelope(frac),baseY=92+((i*73)%Math.max(80,h-145)),E=Math.sin(phaseAtPoint(baseX,baseY,left,right,h)),drift=band==='xray'?0:E*11*amp*env;ctx.strokeStyle='rgba(245,189,104,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.cos(time*2+i)*3,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',baseX+drift-2.5,baseY+3)}
+  }
+  function drawWaveSegment(x0,y0,x1,y1,amp,period,color,alpha,phaseOffset){
+    const dx=x1-x0,dy=y1-y0,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+    ctx.strokeStyle=color;ctx.globalAlpha=alpha;ctx.lineWidth=2;ctx.beginPath();
+    for(let s=0;s<=L;s+=3){
+      const off=Math.sin(s/period*Math.PI*2-time*3+(phaseOffset||0))*amp,x=x0+ux*s+nx*off,y=y0+uy*s+ny*off;
+      if(s===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.globalAlpha=1;
+  }
+  function surfaceGeometry(w,h,left,right){
+    const o=surfaceOptics(),hitY=h*.48,ci=Math.cos(o.thetaI),si=Math.sin(o.thetaI);
+    let rayLen=230;
+    if(ci>.02)rayLen=Math.min(rayLen,(left-22)/ci);
+    if(si>.02)rayLen=Math.min(rayLen,(h-hitY-28)/si);
+    rayLen=Math.max(55,rayLen);
+    return {o:o,hitY:hitY,start:{x:left-ci*rayLen,y:hitY+si*rayLen},ref:{x:left-ci*rayLen,y:hitY-si*rayLen},rayLen:rayLen,span:right-left};
   }
   function drawClassicalField(w,h,left,right){
     if(!root.getElementById('showField').checked)return;
-    const amp=+root.getElementById('fieldAmp').value/100,span=right-left;
-    ctx.strokeStyle='rgba(128,224,177,.88)';ctx.lineWidth=2.2;ctx.beginPath();
-    for(let x=left;x<=right;x+=3){const frac=(x-left)/span,env=fieldEnvelope(frac),y=h*.46+Math.sin(phaseAt(frac))*24*amp*env;if(x===left)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
-    for(let x=left+25;x<right;x+=70){const frac=(x-left)/span,env=fieldEnvelope(frac),e=Math.sin(phaseAt(frac));drawArrow(x,h*.46-58,0,e*30*amp*env,'#80e0b1',.25+.45*env)}
-    ctx.fillStyle='rgba(128,224,177,.85)';ctx.font='11px system-ui';ctx.fillText('iç E alanı · genlik derinlikle azalıyor',left+12,h*.46-72);
+    const g=surfaceGeometry(w,h,left,right),o=g.o,amp=+root.getElementById('fieldAmp').value/100;
+    drawWaveSegment(g.start.x,g.start.y,left,g.hitY,8,30,'#8fd6ff',1,0);
+    if(o.R>1e-6)drawWaveSegment(left,g.hitY,g.ref.x,g.ref.y,8*Math.sqrt(o.R),30,'#f4c46c',Math.max(.3,Math.sqrt(o.R)),Math.PI*.35);
+
+    ctx.save();ctx.beginPath();ctx.rect(left,0,right-left,h);ctx.clip();
+    if(o.evanescent){
+      const px=Math.max(5,Math.min((right-left)*.28,(o.evPowerDepth/Math.max(viewDepth(),1e-30))*(right-left)*5));
+      const grad=ctx.createLinearGradient(left,g.hitY,left+px,g.hitY);
+      grad.addColorStop(0,'rgba(128,224,177,'+Math.min(.95,.3+.7*Math.sqrt(o.T))+')');grad.addColorStop(1,'rgba(128,224,177,0)');
+      ctx.fillStyle=grad;ctx.fillRect(left,g.hitY-55,px,110);
+      ctx.fillStyle='rgba(128,224,177,.9)';ctx.font='11px system-ui';ctx.fillText('evanescent yüzey alanı',left+8,g.hitY-64);
+    }else{
+      const ct=Math.max(.04,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=(right-left)/ct;
+      const ux=ct,uy=-st,nx=-uy,ny=ux,period=28,baseAmp=24*amp*Math.sqrt(o.T);
+      ctx.strokeStyle='rgba(128,224,177,.9)';ctx.lineWidth=2.2;ctx.beginPath();
+      for(let s=0;s<=L;s+=3){
+        const x=left+ux*s,y0=g.hitY+uy*s,frac=(x-left)/(right-left),env=fieldEnvelope(frac),off=Math.sin(s/period*Math.PI*2-time*3)*baseAmp*env;
+        const y=y0+ny*off,xx=x+nx*off;if(s===0)ctx.moveTo(xx,y);else ctx.lineTo(xx,y);
+      }
+      ctx.stroke();
+      ctx.fillStyle='rgba(128,224,177,.86)';ctx.font='11px system-ui';ctx.fillText('iç alan · kırılır ve derinlikle zayıflar',left+12,42);
+    }
+    ctx.restore();
+
+    ctx.fillStyle='rgba(143,214,255,.9)';ctx.font='11px system-ui';ctx.fillText('gelen',Math.max(12,g.start.x+8),Math.max(42,g.start.y-10));
+    if(o.R>.001){ctx.fillStyle='rgba(244,196,108,.95)';ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,g.ref.x+8),Math.max(42,g.ref.y-10))}
   }
   function drawXrayFlux(w,h,left,right){
     if(!root.getElementById('showField').checked)return;
-    const span=right-left,count=18;
-    ctx.fillStyle='rgba(143,214,255,.85)';ctx.font='11px system-ui';ctx.fillText('10 keV foton akısı · I(z)=I₀e⁻ᶻ/ᴸᵖ',left+12,43);
+    const g=surfaceGeometry(w,h,left,right),o=g.o,count=22,ci=Math.cos(o.thetaI),si=Math.sin(o.thetaI);
+    ctx.font='11px system-ui';
     for(let i=0;i<count;i++){
-      const travel=(time*.13+i/count)%1,frac=travel,prob=powerEnvelope(frac),x=left+frac*span,y=70+(i*29)%(h-125);
-      if(((i*37)%100)/100<prob){ctx.globalAlpha=.18+.82*prob;ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='rgba(143,214,255,.32)';ctx.beginPath();ctx.moveTo(Math.max(left,x-22),y);ctx.lineTo(x,y);ctx.stroke();ctx.globalAlpha=1}
+      const q=(time*.12+i/count)%1,x=g.start.x+(left-g.start.x)*q,y=g.start.y+(g.hitY-g.start.y)*q;
+      ctx.globalAlpha=.45+.55*(1-q);ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
     }
-    ctx.strokeStyle='rgba(143,214,255,.42)';ctx.lineWidth=1.5;ctx.beginPath();
-    for(let x=left;x<=right;x+=3){const frac=(x-left)/span,y=h*.46-65*powerEnvelope(frac);if(x===left)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
-    ctx.fillStyle='rgba(143,214,255,.7)';ctx.fillText('göreli foton akısı',left+12,h*.46-72);
+    const reflected=Math.round(count*o.R);
+    for(let i=0;i<reflected;i++){
+      const q=(time*.12+i/Math.max(1,reflected))%1,x=left+(g.ref.x-left)*q,y=g.hitY+(g.ref.y-g.hitY)*q;
+      ctx.globalAlpha=.5+.5*(1-q);ctx.fillStyle='#f4c46c';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+
+    ctx.save();ctx.beginPath();ctx.rect(left,0,right-left,h);ctx.clip();
+    if(o.evanescent){
+      const frac=Math.max(.004,Math.min(.24,o.evPowerDepth/Math.max(viewDepth(),1e-30)*5)),px=(right-left)*frac;
+      const grad=ctx.createLinearGradient(left,0,left+px,0);
+      grad.addColorStop(0,'rgba(143,214,255,.48)');grad.addColorStop(1,'rgba(143,214,255,0)');
+      ctx.fillStyle=grad;ctx.fillRect(left,0,px,h);
+      ctx.fillStyle='rgba(143,214,255,.9)';ctx.fillText('total external reflection · evanescent alan',left+10,44);
+    }else{
+      const ct=Math.max(.025,Math.cos(o.thetaT)),st=Math.sin(o.thetaT),L=(right-left)/ct,insideCount=Math.round(count*o.T);
+      for(let i=0;i<insideCount;i++){
+        const q=(time*.10+i/Math.max(1,insideCount))%1,s=L*q,x=left+ct*s,y=g.hitY-st*s,frac=(x-left)/(right-left),prob=powerEnvelope(frac);
+        if(((i*37)%100)/100<prob){ctx.globalAlpha=.16+.84*prob;ctx.fillStyle='#8fd6ff';ctx.beginPath();ctx.arc(x,y,3.1,0,Math.PI*2);ctx.fill()}
+      }
+      ctx.globalAlpha=1;ctx.fillStyle='rgba(143,214,255,.8)';ctx.fillText('içeri giren X-foton akısı · Beer–Lambert zayıflaması',left+10,44);
+    }
+    ctx.restore();
+    ctx.fillStyle='rgba(244,196,108,.95)';if(o.R>.002)ctx.fillText('yansıyan · %'+(100*o.R).toFixed(1),Math.max(12,g.ref.x+8),Math.max(42,g.ref.y-10));
   }
   function eventX(i,count,left,right){
-    const u=(i+.55)/(count+.2),F=1-Math.exp(-depthFactor()),zFrac=-Math.log(Math.max(1e-8,1-u*F))/depthFactor();
+    const o=surfaceOptics(),K=o.evanescent?viewDepth()/Math.max(o.evPowerDepth,1e-30):depthFactor()*o.pathFactor;
+    const u=(i+.55)/(count+.2),F=1-Math.exp(-K),zFrac=-Math.log(Math.max(1e-8,1-u*F))/Math.max(K,1e-9);
     return left+Math.min(.98,zFrac)*(right-left);
   }
   function drawGeneration(w,h,left,right){
@@ -269,6 +398,7 @@
       else if(m.type==='metal'){events=8;kind='heat'}
       else events=1;
     }else if(band==='xray'){events=m.type==='metal'?12:10;kind=m.type==='semiconductor'?'cascade':'ionize'}
+    const entry=surfaceOptics().T;events=Math.round(events*entry);
     if(!events)return;
     for(let i=0;i<events;i++){
       const x=eventX(i,events,left,right),frac=(x-left)/span,env=powerEnvelope(frac),y=65+((i*79)%Math.max(80,h-130)),pulse=.5+.5*Math.sin(time*5+i);
@@ -282,26 +412,20 @@
       if(band==='xray'&&kind==='cascade'){for(let j=0;j<3;j++){ctx.strokeStyle='rgba(239,120,152,.35)';ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+18+j*8,y-18+j*13);ctx.stroke()}}
     }
   }
-  function drawIncident(w,h,left){
-    if(!root.getElementById('showField').checked)return;
-    if(band==='xray'){
-      ctx.fillStyle='#8fd6ff';for(let i=0;i<8;i++){const x=35+((time*70+i*41)%(Math.max(30,left-45))),y=90+i*48%(h-120);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill()}
-    }else{
-      ctx.strokeStyle='#8fd6ff';ctx.lineWidth=2;ctx.beginPath();for(let x=35;x<=left;x+=3){const y=h*.46+Math.sin(x*.055-time*3)*22;if(x===35)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.stroke();
-    }
-  }
   function drawDepthAxis(w,h,left,right){
-    const D=viewDepth();ctx.strokeStyle='rgba(220,232,248,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,h-24);ctx.lineTo(right,h-24);ctx.stroke();
+    const D=viewDepth(),o=surfaceOptics();ctx.strokeStyle='rgba(220,232,248,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,h-24);ctx.lineTo(right,h-24);ctx.stroke();
     ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';
     ctx.fillText('0',left,h-9);ctx.fillText(fmtLen(D/2),left+(right-left)/2-18,h-9);ctx.fillText(fmtLen(D),right-42,h-9);
-    const lpX=left+(right-left)/depthFactor();
-    if(lpX<right){ctx.strokeStyle='rgba(245,189,104,.48)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(lpX,34);ctx.lineTo(lpX,h-28);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,189,104,.88)';ctx.fillText('Lₚ · güç %36.8',Math.min(right-88,lpX+5),h-34)}
+    const normal1e=o.evanescent?o.evPowerDepth:attenuation()/o.pathFactor;
+    const lpX=left+(right-left)*normal1e/Math.max(D,1e-30);
+    if(lpX>left&&lpX<right){ctx.strokeStyle='rgba(245,189,104,.48)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(lpX,34);ctx.lineTo(lpX,h-28);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,189,104,.88)';ctx.fillText(o.evanescent?'evanescent 1/e':'yol boyunca Lₚ → normal 1/e',Math.min(right-130,lpX+5),h-34)}
   }
   function drawScene(){
     const r=nano.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),left=w*.27,right=w*.96;
     ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
     ctx.fillStyle='rgba(109,132,165,.13)';ctx.fillRect(left,0,right-left,h);ctx.strokeStyle='rgba(220,232,248,.5)';ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(left,h);ctx.stroke();
-    drawIncident(w,h,left);
+    const geo=surfaceGeometry(w,h,left,right);ctx.strokeStyle='rgba(220,232,248,.22)';ctx.setLineDash([4,5]);ctx.beginPath();ctx.moveTo(left-75,geo.hitY);ctx.lineTo(left+75,geo.hitY);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';ctx.fillText(band==='xray'?('grazing '+grazingDeg().toFixed(3)+'°'):('normalden '+incidenceDeg().toFixed(1)+'°'),Math.max(8,left-112),geo.hitY-8);
     if(band==='xray')drawXrayFlux(w,h,left,right);else drawClassicalField(w,h,left,right);
     drawLattice(m,w,h,left,right);drawCarriers(w,h,left,right);drawGeneration(w,h,left,right);drawDepthAxis(w,h,left,right);
     ctx.fillStyle='rgba(225,235,247,.8)';ctx.font='12px system-ui';ctx.fillText('vakum / hava',18,24);ctx.fillText(m.label,left+12,24);
@@ -327,40 +451,105 @@
     }
   }
   function updateUI(){
-    const m=mat(),p=photon(),gap=m.gap||0,ratio=gap?p/gap:Infinity,c=carrierCounts(),Lp=attenuation(),D=viewDepth(),edge=powerEnvelope(1);
+    const m=mat(),p=photon(),gap=m.gap||0,ratio=gap?p/gap:Infinity,carr=carrierCounts(),Lp=attenuation(),D=viewDepth(),edge=powerEnvelope(1),o=surfaceOptics();
     root.getElementById('dopingWrap').style.display=m.type==='semiconductor'?'block':'none';
     root.getElementById('fieldOut').value=(+root.getElementById('fieldAmp').value/100).toFixed(2)+'×';
     root.getElementById('densityOut').value=(+root.getElementById('density').value/10).toFixed(1)+'×';
     root.getElementById('depthFactorOut').value=depthFactor().toFixed(1)+' × Lₚ';
     root.getElementById('speedOut').value=(+root.getElementById('speed').value/10).toFixed(1)+'×';
-    root.getElementById('photonVal').textContent=fmtE(p);root.getElementById('gapVal').textContent=m.type==='metal'?'0 eV':gap.toFixed(2)+' eV';
+    root.getElementById('angleOut').value=incidenceDeg().toFixed(2)+'°';
+    root.getElementById('grazingOut').textContent=grazingDeg().toFixed(2)+'°';
+    root.getElementById('xrayFineWrap').style.display=band==='xray'?'block':'none';
+    if(band==='xray'&&grazingDeg()>=.05&&grazingDeg()<=5){
+      root.getElementById('xrayFine').value=Math.round(grazingDeg()*100);
+      root.getElementById('xrayFineOut').value=grazingDeg().toFixed(2)+'°';
+    }
+    root.getElementById('polAvg').classList.toggle('active',polarization==='avg');
+    root.getElementById('polS').classList.toggle('active',polarization==='s');
+    root.getElementById('polP').classList.toggle('active',polarization==='p');
+
+    root.getElementById('photonVal').textContent=fmtE(p);
+    root.getElementById('gapVal').textContent=m.type==='metal'?'0 eV':gap.toFixed(2)+' eV';
     root.getElementById('ratioVal').textContent=isFinite(ratio)?(ratio<.001?ratio.toExponential(2):ratio.toFixed(2)):'—';
-    root.getElementById('wavelengthVal').textContent=fmtLen(bnd().lambda);root.getElementById('attenuationVal').textContent=fmtLen(Lp);root.getElementById('viewDepthVal').textContent=fmtLen(D);root.getElementById('edgePowerVal').textContent=(100*edge).toFixed(edge>.01?1:3)+'%';
+    root.getElementById('wavelengthVal').textContent=fmtLen(bnd().lambda);
+    root.getElementById('attenuationVal').textContent=fmtLen(Lp);
+    root.getElementById('viewDepthVal').textContent=fmtLen(D);
+    root.getElementById('edgePowerVal').textContent=(100*edge).toFixed(edge>.01?1:3)+'%';
+    root.getElementById('surfaceReflectVal').textContent=(100*o.R).toFixed(o.R>.001?1:4)+'%';
+    root.getElementById('surfaceEnterVal').textContent=(100*o.T).toFixed(o.T>.001?1:4)+'%';
+    root.getElementById('criticalVal').textContent=band==='xray'?(o.critical.toFixed(3)+'° grazing'):'—';
+
     let pair='Hayır',carrier='polarizasyon',status='',flow='',mech='polarization',attModel=band==='xray'?'Beer–Lambert / foton akısı':'E∝e⁻ᶻ/(²ᴸᵖ)';
     if(m.type==='semiconductor'){
       if(band==='rf'){carrier='mevcut taşıyıcı';status='RF foton enerjisi bant aralığından milyonlarca kat küçüktür. Yeni e–h çifti oluşmaz. Bu yüksek-özdirençli Si presetinde alan uzun mesafede yavaşça zayıflar; n/p seçimi tek başına zayıflamayı belirlemez.';flow='<strong>RF:</strong> E(t) → bağlı elektron polarizasyonu + mevcut taşıyıcı drift hareketi → saçılma/kayıp.';mech='drift + polarization'}
       else if(band==='micro'){carrier='mevcut taşıyıcı';status='2.45 GHz foton enerjisi E_g’den çok küçüktür. Yeni e–h üretimi yoktur; AC taşıyıcı hareketi ve dielektrik/iletkenlik kaybı alanı zayıflatır.';flow='<strong>Mikrodalga:</strong> E(t) → AC taşıyıcı cevabı → saçılma / ısı.';mech='AC transport'}
-      else if(band==='visible'){pair=p>=gap?'Evet':'Hayır';carrier='e–h üretimi';status='550 nm ışık Si içinde güçlü biçimde soğurulur. Güç 1/e’ye yaklaşık 1.56 µm’de düşer; soğurulan foton e–h çifti oluşturabilir.';flow='<strong>Görünür:</strong> foton soğurulur → valans elektronu iletim bandına çıkar → e⁻ + hol.';mech='interband absorption'}
-      else{pair='Çoklu';carrier='ikincil kaskat';status='10 keV X-ışını Si içinde sonsuza kadar gitmez: NIST tabanlı 1/e güç zayıflama uzunluğu yaklaşık 127 µm’dir. Soğurulan/saçılan fotonlar hızlı ikincil elektronlar ve çoklu e–h çiftleri oluşturabilir.';flow='<strong>X-ışını:</strong> azalan foton akısı → fotoelektrik/saçılma → hızlı elektron → iyonizasyon kaskadı.';mech='photon attenuation + cascade'}
+      else if(band==='visible'){pair=p>=gap?'Evet':'Hayır';carrier='e–h üretimi';status='550 nm ışık Si içinde güçlü biçimde soğurulur. Soğurulan foton e–h çifti oluşturabilir; yüzeyde ayrıca Fresnel yansıması vardır.';flow='<strong>Görünür:</strong> Fresnel yansıması + içeri giren foton → interband soğurma → e⁻ + hol.';mech='Fresnel + interband'}
+      else{pair='Çoklu';carrier='ikincil kaskat';status='10 keV X-ışını Si içinde sonsuza kadar gitmez; içeri giren foton akısı zayıflar ve soğurulan/saçılan fotonlar ikincil elektronlar ile çoklu e–h çiftleri oluşturabilir.';flow='<strong>X-ışını:</strong> yüzey Fresnel cevabı → azalan foton akısı → fotoelektrik/saçılma → iyonizasyon kaskadı.';mech='x-ray Fresnel + cascade'}
     }else if(m.type==='metal'){
       pair='Uygulanmaz';carrier='serbest elektron';
-      if(band==='xray'){status='10 keV X-ışını bakırda çok güçlü zayıflar: 1/e güç uzunluğu yaklaşık 5.2 µm. 10 keV ayrıca Cu K-kenarının (~8.98 keV) hemen üzerindedir; fotoelektrik soğurma güçlüdür. Kalan foton akısı derinlikle üstel azalır.';flow='<strong>Cu + X:</strong> I(z)=I₀e⁻ᵘᶻ → fotoelektrik/saçılma → hızlı elektronlar.';mech='NIST XCOM attenuation'}
-      else{status='Bakırda alan yüzeye yakın bölgede hızla söner; RF/mikrodalgada skin effect, görünürde optik soğurma baskındır.';flow='<strong>Metal:</strong> E(t) → serbest elektron akımı → yeniden yayım + Joule/optik kayıp.';mech='skin/optical loss'}
+      if(band==='xray'){status='10 keV X-ışını bakırda içeri girdikten sonra yaklaşık 5.2 µm 1/e güç uzunluğuyla zayıflar. Grazing geliş kritik açının altındaysa yüzey yansıması çok güçlü olabilir.';flow='<strong>Cu + X:</strong> grazing Fresnel yansıması → içeri giren fotonlarda fotoelektrik/saçılma → hızlı elektronlar.';mech='x-ray Fresnel + XCOM'}
+      else if(band==='visible'){status='Bakır görünür ışıkta hem güçlü Fresnel yansıması hem de yüzeye yakın optik soğurma gösterir. İçeri giren küçük bölüm yaklaşık onlarca nm içinde sönümlenir.';flow='<strong>Cu + görünür:</strong> güçlü yüzey yansıması → kalan alanın skin/optik soğurması.';mech='metal Fresnel + loss'}
+      else{status='Bakırda yüzey yansıması çok yüksektir; içeri giren küçük alan skin-depth ölçeğinde hızla söner.';flow='<strong>Metal:</strong> güçlü Fresnel/iletken yüzey cevabı → yüzey akımı → skin-depth kaybı.';mech='conductor reflection'}
     }else{
       pair='Uygulanmaz';carrier=m.type==='polar'?'dipol/bağlı yük':'bağlı elektron';
-      if(band==='xray'){status=(m.type==='polar'?'Su':'Borosilikat cam')+' için 10 keV foton akısı derinlikle üstel azalır. Buradaki olay semiconductor “hol” üretimi değil, atomik/moleküler iyonizasyon ve saçılmadır.';flow='<strong>X-ışını:</strong> foton akısı → atomik iyonizasyon / saçılma → ikincil elektronlar.';mech='photon attenuation'}
-      else{status='Bu malzemede temel nano cevap bağlı yüklerin veya moleküler dipollerin polarizasyonudur. Alan malzemeye özgü kayıpla derinlik boyunca zayıflar.';flow='<strong>Dielektrik:</strong> E(t) → polarizasyon → yeniden yayım + kayıp.';mech='bound polarization'}
+      if(band==='xray'){status=(m.type==='polar'?'Su':'Cam')+' için normal gelişte X-ışını yüzey yansıması çok küçüktür; çok küçük grazing açıda ise total external reflection ortaya çıkabilir. İçeri giren fotonlar atomik iyonizasyon ve saçılmayla zayıflar.';flow='<strong>X-ışını:</strong> açıya bağlı Fresnel yansıması → foton zayıflaması → atomik iyonizasyon / saçılma.';mech='x-ray Fresnel + attenuation'}
+      else{status='Yüzeyde kırılma indisi farkından Fresnel yansıması oluşur; içeri giren alan malzemeye özgü polarizasyon ve kayıpla derinlik boyunca zayıflar.';flow='<strong>Dielektrik:</strong> Fresnel yansıması → kırılan alan → polarizasyon → kayıp.';mech='Fresnel + polarization'}
     }
-    root.getElementById('pairVal').textContent=pair;root.getElementById('carrierVal').textContent=carrier;root.getElementById('statusText').textContent=status;root.getElementById('flowText').innerHTML=flow;
-    root.getElementById('electronCount').textContent=c.e;root.getElementById('holeCount').textContent=c.h;root.getElementById('fieldPeriod').textContent=fmtTime(1/bnd().f);root.getElementById('mechanism').textContent=mech;root.getElementById('attenuationModel').textContent=attModel;root.getElementById('sourceVal').textContent=m.source[band];
+
+    let surfaceSummary=' Yüzeyde gücün %'+(100*o.R).toFixed(1)+' kadarı yansır, %'+(100*o.T).toFixed(1)+' kadarı malzemeye girer.';
+    if(band==='xray'){
+      if(o.evanescent){
+        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'°, kritik açı '+o.critical.toFixed(3)+'°: total external reflection bölgesi; yüzeyde R≈%'+(100*o.R).toFixed(1)+'. İçeride yalnız kısa menzilli evanescent alan kalır.';
+        attModel='evanescent + absorption';
+      }else{
+        surfaceSummary=' Grazing açı '+grazingDeg().toFixed(3)+'° kritik '+o.critical.toFixed(3)+'° değerinin üzerinde; R≈%'+(100*o.R).toFixed(2)+' ve kalan foton akısı içeri girer.';
+      }
+    }
+    status+=surfaceSummary;
+
+    root.getElementById('pairVal').textContent=pair;
+    root.getElementById('carrierVal').textContent=carrier;
+    root.getElementById('statusText').textContent=status;
+    root.getElementById('flowText').innerHTML=flow;
+    root.getElementById('electronCount').textContent=carr.e;
+    root.getElementById('holeCount').textContent=carr.h;
+    root.getElementById('fieldPeriod').textContent=fmtTime(1/bnd().f);
+    root.getElementById('mechanism').textContent=mech;
+    root.getElementById('attenuationModel').textContent=attModel;
+    root.getElementById('sourceVal').textContent=m.source[band];
     root.getElementById('sceneTitle').textContent=bnd().label+' · '+m.label+' · nano elektronik görünüm';
-    root.getElementById('sceneSubtitle').textContent=band==='xray'?'Foton akısı, zayıflama ve atomik etkileşimler.':(m.type==='semiconductor'?'İç alan, polarizasyon, serbest taşıyıcılar ve bant geçişleri.':'Atomik/moleküler alan cevabı.');
-    root.getElementById('overlayText').innerHTML=status+' <strong>İç alan normalize:</strong> z=0⁺ için güç %100. <strong>Görüntü:</strong> '+fmtLen(D)+' = '+depthFactor().toFixed(1)+' Lₚ; sağ kenarda içeri giren gücün ≈ %'+(100*edge).toFixed(1)+' kadarı kalır.';
+    root.getElementById('sceneSubtitle').textContent='Yüzey yansıması + malzeme içi elektronik cevap ve zayıflama.';
+    const totalEdge=o.T*edge;
+    root.getElementById('overlayText').innerHTML=status+' <strong>Sağ kenar:</strong> gelen gücün yaklaşık %'+(100*totalEdge).toFixed(totalEdge>.001?1:3)+' kadarı bu derinliğe kadar ulaşır.';
   }
   function frame(ts){if(!last)last=ts;const sp=+root.getElementById('speed').value/10;if(running)time+=Math.min(.05,(ts-last)/1000)*sp;last=ts;updateUI();drawScene();drawBands();requestAnimationFrame(frame)}
-  root.querySelectorAll('[data-band]').forEach(btn=>btn.addEventListener('click',()=>{band=btn.dataset.band;root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b===btn))}));
+  root.querySelectorAll('[data-band]').forEach(btn=>btn.addEventListener('click',()=>{
+    band=btn.dataset.band;
+    root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b===btn));
+    if(band==='xray'){root.getElementById('angle').value=8990;root.getElementById('xrayFine').value=10}
+    else root.getElementById('angle').value=0;
+  }));
+  root.getElementById('angle').addEventListener('input',()=>{
+    if(band==='xray'){const g=grazingDeg();if(g>=.05&&g<=5)root.getElementById('xrayFine').value=Math.round(g*100)}
+  });
+  root.getElementById('xrayFine').addEventListener('input',function(){root.getElementById('angle').value=Math.round((90-(+this.value/100))*100)});
+  root.getElementById('normalBtn').addEventListener('click',()=>{root.getElementById('angle').value=0});
+  root.getElementById('obliqueBtn').addEventListener('click',()=>{root.getElementById('angle').value=4500});
+  root.getElementById('xrayGrazingBtn').addEventListener('click',()=>{
+    band='xray';root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='xray'));
+    root.getElementById('angle').value=8990;root.getElementById('xrayFine').value=10;
+  });
+  root.getElementById('polAvg').addEventListener('click',()=>{polarization='avg'});
+  root.getElementById('polS').addEventListener('click',()=>{polarization='s'});
+  root.getElementById('polP').addEventListener('click',()=>{polarization='p'});
   root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
-  root.getElementById('resetBtn').addEventListener('click',function(){band='rf';root.getElementById('material').value='silicon';root.getElementById('doping').value='intrinsic';root.getElementById('fieldAmp').value=100;root.getElementById('density').value=10;root.getElementById('depthFactor').value=40;root.getElementById('speed').value=10;['showField','showBound','showCarriers','showGeneration'].forEach(id=>root.getElementById(id).checked=true);root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='rf'));time=0});
+  root.getElementById('resetBtn').addEventListener('click',function(){
+    band='rf';polarization='avg';root.getElementById('material').value='silicon';root.getElementById('doping').value='intrinsic';
+    root.getElementById('fieldAmp').value=100;root.getElementById('density').value=10;root.getElementById('depthFactor').value=40;root.getElementById('speed').value=10;
+    root.getElementById('angle').value=0;root.getElementById('xrayFine').value=10;
+    ['showField','showBound','showCarriers','showGeneration'].forEach(id=>root.getElementById(id).checked=true);
+    root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='rf'));time=0;
+  });
   window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
 })();
 </script>
