@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>CSI — Dalgalar</title>
+  <meta name="description" content="CSI ile OFDM alt taşıyıcılarının kompleks kanal cevabını, genlik-faz bilgisini ve çoklu yol gecikme profilini etkileşimli olarak inceleyin.">
+  <style>
+    :root{--bg:#f6f8fc;--surface:#fff;--text:#142033;--muted:#607087;--line:#dbe3ef;--nav:#0f1f3d;--nav2:#15305d;--accent:#6845c6;--shadow:0 18px 45px rgba(20,32,51,.09);--radius:20px}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+    button,input,select{font:inherit}button{cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--nav),var(--nav2));color:#fff;box-shadow:0 8px 24px rgba(15,31,61,.18)}
+    .topbar-inner{max-width:1360px;margin:auto;display:flex;gap:18px;align-items:center;padding:12px 20px}
+    .brand{font-weight:800;letter-spacing:-.03em;white-space:nowrap}.nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav a{text-decoration:none;font-size:.9rem;padding:8px 11px;border-radius:999px;color:#dce7fb;white-space:nowrap}.nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff}.nav a[aria-current="page"]{background:rgba(255,255,255,.18);color:#fff}
+    main{max-width:1360px;margin:auto;padding:26px 20px 56px}.intro{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:end;margin-bottom:18px}.intro h1{font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.05;letter-spacing:-.04em;margin:0 0 10px}.intro p{margin:0;color:var(--muted);font-size:1.01rem}.intro-note{padding:17px 18px;border-radius:17px;background:#fff;border:1px solid var(--line);color:#4d5f76}.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eee9ff;color:#5f4998;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .freqs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:18px 0}.freq{border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px;text-align:left;color:#41536b}.freq strong{display:block}.freq span{display:block;color:var(--muted);font-size:.74rem;margin-top:3px}.freq.active{background:#142a4d;color:#fff;border-color:#142a4d}.freq.active span{color:#d9e5f7}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 355px;gap:18px;align-items:start}.card,.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.visual-card{overflow:hidden}.visual-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 17px;border-bottom:1px solid var(--line)}.visual-head p{margin:3px 0 0;color:var(--muted);font-size:.8rem}
+    .scene{position:relative;background:#071427}.scene canvas{display:block;width:100%;height:260px}.legend{position:absolute;right:14px;top:14px;display:flex;gap:9px;flex-wrap:wrap;max-width:430px;padding:7px 9px;border-radius:10px;background:rgba(7,20,39,.82);color:#e7eef8;font-size:.7rem;backdrop-filter:blur(5px)}.legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.overlay{position:absolute;left:14px;bottom:14px;max-width:min(720px,calc(100% - 28px));padding:9px 11px;border-radius:10px;background:rgba(7,20,39,.84);color:#e5edf8;font-size:.75rem;backdrop-filter:blur(5px)}
+    .plots{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);background:#fbfcfe}.plot{padding:12px 14px;min-width:0}.plot:first-child{border-right:1px solid var(--line)}.plot canvas{display:block;width:100%;height:230px}.delay{border-top:1px solid var(--line);padding:12px 14px;background:#fff}.delay canvas{display:block;width:100%;height:190px}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line)}.metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:.98rem}.metric span{font-size:.68rem;color:var(--muted)}
+    .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}.control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}.control input[type=range]{width:100%;accent-color:var(--accent)}select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#263a55}.switch{display:flex;align-items:center;gap:8px;font-size:.77rem;font-weight:750;margin:9px 0}.switch input{width:17px;height:17px;accent-color:var(--accent)}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{border:0;border-radius:10px;padding:8px 11px;background:#543c91;color:#fff;font-weight:800}.actions button.alt{background:#eef2f7;color:#39516e;border:1px solid var(--line)}.status{padding:11px 12px;border-radius:12px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.78rem;margin-top:12px}
+    .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.step,.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.step b{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:#152d52;color:#fff;font-size:.75rem;margin-bottom:8px}.step h3,.info h3{font-size:.92rem;margin:0 0 6px}.step p,.info p{font-size:.8rem;color:#586b82;margin:0}.formula{margin-top:9px;padding:8px 9px;border-radius:9px;background:#101f37;color:#dce7f5;font:600 .7rem "SFMono-Regular",Consolas,monospace}
+    .infos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.info ul{padding-left:18px;margin:8px 0 0;color:#586b82;font-size:.78rem}.note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.82rem}
+    @media(max-width:1000px){.intro,.layout{grid-template-columns:1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr}.flow{grid-template-columns:1fr 1fr}}
+    @media(max-width:700px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.freqs,.metrics,.flow,.infos,.plots{grid-template-columns:1fr}.plot:first-child{border-right:0;border-bottom:1px solid var(--line)}}
+  </style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner"><div class="brand">dalgalar</div><nav class="nav" aria-label="Sayfalar"><a href="index.html">Altyapı</a><a href="2d.html">2B Girişim</a><a href="3d.html">3B Girişim</a><a href="yuzey.html">Yüzey & Frekans</a><a href="mikro.html">Mikro</a><a href="nano.html">Nano</a><a href="txrx.html">TX / RX</a><a href="rssi.html">RSSI</a><a href="csi.html" aria-current="page">CSI</a></nav></div></header>
+<main>
+  <section class="intro">
+    <div><span class="badge">Kanal ölçümü</span><h1>CSI · kanalın genlik ve faz haritası</h1><p>OFDM alt taşıyıcılarının kompleks kanal cevabını inceleyin; çoklu yolun frekansa göre genlik çukurları, faz eğimi ve gecikme tepeleri oluşturduğunu görün.</p></div>
+    <div class="intro-note"><strong>Temel fark:</strong> RSSI kanalı tek güç değerine indirger. CSI ise her alt taşıyıcı ve çoğu sistemde her TX–RX anten çifti için <strong>kompleks</strong> kanal katsayısı verir: <strong>H<sub>k</sub>=A<sub>k</sub>e<sup>jφk</sup></strong>.</div>
+  </section>
+
+  <div class="freqs">
+    <button class="freq" data-f="2.412e9" type="button"><strong>2.412 GHz</strong><span>Wi-Fi 2.4 GHz örneği</span></button>
+    <button class="freq active" data-f="5.18e9" type="button"><strong>5.18 GHz</strong><span>Wi-Fi 5 GHz örneği</span></button>
+    <button class="freq" data-f="5.805e9" type="button"><strong>5.805 GHz</strong><span>5.8 GHz örneği</span></button>
+  </div>
+
+  <div class="layout">
+    <section class="card visual-card">
+      <div class="visual-head"><div><strong id="sceneTitle">5.18 GHz · 20 MHz · 64 FFT bin</strong><p>Çoklu yol modeli: doğrudan yol + hareketli yansıma + zayıf sabit yansıma.</p></div></div>
+      <div class="scene"><canvas id="scene" aria-label="CSI çoklu yol geometrisi"></canvas><div class="legend"><span><i class="dot" style="background:#81d4ff"></i>doğrudan</span><span><i class="dot" style="background:#efae70"></i>hareketli yansıma</span><span><i class="dot" style="background:#b998e8"></i>sabit yansıma</span></div><div class="overlay" id="overlayText">Aynı yollar, farklı alt taşıyıcılarda farklı fazlarla toplanır.</div></div>
+      <div class="plots"><div class="plot"><canvas id="ampPlot" aria-label="CSI alt taşıyıcı genliği"></canvas></div><div class="plot"><canvas id="phasePlot" aria-label="CSI alt taşıyıcı fazı"></canvas></div></div>
+      <div class="delay"><canvas id="delayPlot" aria-label="CSI gecikme profili"></canvas></div>
+      <div class="metrics">
+        <div class="metric"><strong id="nVal">64</strong><span>FFT / alt taşıyıcı örneği</span></div>
+        <div class="metric"><strong id="dfVal">312.5 kHz</strong><span>alt taşıyıcı aralığı Δf</span></div>
+        <div class="metric"><strong id="delayResVal">50 ns</strong><span>yaklaşık gecikme çözünürlüğü 1/B</span></div>
+        <div class="metric"><strong id="maxDelayVal">3.20 µs</strong><span>gecikme periyodu 1/Δf</span></div>
+        <div class="metric"><strong id="rmsVal">— ns</strong><span>RMS delay spread</span></div>
+        <div class="metric"><strong id="cohVal">— MHz</strong><span>yaklaşık coherence bandwidth</span></div>
+        <div class="metric"><strong id="avgVal">— dB</strong><span>ortalama |H|²</span></div>
+        <div class="metric"><strong id="rippleVal">— dB</strong><span>CSI genlik ripple</span></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>CSI kanal modeli</h2>
+      <div class="control"><label for="bandwidth">Bant genişliği</label><select id="bandwidth"><option value="20">20 MHz · 64 FFT</option><option value="40">40 MHz · 128 FFT</option><option value="80">80 MHz · 256 FFT</option></select></div>
+      <div class="control"><label>TX–RX mesafesi <output id="distanceOut">8.0 m</output></label><input id="distance" type="range" min="10" max="500" step="1" value="151"></div>
+      <div class="control"><label>Yansıma alan katsayısı a₁ <output id="reflOut">0.60</output></label><input id="reflection" type="range" min="0" max="90" step="1" value="60"></div>
+      <div class="control"><label>Yansıma ek yol ΔR₁ <output id="excessOut">1.20 m</output></label><input id="excess" type="range" min="0" max="500" step="1" value="120"></div>
+      <div class="control"><label>Hareket genliği <output id="motionOut">3.0 cm</output></label><input id="motion" type="range" min="0" max="30" step="1" value="3"></div>
+      <div class="control"><label>Hareket hızı <output id="speedOut">0.40 Hz</output></label><input id="speed" type="range" min="0" max="150" step="1" value="40"></div>
+      <div class="control"><label>Sabit ikinci yol a₂ <output id="refl2Out">0.25</output></label><input id="reflection2" type="range" min="0" max="60" step="1" value="25"></div>
+      <div class="control"><label>İkinci yol ek mesafe <output id="excess2Out">3.00 m</output></label><input id="excess2" type="range" min="0" max="800" step="1" value="300"></div>
+      <div class="control"><label>Ölçüm ortak faz ofseti <output id="phaseOffsetOut">55°</output></label><input id="phaseOffset" type="range" min="-180" max="180" step="1" value="55"></div>
+      <label class="switch"><input id="calibratePhase" type="checkbox"> Ortak faz ofsetini kaldır</label>
+      <div class="actions"><button id="pauseBtn" type="button">Duraklat</button><button id="resetBtn" class="alt" type="button">Sıfırla</button></div>
+      <div class="status" id="statusText">Ham CSI fazı kanal geometrisine ek olarak ölçüm zinciri faz ofsetleri içerebilir.</div>
+    </aside>
+  </div>
+
+  <section class="flow">
+    <article class="step"><b>1</b><h3>OFDM alt taşıyıcıları</h3><p>Geniş bant kanal, birbirine yakın birçok dar bant frekans örneğiyle ölçülür.</p><div class="formula">fₖ=f_c+kΔf</div></article>
+    <article class="step"><b>2</b><h3>Her yol faz taşır</h3><p>Bir yolun gecikmesi, her alt taşıyıcıda farklı kompleks faz döndürür.</p><div class="formula">Hₖ=Σ aₚ e^(−j2πfₖτₚ)</div></article>
+    <article class="step"><b>3</b><h3>CSI genlik + faz olur</h3><p>Frekansa göre çukurlar, tepeler ve faz eğimi çoklu yol geometrisinin izini taşır.</p><div class="formula">Hₖ=Aₖe^(jφₖ)</div></article>
+    <article class="step"><b>4</b><h3>Gecikme alanına geçilebilir</h3><p>Frekans örneklerinin ters dönüşümü, farklı gecikmeli yolların yaklaşık profilini verir.</p><div class="formula">h(τ)≈IFFT{Hₖ}</div></article>
+  </section>
+
+  <section class="infos">
+    <article class="info"><h3>CSI neden RSSI'den daha zengin?</h3><p>RSSI bütün kanal bilgisini tek güce indirger; CSI frekans eksenindeki yapıyı korur.</p><ul><li>alt taşıyıcı başına genlik</li><li>alt taşıyıcı başına faz</li><li>frekans-seçici fading</li><li>MIMO sistemlerde anten çifti başına H<sub>r,t,k</sub></li></ul></article>
+    <article class="info"><h3>Ham CSI fazına neden dikkat?</h3><p>Ölçülen faz yalnız geometrik yayılım değildir. Gerçek donanımda ortak faz, lineer faz eğimi ve zincirler arası ofset oluşabilir.</p><ul><li>CFO / residual frequency offset</li><li>sampling/timing offset</li><li>packet detection delay</li><li>RF zinciri sabit faz farkları</li><li>cihaz/driver'a özgü kalibrasyon</li></ul></article>
+  </section>
+
+  <div class="note"><strong>Çözünürlük:</strong> Gecikme alanında kabaca ayırabileceğiniz zaman ölçeği bant genişliğiyle belirlenir: Δτ≈1/B. 20 MHz için yaklaşık 50 ns, 80 MHz için yaklaşık 12.5 ns. Bu, serbest uzay yol farkı olarak yaklaşık 15 m ve 3.75 m ölçeklerine karşılık gelir; daha küçük hareketler yine CSI faz/genlik desenini değiştirebilir fakat ayrı gecikme tepeleri olarak çözülmeyebilir.</div>
+  <div class="note"><strong>Simülasyon sınırı:</strong> Buradaki CSI, ideal OFDM kanal katsayısı modelidir. Gerçek cihazlarda hangi alt taşıyıcıların raporlandığı, nicemleme, AGC, pilot/DC/guard taşıyıcılar, MIMO zincirleri ve faz kalibrasyonu chipset/firmware/driver'a bağlıdır.</div>
+</main>
+
+<script>
+(function(){
+  const root=document,c0=299792458,dpr=Math.min(window.devicePixelRatio||1,2);
+  const sc=root.getElementById('scene'),sctx=sc.getContext('2d'),amp=root.getElementById('ampPlot'),actx=amp.getContext('2d'),phase=root.getElementById('phasePlot'),pctx=phase.getContext('2d'),delay=root.getElementById('delayPlot'),dctx=delay.getContext('2d');
+  let fc=5.18e9,running=true,t=0,last=0;
+  function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
+  function resize(){resizeOne(sc,sctx,260);resizeOne(amp,actx,230);resizeOne(phase,pctx,230);resizeOne(delay,dctx,190)}
+  function distance(){const x=+root.getElementById('distance').value/500;return .5*Math.pow(100,x)}
+  function params(time){
+    const B=+root.getElementById('bandwidth').value*1e6,N=Math.round(B/312500),df=B/N,d=distance(),a1=+root.getElementById('reflection').value/100,a2=+root.getElementById('reflection2').value/100;
+    const motion=+root.getElementById('motion').value/100,speed=+root.getElementById('speed').value/100,dr1=+root.getElementById('excess').value/100+motion*Math.sin(2*Math.PI*speed*time),dr2=+root.getElementById('excess2').value/100;
+    const tau1=dr1/c0,tau2=dr2/c0,measurePhase=(+root.getElementById('phaseOffset').value)*Math.PI/180,cal=root.getElementById('calibratePhase').checked;
+    return {B,N,df,d,a1,a2,dr1,dr2,tau1,tau2,measurePhase,cal};
+  }
+  function channel(q){
+    const H=[],amps=[],phases=[];let sumP=0,minDb=1e9,maxDb=-1e9;
+    for(let i=0;i<q.N;i++){
+      const k=i-q.N/2,f=fc+k*q.df;
+      const ph1=-2*Math.PI*f*q.tau1,ph2=-2*Math.PI*f*q.tau2;
+      let re=1+q.a1*Math.cos(ph1)+q.a2*Math.cos(ph2),im=q.a1*Math.sin(ph1)+q.a2*Math.sin(ph2);
+      const mphase=q.cal?0:q.measurePhase,cr=Math.cos(mphase),ci=Math.sin(mphase),rr=re*cr-im*ci,ii=re*ci+im*cr;re=rr;im=ii;
+      const p=re*re+im*im,aDb=10*Math.log10(Math.max(p,1e-12)),ph=Math.atan2(im,re);
+      H.push({re,im,f,k});amps.push(aDb);phases.push(ph);sumP+=p;minDb=Math.min(minDb,aDb);maxDb=Math.max(maxDb,aDb);
+    }
+    return {H,amps,phases,avgP:sumP/q.N,ripple:maxDb-minDb,minDb,maxDb};
+  }
+  function delayStats(q){
+    const ps=[1,q.a1*q.a1,q.a2*q.a2],taus=[0,q.tau1,q.tau2],sum=ps.reduce((a,b)=>a+b,0),mean=ps.reduce((a,p,i)=>a+p*taus[i],0)/sum;
+    const variance=ps.reduce((a,p,i)=>a+p*Math.pow(taus[i]-mean,2),0)/sum,rms=Math.sqrt(variance),coh=rms>0?1/(5*rms):Infinity;
+    return {rms,coh};
+  }
+  function drawScene(q){
+    const r=sc.getBoundingClientRect(),w=r.width,h=r.height;sctx.clearRect(0,0,w,h);sctx.fillStyle='#071427';sctx.fillRect(0,0,w,h);
+    const tx={x:55,y:h*.63},rx={x:w-55,y:h*.63},mid=(tx.x+rx.x)/2,scale=(rx.x-tx.x)/Math.max(q.d,1);
+    const y1=h*.63-Math.min(h*.42,(q.dr1*.6+1)*scale*.45),y2=h*.63+Math.min(h*.25,(q.dr2*.35+.6)*scale*.25);
+    sctx.strokeStyle='rgba(119,150,186,.14)';for(let x=25;x<w;x+=50){sctx.beginPath();sctx.moveTo(x,0);sctx.lineTo(x,h);sctx.stroke()}for(let y=25;y<h;y+=50){sctx.beginPath();sctx.moveTo(0,y);sctx.lineTo(w,y);sctx.stroke()}
+    function path(color,y,alpha){sctx.strokeStyle=color;sctx.globalAlpha=alpha;sctx.lineWidth=2;sctx.beginPath();sctx.moveTo(tx.x,tx.y);sctx.lineTo(mid,y);sctx.lineTo(rx.x,rx.y);sctx.stroke();sctx.globalAlpha=1}
+    sctx.strokeStyle='#81d4ff';sctx.lineWidth=2.5;sctx.beginPath();sctx.moveTo(tx.x,tx.y);sctx.lineTo(rx.x,rx.y);sctx.stroke();path('#efae70',y1,.95);path('#b998e8',y2,.72);
+    [['TX',tx.x,tx.y,'#81d4ff'],['RX',rx.x,rx.y,'#83e2b1']].forEach(v=>{sctx.fillStyle=v[3];sctx.beginPath();sctx.arc(v[1],v[2],7,0,Math.PI*2);sctx.fill();sctx.fillStyle='#e6eef9';sctx.font='700 12px system-ui';sctx.fillText(v[0],v[1]-10,v[2]-14)});
+    sctx.fillStyle='#efae70';sctx.beginPath();sctx.arc(mid,y1,6,0,Math.PI*2);sctx.fill();sctx.fillStyle='#b998e8';sctx.beginPath();sctx.arc(mid,y2,6,0,Math.PI*2);sctx.fill();
+    sctx.fillStyle='rgba(230,238,249,.72)';sctx.font='11px system-ui';sctx.fillText('ΔR₁ '+q.dr1.toFixed(3)+' m · τ₁ '+(q.tau1*1e9).toFixed(2)+' ns',mid-90,Math.max(18,y1-12));sctx.fillText('ΔR₂ '+q.dr2.toFixed(2)+' m · τ₂ '+(q.tau2*1e9).toFixed(2)+' ns',mid-90,Math.min(h-10,y2+20));
+  }
+  function axes(cc,w,h,L,T,R,B,title,yLabels){
+    cc.strokeStyle='#d5deea';cc.beginPath();cc.moveTo(L,T);cc.lineTo(L,B);cc.lineTo(R,B);cc.stroke();cc.fillStyle='#253a56';cc.font='700 11px system-ui';cc.fillText(title,L,T+9);
+    yLabels.forEach((v,i)=>{const y=T+(B-T)*i/(yLabels.length-1);cc.strokeStyle='#edf1f6';cc.beginPath();cc.moveTo(L,y);cc.lineTo(R,y);cc.stroke();cc.fillStyle='#68798d';cc.font='10px system-ui';cc.fillText(v.label,5,y+3)});
+  }
+  function drawAmp(q,ch){
+    const r=amp.getBoundingClientRect(),w=r.width,h=r.height;actx.clearRect(0,0,w,h);actx.fillStyle='#fbfcfe';actx.fillRect(0,0,w,h);const L=42,R=w-12,T=14,B=h-27,min=Math.floor(ch.minDb/5)*5-2,max=Math.ceil(ch.maxDb/5)*5+2;
+    axes(actx,w,h,L,T,R,B,'CSI amplitude · 20 log₁₀|Hₖ|',[{label:max.toFixed(0)},{label:((max+min)/2).toFixed(0)},{label:min.toFixed(0)}]);
+    actx.strokeStyle='#6845c6';actx.lineWidth=1.7;actx.beginPath();ch.amps.forEach((v,i)=>{const x=L+(R-L)*i/(q.N-1),y=T+(max-v)/(max-min)*(B-T);if(i===0)actx.moveTo(x,y);else actx.lineTo(x,y)});actx.stroke();
+    actx.fillStyle='#6a7a8d';actx.font='10px system-ui';actx.fillText('−B/2',L,B+17);actx.fillText('f_c',((L+R)/2)-7,B+17);actx.fillText('+B/2',R-28,B+17);
+  }
+  function unwrap(phases){const out=[phases[0]];for(let i=1;i<phases.length;i++){let v=phases[i],prev=out[i-1];while(v-prev>Math.PI)v-=2*Math.PI;while(v-prev<-Math.PI)v+=2*Math.PI;out.push(v)}return out}
+  function drawPhase(q,ch){
+    const vals=unwrap(ch.phases),min=Math.min(...vals),max=Math.max(...vals),r=phase.getBoundingClientRect(),w=r.width,h=r.height;pctx.clearRect(0,0,w,h);pctx.fillStyle='#fbfcfe';pctx.fillRect(0,0,w,h);const L=42,R=w-12,T=14,B=h-27,pad=Math.max(.25,(max-min)*.08),lo=min-pad,hi=max+pad;
+    axes(pctx,w,h,L,T,R,B,q.cal?'CSI phase · ortak faz kaldırılmış':'CSI phase · ham / unwrapped',[{label:(hi*180/Math.PI).toFixed(0)+'°'},{label:(((hi+lo)/2)*180/Math.PI).toFixed(0)+'°'},{label:(lo*180/Math.PI).toFixed(0)+'°'}]);
+    pctx.strokeStyle='#2f8b79';pctx.lineWidth=1.7;pctx.beginPath();vals.forEach((v,i)=>{const x=L+(R-L)*i/(q.N-1),y=T+(hi-v)/(hi-lo)*(B-T);if(i===0)pctx.moveTo(x,y);else pctx.lineTo(x,y)});pctx.stroke();pctx.fillStyle='#6a7a8d';pctx.font='10px system-ui';pctx.fillText('−B/2',L,B+17);pctx.fillText('f_c',((L+R)/2)-7,B+17);pctx.fillText('+B/2',R-28,B+17);
+  }
+  function drawDelay(q,ch){
+    const r=delay.getBoundingClientRect(),w=r.width,h=r.height;dctx.clearRect(0,0,w,h);dctx.fillStyle='#fff';dctx.fillRect(0,0,w,h);const L=48,R=w-14,T=14,B=h-28,maxTau=Math.min(800e-9,1/q.df),bins=180,vals=[];
+    let vmax=0;for(let j=0;j<bins;j++){const tau=maxTau*j/(bins-1);let re=0,im=0;for(let i=0;i<q.N;i++){const fk=(i-q.N/2)*q.df,ang=2*Math.PI*fk*tau,reH=ch.H[i].re,imH=ch.H[i].im;re+=reH*Math.cos(ang)-imH*Math.sin(ang);im+=reH*Math.sin(ang)+imH*Math.cos(ang)}const p=(re*re+im*im)/(q.N*q.N);vals.push(p);vmax=Math.max(vmax,p)}
+    axes(dctx,w,h,L,T,R,B,'Approx. channel impulse / delay profile',[{label:'0 dB'},{label:'−15'},{label:'−30'}]);
+    dctx.strokeStyle='#b0793c';dctx.lineWidth=1.7;dctx.beginPath();vals.forEach((p,i)=>{const db=10*Math.log10(Math.max(p/vmax,1e-3)),x=L+(R-L)*i/(bins-1),y=T+(-db/30)*(B-T);if(i===0)dctx.moveTo(x,y);else dctx.lineTo(x,y)});dctx.stroke();dctx.fillStyle='#6a7a8d';dctx.font='10px system-ui';dctx.fillText('0 ns',L,B+17);dctx.fillText((maxTau*1e9).toFixed(0)+' ns',R-38,B+17);
+    [q.tau1,q.tau2].forEach((tau,i)=>{if(tau<=maxTau){const x=L+(R-L)*tau/maxTau;dctx.strokeStyle=i===0?'#efae70':'#b998e8';dctx.setLineDash([4,4]);dctx.beginPath();dctx.moveTo(x,T+16);dctx.lineTo(x,B);dctx.stroke();dctx.setLineDash([])}});
+  }
+  function update(q,ch,st){
+    root.getElementById('distanceOut').value=q.d.toFixed(2)+' m';root.getElementById('reflOut').value=q.a1.toFixed(2);root.getElementById('excessOut').value=q.dr1.toFixed(3)+' m';root.getElementById('motionOut').value=(+root.getElementById('motion').value).toFixed(1)+' cm';root.getElementById('speedOut').value=(+root.getElementById('speed').value/100).toFixed(2)+' Hz';root.getElementById('refl2Out').value=q.a2.toFixed(2);root.getElementById('excess2Out').value=q.dr2.toFixed(2)+' m';root.getElementById('phaseOffsetOut').value=root.getElementById('phaseOffset').value+'°';
+    root.getElementById('nVal').textContent=q.N;root.getElementById('dfVal').textContent=(q.df/1e3).toFixed(1)+' kHz';root.getElementById('delayResVal').textContent=(1/q.B*1e9).toFixed(1)+' ns';root.getElementById('maxDelayVal').textContent=(1/q.df*1e6).toFixed(2)+' µs';root.getElementById('rmsVal').textContent=(st.rms*1e9).toFixed(2)+' ns';root.getElementById('cohVal').textContent=isFinite(st.coh)?(st.coh/1e6).toFixed(2)+' MHz':'∞';root.getElementById('avgVal').textContent=(10*Math.log10(ch.avgP)).toFixed(2)+' dB';root.getElementById('rippleVal').textContent=ch.ripple.toFixed(2)+' dB';
+    root.getElementById('sceneTitle').textContent=(fc/1e9).toFixed(3)+' GHz · '+(q.B/1e6).toFixed(0)+' MHz · '+q.N+' FFT bin';
+    root.getElementById('statusText').textContent=q.cal?'Ortak faz ofseti kaldırıldı. Kalan faz eğimi ve kıvrımlar çoklu yol gecikmelerinden geliyor.':'Ham faza '+root.getElementById('phaseOffset').value+'° ortak ölçüm ofseti ekleniyor; gerçek cihazlarda buna başka zamanlama/frekans ofsetleri de eklenebilir.';
+    root.getElementById('overlayText').innerHTML='<strong>CSI:</strong> hareketli yol ΔR₁='+q.dr1.toFixed(3)+' m ('+(q.tau1*1e9).toFixed(2)+' ns). Aynı yol her alt taşıyıcıda farklı faz döndürdüğü için |Hₖ| ve φₖ frekans boyunca şekilleniyor.';
+  }
+  function frame(ts){if(!last)last=ts;const dt=Math.min(.05,(ts-last)/1000);last=ts;if(running)t+=dt;const q=params(t),ch=channel(q),st=delayStats(q);update(q,ch,st);drawScene(q);drawAmp(q,ch);drawPhase(q,ch);drawDelay(q,ch);requestAnimationFrame(frame)}
+  root.querySelectorAll('[data-f]').forEach(b=>b.addEventListener('click',()=>{fc=+b.dataset.f;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x===b))}));
+  root.getElementById('pauseBtn').addEventListener('click',function(){running=!running;this.textContent=running?'Duraklat':'Devam et'});
+  root.getElementById('resetBtn').addEventListener('click',()=>{fc=5.18e9;root.getElementById('bandwidth').value='20';root.getElementById('distance').value=151;root.getElementById('reflection').value=60;root.getElementById('excess').value=120;root.getElementById('motion').value=3;root.getElementById('speed').value=40;root.getElementById('reflection2').value=25;root.getElementById('excess2').value=300;root.getElementById('phaseOffset').value=55;root.getElementById('calibratePhase').checked=false;t=0;root.querySelectorAll('[data-f]').forEach(x=>x.classList.toggle('active',x.dataset.f==='5.18e9'))});
+  window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
