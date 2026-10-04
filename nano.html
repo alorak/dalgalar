@@ -167,7 +167,7 @@
 (function(){
   const root=document,nano=root.getElementById('nanoCanvas'),ctx=nano.getContext('2d'),bandCanvas=root.getElementById('bandCanvas'),bctx=bandCanvas.getContext('2d');
   const dpr=Math.min(window.devicePixelRatio||1,2),hEV=4.135667696e-15,c0=299792458,EgSi=1.12;
-  let band='rf',running=true,time=0,last=0;
+  let band='rf',polarization='avg',running=true,time=0,last=0;
   const bands={
     rf:{label:'RF',f:1e8,lambda:c0/1e8},
     micro:{label:'Mikrodalga',f:2.45e9,lambda:c0/2.45e9},
@@ -181,17 +181,74 @@
   // Water 550 nm: alpha≈0.0563 m^-1 => ≈17.8 m.
   // 2.45 GHz: representative penetration depths, strongly material/temperature dependent.
   const materials={
-    silicon:{label:'Silisyum',type:'semiconductor',gap:EgSi,lattice:true,powerDepth:{rf:20,micro:4,visible:1.56e-6,xray:126.6e-6},source:{rf:'yüksek-özdirençli Si preset',micro:'yüksek-özdirençli Si preset',visible:'Si 550 nm α≈6406 cm⁻¹',xray:'NIST XCOM 10 keV'}},
-    copper:{label:'Bakır',type:'metal',gap:0,lattice:true,powerDepth:{rf:3.3e-6,micro:0.67e-6,visible:17e-9,xray:5.17e-6},source:{rf:'Cu skin depth /2',micro:'Cu skin depth /2',visible:'optik k için temsilî preset',xray:'NIST XCOM 10 keV'}},
-    glass:{label:'Cam',type:'dielectric',gap:8.5,lattice:false,powerDepth:{rf:100,micro:15.7,visible:0.1,xray:263e-6},source:{rf:'düşük-kayıplı cam preset',micro:'borosilikat ~15.7 m',visible:'şeffaf borosilikat preset',xray:'NIST XCOM Pyrex 10 keV'}},
-    water:{label:'Su',type:'polar',gap:6.5,lattice:false,powerDepth:{rf:10,micro:0.018,visible:17.8,xray:1.88e-3},source:{rf:'saf su Debye ölçek preset',micro:'25 °C su ~1.8 cm',visible:'saf su 550 nm α≈0.056 m⁻¹',xray:'NIST XCOM 10 keV'}}
+    silicon:{
+      label:'Silisyum',type:'semiconductor',gap:EgSi,lattice:true,
+      nReal:{rf:3.42,micro:3.42,visible:3.9766},
+      xrayDelta:4.82e-6,
+      powerDepth:{rf:20,micro:4,visible:1.56e-6,xray:126.6e-6},
+      source:{rf:'yüksek-özdirençli Si preset',micro:'yüksek-özdirençli Si preset',visible:'Aspnes/Si optik sabitleri + α',xray:'NIST XCOM 10 keV'}
+    },
+    copper:{
+      label:'Bakır',type:'metal',gap:0,lattice:true,
+      nReal:{rf:null,micro:null,visible:.395},sigma:5.8e7,xrayDelta:1.67e-5,
+      powerDepth:{rf:3.3e-6,micro:0.67e-6,visible:17e-9,xray:5.17e-6},
+      source:{rf:'Cu skin depth',micro:'Cu skin depth',visible:'Querry/Cu optik sabitleri',xray:'NIST XCOM 10 keV'}
+    },
+    glass:{
+      label:'Cam',type:'dielectric',gap:8.5,lattice:false,
+      nReal:{rf:2.0,micro:2.05,visible:1.52},xrayDelta:4.4e-6,
+      powerDepth:{rf:100,micro:15.7,visible:0.1,xray:263e-6},
+      source:{rf:'düşük-kayıplı cam preset',micro:'borosilikat ~15.7 m',visible:'n≈1.52 şeffaf cam preset',xray:'NIST XCOM Pyrex 10 keV'}
+    },
+    water:{
+      label:'Su',type:'polar',gap:6.5,lattice:false,
+      nReal:{rf:8.94,micro:8.6,visible:1.3325},xrayDelta:2.30e-6,
+      powerDepth:{rf:10,micro:0.018,visible:17.8,xray:1.88e-3},
+      source:{rf:'saf su Debye ölçek preset',micro:'25 °C su ~1.8 cm',visible:'Hale–Querry su optik sabitleri',xray:'NIST XCOM 10 keV'}
+    }
   };
   function bnd(){return bands[band]} function mat(){return materials[root.getElementById('material').value]}
   function photon(){return hEV*bnd().f}
   function attenuation(){return mat().powerDepth[band]}
   function depthFactor(){return +root.getElementById('depthFactor').value/10}
   function viewDepth(){return attenuation()*depthFactor()}
-  function powerEnvelope(frac){return Math.exp(-Math.max(0,frac)*depthFactor())}
+  function C(re,im){return {re:re,im:im||0}}
+  function cadd(a,b){return C(a.re+b.re,a.im+b.im)}
+  function csub(a,b){return C(a.re-b.re,a.im-b.im)}
+  function cmul(a,b){return C(a.re*b.re-a.im*b.im,a.re*b.im+a.im*b.re)}
+  function cdiv(a,b){const d=b.re*b.re+b.im*b.im||1e-30;return C((a.re*b.re+a.im*b.im)/d,(a.im*b.re-a.re*b.im)/d)}
+  function cabs2(a){return a.re*a.re+a.im*a.im}
+  function csqrt(z){const r=Math.hypot(z.re,z.im),re=Math.sqrt(Math.max(0,(r+z.re)/2)),im=(z.im<0?-1:1)*Math.sqrt(Math.max(0,(r-z.re)/2));return C(re,im)}
+  function incidenceDeg(){return +root.getElementById('angle').value/100}
+  function grazingDeg(){return 90-incidenceDeg()}
+  function complexIndex(){
+    const m=mat(),b=bnd(),Lp=attenuation(),kappa=b.lambda/(4*Math.PI*Math.max(Lp,1e-30));
+    if(band==='xray')return C(1-m.xrayDelta,kappa);
+    if(m.type==='metal'&&(band==='rf'||band==='micro'))return C(kappa,kappa);
+    return C(m.nReal[band]||1,kappa);
+  }
+  function surfaceOptics(){
+    const m=mat(),N=complexIndex(),theta=incidenceDeg()*Math.PI/180,s=Math.sin(theta),c=Math.cos(theta);
+    const sinT=cdiv(C(s,0),N),cosT=csqrt(csub(C(1,0),cmul(sinT,sinT))),Ncos=cmul(N,cosT);
+    const rs=cdiv(csub(C(c,0),Ncos),cadd(C(c,0),Ncos));
+    const rp=cdiv(csub(C(N.re*c,N.im*c),cosT),cadd(C(N.re*c,N.im*c),cosT));
+    const Rs=Math.max(0,Math.min(1,cabs2(rs))),Rp=Math.max(0,Math.min(1,cabs2(rp)));
+    const R=polarization==='s'?Rs:(polarization==='p'?Rp:(Rs+Rp)/2);
+    let thetaT=0;
+    if(Math.abs(N.re)>1e-9){const st=Math.max(-.999999,Math.min(.999999,s/N.re));thetaT=Math.asin(st)}
+    if(m.type==='metal'&&band!=='xray')thetaT=0;
+    const critical=band==='xray'?Math.sqrt(2*m.xrayDelta)*180/Math.PI:null;
+    const evanescent=band==='xray'&&critical!==null&&grazingDeg()<critical;
+    const kz=cmul(N,cosT);
+    const evPowerDepth=band==='xray'&&Math.abs(kz.im)>1e-12?bnd().lambda/(4*Math.PI*Math.abs(kz.im)):Infinity;
+    const pathFactor=1/Math.max(.03,Math.abs(Math.cos(thetaT)));
+    return {N:N,thetaI:theta,thetaT:thetaT,cosT:cosT,Rs:Rs,Rp:Rp,R:R,T:1-R,critical:critical,evanescent:evanescent,evPowerDepth:evPowerDepth,pathFactor:pathFactor};
+  }
+  function powerEnvelope(frac){
+    const o=surfaceOptics(),f=Math.max(0,frac);
+    if(o.evanescent)return Math.exp(-f*viewDepth()/Math.max(o.evPowerDepth,1e-30));
+    return Math.exp(-f*depthFactor()*o.pathFactor);
+  }
   function fieldEnvelope(frac){return Math.sqrt(powerEnvelope(frac))}
   function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
   function resize(){resizeOne(nano,ctx,parseFloat(getComputedStyle(nano).height));resizeOne(bandCanvas,bctx,195)}
