@@ -19,7 +19,7 @@
     .nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff}.nav a[aria-current="page"]{background:rgba(255,255,255,.18);color:#fff}
     main{max-width:1360px;margin:auto;padding:26px 20px 56px}
     .intro{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:end;margin-bottom:18px}
-    .intro h1{font-size:clamp(2rem,4.2vw,3.8rem);line-height:.98;letter-spacing:-.05em;margin:0 0 12px}.intro p{margin:0;color:var(--muted);font-size:1.01rem}
+    .intro h1{font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.05;letter-spacing:-.04em;margin:0 0 10px}.intro p{margin:0;color:var(--muted);font-size:1.01rem}
     .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eee9ff;color:#5f4998;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
     .intro-note{padding:17px 18px;border-radius:17px;background:#fff;border:1px solid var(--line);color:#4d5f76}
     .bands{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 0}
@@ -67,8 +67,8 @@
 
 <main>
   <section class="intro">
-    <div><span class="badge">Nano / elektronik görünüm</span><h1>Silisyumun içinde alan elektronları ve holleri nasıl etkiliyor?</h1><p>Bu sayfa yüzey yansımasını değil, malzemenin içinde gerçekleşen elektronik cevabı gösterir: bağlı elektron polarizasyonu, serbest taşıyıcı sürüklenmesi, elektron–hol çiftleri ve frekansa bağlı soğurma.</p></div>
-    <div class="intro-note"><strong>Önemli ayrım:</strong> RF ve mikrodalga fotonları silisyumun bant aralığından çok düşük enerjilidir; yeni e–h çifti üretmez. Görünür ışıkta uygun fotonlar valans bandından iletim bandına elektron çıkarabilir. X-ışınında ise yüksek enerjili ikincil elektronlar çok sayıda e–h çifti üretebilir.</div>
+    <div><span class="badge">Nano görünüm</span><h1>Nano ölçekte elektronik etkileşim</h1><p>Bu sayfa yüzey yansımasından sonra malzemenin içindeki elektronik cevabı gösterir: bağlı elektron polarizasyonu, serbest taşıyıcı hareketi, elektronik uyarımlar ve frekansa bağlı soğurma.</p></div>
+    <div class="intro-note"><strong>Temel ayrım:</strong> Frekans ve malzeme birlikte belirleyicidir. RF/mikrodalgada taşıyıcı ve polarizasyon cevabı, görünür bölgede malzemeye bağlı elektronik soğurma/geçişler, X-ışınında ise atomik iyonizasyon ve saçılma öne çıkar.</div>
   </section>
 
   <div class="bands">
@@ -82,7 +82,7 @@
     <section class="card visual-card">
       <div class="visual-head"><div><strong id="sceneTitle">RF · Silisyum · atomik taşıyıcı görünümü</strong><p id="sceneSubtitle">İç elektromanyetik alan, bağlı elektron polarizasyonu ve mevcut taşıyıcıların hareketi.</p></div><a href="mikro.html" class="btn alt" style="text-decoration:none">← Mikro görünüme dön</a></div>
       <div class="canvas-wrap">
-        <canvas id="nanoCanvas" aria-label="Silisyum nano elektromanyetik etkileşim simülasyonu"></canvas>
+        <canvas id="nanoCanvas" aria-label="Nano elektromanyetik malzeme etkileşim simülasyonu"></canvas>
         <div class="legend"><span><i class="dot field"></i>iç E alanı</span><span><i class="dot bound"></i>bağlı elektron polarizasyonu</span><span><i class="dot e"></i>serbest elektron</span><span><i class="dot h"></i>hol</span><span><i class="dot event"></i>soğurma / e–h üretimi</span></div>
         <div class="overlay" id="overlayText">RF: hν ≪ E<sub>g</sub>. Yeni e–h çifti oluşmaz; mevcut taşıyıcılar ve bağlı elektronlar alan tarafından sürülür/polarize edilir.</div>
       </div>
