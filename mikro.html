@@ -541,7 +541,11 @@
         const rect=depthCanvas.getBoundingClientRect(),w=rect.width,h=rect.height;dctx.clearRect(0,0,w,h);dctx.fillStyle='#fbfcfe';dctx.fillRect(0,0,w,h);
         const left=50,right=20,top=12,bottom=27,plotW=w-left-right,plotH=h-top-bottom;
         dctx.strokeStyle='#cfd9e7';dctx.beginPath();dctx.moveTo(left,top);dctx.lineTo(left,h-bottom);dctx.lineTo(w-right,h-bottom);dctx.stroke();
-        dctx.fillStyle='#61728a';dctx.font='11px system-ui';dctx.fillText('giriş',left-9,h-7);dctx.fillText('arka yüzey',w-76,h-7);
+        dctx.fillStyle='#61728a';dctx.font='11px system-ui';
+        dctx.fillText('0',left-3,h-7);
+        dctx.fillText(fmtLen(r.thickness/2),left+plotW/2-22,h-7);
+        dctx.fillText(fmtLen(r.thickness),w-right-46,h-7);
+        dctx.fillText('fiziksel derinlik z →',left+6,h-21);
         const entryAmp=Math.sqrt(r.transport.entry);
         dctx.strokeStyle='#6d4bd1';dctx.lineWidth=2.2;dctx.beginPath();
         for(let i=0;i<=plotW;i++){
