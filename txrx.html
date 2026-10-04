@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+  <title>TX / RX Anten Bağlantısı — Dalgalar</title>
+  <meta name="description" content="TX anteninden elektromanyetik dalga üretimi, 3B anten desenleri, serbest uzay yayılımı ve RX anteninde alınan güç/SNR analizi.">
+  <style>
+    :root{--bg:#f6f8fc;--surface:#fff;--text:#142033;--muted:#607087;--line:#dbe3ef;--nav:#0f1f3d;--nav2:#15305d;--accent:#6845c6;--shadow:0 18px 45px rgba(20,32,51,.09);--radius:20px}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+    button,input,select{font:inherit}button{cursor:pointer}
+    .topbar{position:sticky;top:0;z-index:30;background:linear-gradient(120deg,var(--nav),var(--nav2));color:#fff;box-shadow:0 8px 24px rgba(15,31,61,.18)}
+    .topbar-inner{max-width:1360px;margin:auto;display:flex;gap:18px;align-items:center;padding:12px 20px}
+    .brand{font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+    .nav{display:flex;gap:8px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}
+    .nav a{text-decoration:none;font-size:.9rem;padding:8px 11px;border-radius:999px;color:#dce7fb;white-space:nowrap}
+    .nav a:hover,.nav a:focus{background:rgba(255,255,255,.12);color:#fff}.nav a[aria-current="page"]{background:rgba(255,255,255,.18);color:#fff}
+    main{max-width:1360px;margin:auto;padding:26px 20px 56px}
+    .intro{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:end;margin-bottom:18px}
+    .intro h1{font-size:clamp(1.75rem,3vw,2.75rem);line-height:1.05;letter-spacing:-.04em;margin:0 0 10px}
+    .intro p{margin:0;color:var(--muted);font-size:1.01rem}
+    .intro-note{padding:17px 18px;border-radius:17px;background:#fff;border:1px solid var(--line);color:#4d5f76}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#eee9ff;color:#5f4998;font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+    .preset-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:18px 0}
+    .preset{border:1px solid var(--line);background:#fff;border-radius:15px;padding:13px;text-align:left;color:#41536b}
+    .preset strong{display:block}.preset span{display:block;color:var(--muted);font-size:.74rem;margin-top:3px}.preset.active{background:#142a4d;color:#fff;border-color:#142a4d}.preset.active span{color:#d9e5f7}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 375px;gap:18px;align-items:start}
+    .card,.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .visual-card{overflow:hidden}.visual-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:14px 17px;border-bottom:1px solid var(--line)}
+    .visual-head p{margin:3px 0 0;color:var(--muted);font-size:.8rem}
+    .view-actions{display:flex;gap:7px;flex-wrap:wrap}.view-actions button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 9px;color:#4d6078;font-size:.73rem;font-weight:800}
+    .canvas-wrap{position:relative;background:#071427}.canvas-wrap canvas{display:block;width:100%;height:610px;touch-action:none}
+    .legend{position:absolute;right:14px;top:14px;display:flex;gap:9px;flex-wrap:wrap;max-width:450px;padding:7px 9px;border-radius:10px;background:rgba(7,20,39,.82);color:#e7eef8;font-size:.7rem;backdrop-filter:blur(5px)}
+    .legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.txc{background:#82d5ff}.rxc{background:#88e3b9}.lobec{background:#c5a9ff}.wavec{background:#f4bf6e}
+    .overlay{position:absolute;left:14px;bottom:14px;max-width:min(720px,calc(100% - 28px));padding:9px 11px;border-radius:10px;background:rgba(7,20,39,.84);color:#e5edf8;font-size:.75rem;backdrop-filter:blur(5px)}
+    .analyzer{border-top:1px solid var(--line);background:#fbfcfe;padding:12px 15px}.analyzer canvas{display:block;width:100%;height:195px}
+    .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line)}
+    .metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:.98rem}.metric span{font-size:.68rem;color:var(--muted)}
+    .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}
+    .group{padding:12px;border:1px solid var(--line);border-radius:14px;margin-bottom:12px;background:#fbfcfe}.group h3{font-size:.84rem;margin:0 0 10px}
+    .control{margin-bottom:12px}.control:last-child{margin-bottom:0}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.79rem;font-weight:750;margin-bottom:5px}.control output{color:#526984}
+    .control input[type=range]{width:100%;accent-color:var(--accent)}
+    select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#263a55}
+    .control-hint{font-size:.68rem;color:var(--muted);margin-top:4px}
+    .switch{display:flex;align-items:center;gap:8px;font-size:.77rem;font-weight:750;margin:8px 0}.switch input{width:17px;height:17px;accent-color:var(--accent)}
+    .status{padding:11px 12px;border-radius:12px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.78rem;margin-top:11px}
+    .chain{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.step b{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:#152d52;color:#fff;font-size:.75rem;margin-bottom:8px}.step h3{font-size:.92rem;margin:0 0 6px}.step p{font-size:.8rem;color:#586b82;margin:0}.formula{margin-top:9px;padding:8px 9px;border-radius:9px;background:#101f37;color:#dce7f5;font:600 .7rem "SFMono-Regular",Consolas,monospace}
+    .compare{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.info h3{font-size:.9rem;margin:0 0 7px}.info p{font-size:.8rem;color:#586b82;margin:0}.info ul{padding-left:18px;margin:8px 0 0;color:#586b82;font-size:.78rem}
+    .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.82rem}
+    @media(max-width:1030px){.intro,.layout{grid-template-columns:1fr}.preset-row{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr}.chain{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.preset-row{grid-template-columns:1fr}.canvas-wrap canvas{height:470px}.metrics,.chain,.compare{grid-template-columns:1fr}.legend{left:12px;right:12px;top:12px}.visual-head{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+<header class="topbar"><div class="topbar-inner">
+  <div class="brand">dalgalar</div>
+  <nav class="nav" aria-label="Sayfalar">
+    <a href="index.html">Altyapı</a>
+    <a href="2d.html">2B Girişim</a>
+    <a href="3d.html">3B Girişim</a>
+    <a href="yuzey.html">Yüzey & Frekans</a>
+    <a href="mikro.html">Mikro</a>
+    <a href="nano.html">Nano</a>
+    <a href="txrx.html" aria-current="page">TX / RX</a>
+  </nav>
+</div></header>
+
+<main>
+  <section class="intro">
+    <div>
+      <span class="badge">3B anten bağlantısı</span>
+      <h1>TX anteninden RX analizine</h1>
+      <p>RF kaynağından başlayan enerjinin anten deseniyle uzaya dağılıp serbest uzayda ilerlemesini ve RX anteninde güce dönüşmesini 3B olarak inceleyin.</p>
+    </div>
+    <div class="intro-note"><strong>Temel fikir:</strong> Anten güç üretmez; vericiden aldığı gücü uzaya belirli açılarda dağıtır. RX anteni de bulunduğu yöndeki alanı etkin açıklığı, yönelimi ve polarizasyon uyumuna göre toplar.</div>
+  </section>
+
+  <div class="preset-row">
+    <button class="preset" data-f="433e6" type="button"><strong>433 MHz</strong><span>λ ≈ 69 cm · ISM / düşük UHF</span></button>
+    <button class="preset" data-f="915e6" type="button"><strong>915 MHz</strong><span>λ ≈ 32.8 cm · ISM</span></button>
+    <button class="preset active" data-f="2.45e9" type="button"><strong>2.45 GHz</strong><span>λ ≈ 12.2 cm · Wi-Fi / ISM</span></button>
+    <button class="preset" data-f="5.8e9" type="button"><strong>5.8 GHz</strong><span>λ ≈ 5.17 cm · ISM</span></button>
+  </div>
+
+  <div class="layout">
+    <section class="card visual-card">
+      <div class="visual-head">
+        <div><strong id="sceneTitle">2.45 GHz · Patch TX → Patch RX</strong><p>Fare/parmakla döndür, tekerlek/pinch ile yakınlaştır. Anten lobları gerçek açı bağımlı kazanç modelinden çizilir.</p></div>
+        <div class="view-actions"><button id="viewIso" type="button">İzometrik</button><button id="viewTop" type="button">Üstten</button><button id="viewSide" type="button">Yandan</button></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="scene" aria-label="3 boyutlu TX RX anten bağlantısı simülasyonu"></canvas>
+        <div class="legend"><span><i class="dot txc"></i>TX / bağlantı</span><span><i class="dot rxc"></i>RX / alım</span><span><i class="dot lobec"></i>3B anten lobu</span><span><i class="dot wavec"></i>dalga cephesi</span></div>
+        <div class="overlay" id="overlayText">TX ana lobu RX doğrultusuna bakıyor. Serbest uzay Friis modeli uygulanıyor.</div>
+      </div>
+      <div class="analyzer"><canvas id="analyzer" aria-label="RX spektrum ve gürültü analizörü"></canvas></div>
+      <div class="metrics">
+        <div class="metric"><strong id="lambdaVal">12.24 cm</strong><span>dalga boyu λ</span></div>
+        <div class="metric"><strong id="fsplVal">66.2 dB</strong><span>serbest uzay yol kaybı</span></div>
+        <div class="metric"><strong id="rxPowerVal">— dBm</strong><span>RX giriş gücü</span></div>
+        <div class="metric"><strong id="snrVal">— dB</strong><span>SNR</span></div>
+        <div class="metric"><strong id="eFieldVal">— V/m</strong><span>RX noktasındaki RMS E alanı</span></div>
+        <div class="metric"><strong id="delayVal">— ns</strong><span>yayılım gecikmesi</span></div>
+        <div class="metric"><strong id="aeVal">— cm²</strong><span>RX etkin açıklığı Aₑ</span></div>
+        <div class="metric"><strong id="ffVal">— m</strong><span>TX Fraunhofer sınırı 2D²/λ</span></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h2>Bağlantı ayarları</h2>
+
+      <div class="group">
+        <h3>TX · verici anten</h3>
+        <div class="control"><label for="txType">Anten tipi</label><select id="txType"><option value="patch">Patch</option><option value="directional">Yönlü</option></select></div>
+        <div class="control"><label>TX güç <output id="txPowerOut">20 dBm · 100 mW</output></label><input id="txPower" type="range" min="-10" max="30" step="1" value="20"></div>
+        <div class="control"><label>Azimut <output id="txAzOut">0°</output></label><input id="txAz" type="range" min="-180" max="180" step="1" value="0"></div>
+        <div class="control"><label>Elevasyon <output id="txElOut">0°</output></label><input id="txEl" type="range" min="-60" max="60" step="1" value="0"></div>
+        <div class="control-hint" id="txSpec">Patch · 8 dBi · HPBW ≈ 70° · broadside</div>
+      </div>
+
+      <div class="group">
+        <h3>RX · alıcı anten</h3>
+        <div class="control"><label for="rxType">Anten tipi</label><select id="rxType"><option value="patch">Patch</option><option value="directional">Yönlü</option></select></div>
+        <div class="control"><label>Azimut <output id="rxAzOut">180°</output></label><input id="rxAz" type="range" min="-180" max="180" step="1" value="180"></div>
+        <div class="control"><label>Elevasyon <output id="rxElOut">0°</output></label><input id="rxEl" type="range" min="-60" max="60" step="1" value="0"></div>
+        <div class="control"><label>Polarizasyon farkı <output id="polOut">0°</output></label><input id="polMismatch" type="range" min="0" max="90" step="1" value="0"></div>
+        <div class="control-hint" id="rxSpec">Patch · 8 dBi · HPBW ≈ 70° · broadside</div>
+      </div>
+
+      <div class="group">
+        <h3>Ortam / analiz</h3>
+        <div class="control"><label>Mesafe <output id="distanceOut">20.0 m</output></label><input id="distance" type="range" min="0" max="1000" step="1" value="565"></div>
+        <div class="control"><label>RX yükseklik farkı <output id="heightOut">0.0 m</output></label><input id="height" type="range" min="-10" max="10" step=".1" value="0"></div>
+        <div class="control"><label>Bant genişliği <output id="bwOut">20 MHz</output></label><input id="bandwidth" type="range" min="0" max="4" step="1" value="2"></div>
+        <div class="control"><label>Noise figure <output id="nfOut">5.0 dB</output></label><input id="noiseFigure" type="range" min="0" max="12" step=".5" value="5"></div>
+      </div>
+
+      <label class="switch"><input id="showTxLobe" type="checkbox" checked> TX 3B kazanç lobunu göster</label>
+      <label class="switch"><input id="showRxLobe" type="checkbox" checked> RX kabul lobunu göster</label>
+      <label class="switch"><input id="showWavefronts" type="checkbox" checked> Temsilî dalga cephelerini göster</label>
+      <label class="switch"><input id="showGrid" type="checkbox" checked> 3B referans düzlemini göster</label>
+      <div class="status" id="statusText">Bağlantı far-field bölgesinde. Friis modeli uygundur.</div>
+    </aside>
+  </div>
+
+  <section class="chain">
+    <article class="step"><b>1</b><h3>RF kaynak</h3><p>Osilatör ve güç yükselteci anten besleme noktasına zamana göre değişen gerilim/akım verir.</p><div class="formula">P_TX → V(t), I(t)</div></article>
+    <article class="step"><b>2</b><h3>TX anten</h3><p>İvmelenen yükler EM alan oluşturur. Anten geometrisi toplam gücü değil, gücün açısal dağılımını belirler.</p><div class="formula">EIRP(θ,φ)=P_TX G_TX(θ,φ)</div></article>
+    <article class="step"><b>3</b><h3>Uzayda yayılım</h3><p>Far-field’de enerji küresel alan üzerine yayılır; güç yoğunluğu yaklaşık 1/R² ile azalır.</p><div class="formula">S=P_TX G_TX/(4πR²)</div></article>
+    <article class="step"><b>4</b><h3>RX analiz</h3><p>RX anteni etkin açıklığı kadar gücü toplar; yönelim ve polarizasyon uyumsuzluğu alınan gücü azaltır.</p><div class="formula">P_RX=S A_e · cos²ψ</div></article>
+  </section>
+
+  <section class="compare">
+    <article class="info"><h3>Patch anten değişince ne değişiyor?</h3><p>Tek patch tipik olarak broadside, orta kazançlı ve görece geniş huzmelidir.</p><ul><li>Model: 8 dBi tepe kazanç</li><li>HPBW ≈ 70°</li><li>Boyut ölçeği ≈ 0.5λ</li><li>Daha geniş hizalama toleransı</li></ul></article>
+    <article class="info"><h3>Yönlü anten değişince ne değişiyor?</h3><p>Daha büyük elektriksel açıklık daha dar ana lob ve daha yüksek tepe kazanç üretir.</p><ul><li>Model: 14 dBi tepe kazanç</li><li>HPBW ≈ 32°</li><li>Boyut ölçeği ≈ 2.0λ</li><li>Hizalama hatasına daha hassas</li></ul></article>
+  </section>
+
+  <div class="note"><strong>Model sınırı:</strong> Simülasyon serbest uzay, tek-yol ve far-field Friis modelidir. Anten desenleri gerçek bir üretici datasheet’i değil; patch ve dar-huzmeli yönlü anten fiziğini karşılaştırmak için normalize edilmiş öğretici 3B modellerdir. Yakın alan, çoklu yol, zemin yansıması, empedans/S11 ve gerçek anten verimi bu sürümde ayrı modellenmez.</div>
+</main>
+
+<script>
+(function(){
+  const root=document,scene=root.getElementById('scene'),ctx=scene.getContext('2d'),an=root.getElementById('analyzer'),actx=an.getContext('2d');
+  const dpr=Math.min(window.devicePixelRatio||1,2),c0=299792458,kB=1.380649e-23,T0=290;
+  let freq=2.45e9,time=0,last=0,camYaw=-.72,camPitch=.38,camZoom=1,drag=false,lastX=0,lastY=0;
+
+  const ANT={
+    patch:{label:'Patch',gain:8,hpbw:70,fbr:18,sizeLambda:.50,color:'#a98ee8'},
+    directional:{label:'Yönlü',gain:14,hpbw:32,fbr:22,sizeLambda:2.0,color:'#c6a7ff'}
+  };
+  const bwOptions=[1e6,5e6,20e6,40e6,80e6];
+
+  function resizeOne(c,cc,h){const r=c.getBoundingClientRect();c.width=Math.max(1,Math.floor(r.width*dpr));c.height=Math.max(1,Math.floor(h*dpr));cc.setTransform(dpr,0,0,dpr,0,0)}
+  function resize(){resizeOne(scene,ctx,parseFloat(getComputedStyle(scene).height));resizeOne(an,actx,195)}
+  function deg(v){return v*Math.PI/180}
+  function db2lin(v){return Math.pow(10,v/10)}
+  function lin2db(v){return 10*Math.log10(Math.max(v,1e-30))}
+  function dbm2w(v){return Math.pow(10,(v-30)/10)}
+  function w2dbm(v){return 10*Math.log10(Math.max(v,1e-30))+30}
+  function lambda(){return c0/freq}
+  function fmtLen(m){if(m>=1)return m.toFixed(m<10?2:1)+' m';if(m>=1e-2)return (m*100).toFixed(2)+' cm';if(m>=1e-3)return (m*1e3).toFixed(2)+' mm';return (m*1e6).toFixed(1)+' µm'}
+  function fmtPowerDbm(v){return v.toFixed(1)+' dBm'}
+  function logDistance(){const t=+root.getElementById('distance').value/1000;return .5*Math.pow(200,t)}
+  function vec(x,y,z){return {x:x,y:y,z:z}}
+  function add(a,b){return vec(a.x+b.x,a.y+b.y,a.z+b.z)}
+  function sub(a,b){return vec(a.x-b.x,a.y-b.y,a.z-b.z)}
+  function mul(a,s){return vec(a.x*s,a.y*s,a.z*s)}
+  function dot(a,b){return a.x*b.x+a.y*b.y+a.z*b.z}
+  function cross(a,b){return vec(a.y*b.z-a.z*b.y,a.z*b.x-a.x*b.z,a.x*b.y-a.y*b.x)}
+  function norm(a){const n=Math.hypot(a.x,a.y,a.z)||1;return vec(a.x/n,a.y/n,a.z/n)}
+  function angle(a,b){return Math.acos(Math.max(-1,Math.min(1,dot(norm(a),norm(b)))))}
+  function dir(az,el){const a=deg(az),e=deg(el);return norm(vec(Math.cos(e)*Math.cos(a),Math.cos(e)*Math.sin(a),Math.sin(e)))}
+  function antennaPattern(type,theta){
+    const a=ANT[type],half=deg(a.hpbw/2),q=Math.log(.5)/Math.log(Math.max(.01,Math.cos(half))),rear=db2lin(-a.fbr);
+    if(theta<=Math.PI/2)return Math.max(rear,Math.pow(Math.max(0,Math.cos(theta)),q));
+    const back=rear*(.55+.45*Math.pow(Math.abs(Math.cos(theta)),2));
+    return Math.max(rear*.35,back);
+  }
+  function gainAt(type,theta){return ANT[type].gain+lin2db(antennaPattern(type,theta))}
+  function state(){
+    const txType=root.getElementById('txType').value,rxType=root.getElementById('rxType').value;
+    const txPdbm=+root.getElementById('txPower').value,txP=dbm2w(txPdbm),Rxy=logDistance(),dz=+root.getElementById('height').value;
+    const tx=vec(-Rxy/2,0,0),rx=vec(Rxy/2,0,dz),link=sub(rx,tx),R=Math.hypot(link.x,link.y,link.z),u=norm(link);
+    const txDir=dir(+root.getElementById('txAz').value,+root.getElementById('txEl').value);
+    const rxDir=dir(+root.getElementById('rxAz').value,+root.getElementById('rxEl').value);
+    const txTheta=angle(txDir,u),rxTheta=angle(rxDir,mul(u,-1));
+    const gtDb=gainAt(txType,txTheta),grDb=gainAt(rxType,rxTheta),gt=db2lin(gtDb),gr=db2lin(grDb);
+    const lam=lambda(),fspl=20*Math.log10(4*Math.PI*R/lam),pol=deg(+root.getElementById('polMismatch').value),polFactor=Math.pow(Math.cos(pol),2);
+    const prx=txP*gt*gr*Math.pow(lam/(4*Math.PI*R),2)*polFactor,prxDbm=w2dbm(prx);
+    const bw=bwOptions[+root.getElementById('bandwidth').value],nf=+root.getElementById('noiseFigure').value,noiseDbm=-174+10*Math.log10(bw)+nf,snr=prxDbm-noiseDbm;
+    const S=txP*gt/(4*Math.PI*R*R),Erms=Math.sqrt(120*Math.PI*S),Ae=gr*lam*lam/(4*Math.PI);
+    const D=ANT[txType].sizeLambda*lam,Rff=2*D*D/lam;
+    return {txType,rxType,txPdbm,txP,tx,rx,link,R,u,txDir,rxDir,txTheta,rxTheta,gtDb,grDb,gt,gr,lam,fspl,polFactor,prx,prxDbm,bw,nf,noiseDbm,snr,S,Erms,Ae,Rff,D};
+  }
+
+  function rotateCamera(p){
+    const cy=Math.cos(camYaw),sy=Math.sin(camYaw),cp=Math.cos(camPitch),sp=Math.sin(camPitch);
+    let x=p.x*cy-p.y*sy,y=p.x*sy+p.y*cy,z=p.z;
+    const yy=y*cp-z*sp,zz=y*sp+z*cp;return vec(x,yy,zz)
+  }
+  function projector(w,h,scale){
+    return p=>{const q=rotateCamera(p),pers=1/(1+q.y*.018);return {x:w/2+q.x*scale*pers*camZoom,y:h*.52-q.z*scale*pers*camZoom,depth:q.y,pers:pers}}
+  }
+  function line3(P,a,b,color,width,alpha,dash){
+    const A=P(a),B=P(b);ctx.save();ctx.strokeStyle=color;ctx.globalAlpha=alpha==null?1:alpha;ctx.lineWidth=width||1;if(dash)ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();ctx.restore()
+  }
+  function point3(P,p,r,color,alpha){const q=P(p);ctx.save();ctx.globalAlpha=alpha==null?1:alpha;ctx.fillStyle=color;ctx.beginPath();ctx.arc(q.x,q.y,r*q.pers,0,Math.PI*2);ctx.fill();ctx.restore()}
+  function basisFromAxis(axis){let up=Math.abs(axis.z)<.9?vec(0,0,1):vec(0,1,0);const v=norm(cross(axis,up)),w=norm(cross(v,axis));return {v,w}}
+  function lobeRadius(type,theta){const p=antennaPattern(type,theta);return .22+1.15*Math.sqrt(p)}
+  function drawLobe(P,pos,axis,type,scale,color,alpha){
+    const b=basisFromAxis(axis),rings=18,segs=28;
+    for(let i=0;i<=rings;i++){
+      const th=i*Math.PI/rings,r=lobeRadius(type,th)*scale;
+      let prev=null;
+      for(let j=0;j<=segs;j++){
+        const ph=j*2*Math.PI/segs;
+        const d=add(mul(axis,Math.cos(th)),add(mul(b.v,Math.sin(th)*Math.cos(ph)),mul(b.w,Math.sin(th)*Math.sin(ph))));
+        const p=add(pos,mul(d,r));if(prev)line3(P,prev,p,color,.75,alpha);prev=p;
+      }
+    }
+    for(let j=0;j<10;j++){
+      const ph=j*2*Math.PI/10;let prev=null;
+      for(let i=0;i<=rings;i++){
+        const th=i*Math.PI/rings,r=lobeRadius(type,th)*scale,d=add(mul(axis,Math.cos(th)),add(mul(b.v,Math.sin(th)*Math.cos(ph)),mul(b.w,Math.sin(th)*Math.sin(ph)))),p=add(pos,mul(d,r));
+        if(prev)line3(P,prev,p,color,.75,alpha);prev=p;
+      }
+    }
+  }
+  function drawPatch(P,pos,axis,lam,isRx){
+    const b=basisFromAxis(axis),s=.20,hw=s*.55,hh=s*.40,c=isRx?'#80e3b4':'#82d5ff';
+    const corners=[add(pos,add(mul(b.v,-hw),mul(b.w,-hh))),add(pos,add(mul(b.v,hw),mul(b.w,-hh))),add(pos,add(mul(b.v,hw),mul(b.w,hh))),add(pos,add(mul(b.v,-hw),mul(b.w,hh)))];
+    for(let i=0;i<4;i++)line3(P,corners[i],corners[(i+1)%4],c,3,1);
+    line3(P,pos,add(pos,mul(axis,.16)),c,2,1);
+  }
+  function drawDirectional(P,pos,axis,lam,isRx){
+    const b=basisFromAxis(axis),c=isRx?'#80e3b4':'#82d5ff',boom=.30;
+    line3(P,add(pos,mul(axis,-boom*.4)),add(pos,mul(axis,boom)),c,3,1);
+    for(let i=0;i<6;i++){const t=-.25+i*.20,center=add(pos,mul(axis,t)),half=.13*(1-i*.035);line3(P,add(center,mul(b.v,-half)),add(center,mul(b.v,half)),c,2,1)}
+  }
+  function drawAntenna(P,pos,axis,type,lam,isRx){if(type==='patch')drawPatch(P,pos,axis,lam,isRx);else drawDirectional(P,pos,axis,lam,isRx)}
+  function drawGrid(P,span){
+    if(!root.getElementById('showGrid').checked)return;
+    for(let x=-span;x<=span;x+=.5){line3(P,vec(x,-span,0),vec(x,span,0),'#5d7594',.6,.15)}
+    for(let y=-span;y<=span;y+=.5){line3(P,vec(-span,y,0),vec(span,y,0),'#5d7594',.6,.15)}
+    line3(P,vec(-span,0,0),vec(span,0,0),'#93a9c5',1,.35);line3(P,vec(0,-span,0),vec(0,span,0),'#93a9c5',1,.35)
+  }
+  function drawWavefront(P,s){
+    if(!root.getElementById('showWavefronts').checked)return;
+    const count=7,b=basisFromAxis(s.u),travel=(time*.45)%1;
+    for(let i=0;i<count;i++){
+      const q=(i+travel)/count;if(q>=1)continue;
+      const center=add(s.tx,mul(s.link,q)),rad=.07+.10*q,pts=40;let prev=null;
+      for(let j=0;j<=pts;j++){const ph=j*2*Math.PI/pts,p=add(center,add(mul(b.v,rad*Math.cos(ph)),mul(b.w,rad*Math.sin(ph))));if(prev)line3(P,prev,p,'#f4bf6e',1,.20+.45*(1-q));prev=p}
+    }
+  }
+  function drawScene(s){
+    const r=scene.getBoundingClientRect(),w=r.width,h=r.height;ctx.clearRect(0,0,w,h);ctx.fillStyle='#071427';ctx.fillRect(0,0,w,h);
+    const worldSpan=3.0,scale=Math.min(w,h)/6.2,P=projector(w,h,scale);
+    drawGrid(P,worldSpan);
+    const txp=vec(-1.55,0,0),rxp=vec(1.55,0,Math.max(-.85,Math.min(.85,+root.getElementById('height').value/10))),link=norm(sub(rxp,txp));
+    const txAxis=s.txDir,rxAxis=s.rxDir;
+    if(root.getElementById('showTxLobe').checked)drawLobe(P,txp,txAxis,s.txType,.72,ANT[s.txType].color,.18);
+    if(root.getElementById('showRxLobe').checked)drawLobe(P,rxp,rxAxis,s.rxType,.55,'#79dfb0',.14);
+    line3(P,txp,rxp,'#82d5ff',2,.60,[5,5]);
+    drawWavefront(P,{tx:txp,rx:rxp,link:sub(rxp,txp),u:link});
+    drawAntenna(P,txp,txAxis,s.txType,s.lam,false);drawAntenna(P,rxp,rxAxis,s.rxType,s.lam,true);
+    point3(P,txp,5,'#82d5ff',1);point3(P,rxp,5,'#80e3b4',1);
+    line3(P,txp,add(txp,mul(txAxis,.50)),'#82d5ff',2,.9);line3(P,rxp,add(rxp,mul(rxAxis,.50)),'#80e3b4',2,.9);
+    const tq=P(txp),rq=P(rxp);ctx.fillStyle='#d8e7f7';ctx.font='700 12px system-ui';ctx.fillText('TX',tq.x+8,tq.y-8);ctx.fillText('RX',rq.x+8,rq.y-8);
+    ctx.fillStyle='rgba(216,231,247,.62)';ctx.font='10px system-ui';ctx.fillText('kamera: sürükle / yakınlaştır',16,24);
+  }
+  function drawAnalyzer(s){
+    const r=an.getBoundingClientRect(),w=r.width,h=r.height;actx.clearRect(0,0,w,h);actx.fillStyle='#fbfcfe';actx.fillRect(0,0,w,h);
+    const L=48,R=w-16,T=15,B=h-27,noise=s.noiseDbm,min=Math.min(-130,noise-15),max=Math.max(-20,s.prxDbm+15);
+    actx.strokeStyle='#ced8e6';actx.beginPath();actx.moveTo(L,T);actx.lineTo(L,B);actx.lineTo(R,B);actx.stroke();
+    for(let i=0;i<5;i++){const y=T+(B-T)*i/4,val=max-(max-min)*i/4;actx.strokeStyle='#edf1f6';actx.beginPath();actx.moveTo(L,y);actx.lineTo(R,y);actx.stroke();actx.fillStyle='#6a7a8d';actx.font='10px system-ui';actx.fillText(val.toFixed(0),8,y+3)}
+    const noiseY=T+(max-noise)/(max-min)*(B-T);actx.strokeStyle='#9aa8b9';actx.setLineDash([4,4]);actx.beginPath();actx.moveTo(L,noiseY);actx.lineTo(R,noiseY);actx.stroke();actx.setLineDash([]);actx.fillStyle='#6a7a8d';actx.fillText('noise '+noise.toFixed(1)+' dBm',L+6,noiseY-5);
+    const cx=(L+R)/2,span=(R-L)*.32,peakY=T+(max-s.prxDbm)/(max-min)*(B-T);actx.strokeStyle='#6845c6';actx.lineWidth=2;actx.beginPath();
+    for(let i=0;i<=160;i++){const x=L+(R-L)*i/160,u=(x-cx)/span,shape=Math.exp(-u*u*5),db=noise+(s.prxDbm-noise)*shape,y=T+(max-db)/(max-min)*(B-T);if(i===0)actx.moveTo(x,y);else actx.lineTo(x,y)}actx.stroke();
+    actx.fillStyle='#253a56';actx.font='700 11px system-ui';actx.fillText('RX spektrum görünümü · taşıyıcı merkezli',L,T+9);actx.fillStyle='#6a7a8d';actx.font='10px system-ui';actx.fillText('−BW/2',L,B+17);actx.fillText('f₀',cx-7,B+17);actx.fillText('+BW/2',R-34,B+17);
+    actx.fillStyle='#6845c6';actx.fillText('P_RX '+s.prxDbm.toFixed(1)+' dBm',Math.min(R-110,cx+12),Math.max(T+23,peakY-8));
+  }
+  function update(){
+    const s=state(),txA=ANT[s.txType],rxA=ANT[s.rxType],txM=Math.max(0,Math.min(1,antennaPattern(s.txType,s.txTheta))),rxM=Math.max(0,Math.min(1,antennaPattern(s.rxType,s.rxTheta)));
+    root.getElementById('txPowerOut').value=s.txPdbm.toFixed(0)+' dBm · '+(s.txP*1000).toFixed(s.txP<.1?1:0)+' mW';
+    root.getElementById('txAzOut').value=root.getElementById('txAz').value+'°';root.getElementById('txElOut').value=root.getElementById('txEl').value+'°';
+    root.getElementById('rxAzOut').value=root.getElementById('rxAz').value+'°';root.getElementById('rxElOut').value=root.getElementById('rxEl').value+'°';
+    root.getElementById('polOut').value=root.getElementById('polMismatch').value+'°';root.getElementById('distanceOut').value=s.R.toFixed(1)+' m';root.getElementById('heightOut').value=(+root.getElementById('height').value).toFixed(1)+' m';
+    root.getElementById('bwOut').value=s.bw>=1e6?(s.bw/1e6).toFixed(s.bw<10e6?0:0)+' MHz':s.bw+' Hz';root.getElementById('nfOut').value=s.nf.toFixed(1)+' dB';
+    root.getElementById('txSpec').textContent=txA.label+' · '+txA.gain+' dBi tepe · HPBW ≈ '+txA.hpbw+'° · bu doğrultuda '+s.gtDb.toFixed(1)+' dBi';
+    root.getElementById('rxSpec').textContent=rxA.label+' · '+rxA.gain+' dBi tepe · HPBW ≈ '+rxA.hpbw+'° · bu doğrultuda '+s.grDb.toFixed(1)+' dBi';
+    root.getElementById('lambdaVal').textContent=fmtLen(s.lam);root.getElementById('fsplVal').textContent=s.fspl.toFixed(1)+' dB';root.getElementById('rxPowerVal').textContent=fmtPowerDbm(s.prxDbm);root.getElementById('snrVal').textContent=s.snr.toFixed(1)+' dB';
+    root.getElementById('eFieldVal').textContent=s.Erms>=1?s.Erms.toFixed(2)+' V/m':(s.Erms*1000).toFixed(2)+' mV/m';root.getElementById('delayVal').textContent=(s.R/c0*1e9).toFixed(1)+' ns';root.getElementById('aeVal').textContent=(s.Ae*1e4).toFixed(1)+' cm²';root.getElementById('ffVal').textContent=s.Rff.toFixed(2)+' m';
+    root.getElementById('sceneTitle').textContent=(freq/1e9>=1?(freq/1e9).toFixed(2)+' GHz':(freq/1e6).toFixed(0)+' MHz')+' · '+txA.label+' TX → '+rxA.label+' RX';
+    const far=s.R>=s.Rff,polLoss=s.polFactor>0?lin2db(s.polFactor):-99,txOff=s.txTheta*180/Math.PI,rxOff=s.rxTheta*180/Math.PI;
+    let msg='TX sapma '+txOff.toFixed(1)+'°, RX sapma '+rxOff.toFixed(1)+'°. ';
+    msg+=far?'Bağlantı far-field bölgesinde; Friis yaklaşımı uygun. ':'Mesafe TX Fraunhofer sınırından küçük; Friis sonucu yalnız yaklaşık referanstır. ';
+    if(+root.getElementById('polMismatch').value>0)msg+='Polarizasyon kaybı '+(-polLoss).toFixed(1)+' dB. ';
+    if(s.snr<0)msg+='Sinyal gürültü tabanının altında.'; else if(s.snr<10)msg+='SNR düşük.'; else msg+='RX analizi için kullanılabilir SNR.';
+    root.getElementById('statusText').textContent=msg;root.getElementById('overlayText').innerHTML='<strong>Bağlantı:</strong> '+s.R.toFixed(1)+' m · G_TX='+s.gtDb.toFixed(1)+' dBi · G_RX='+s.grDb.toFixed(1)+' dBi · P_RX='+s.prxDbm.toFixed(1)+' dBm · SNR='+s.snr.toFixed(1)+' dB. <strong>Lob doluluğu:</strong> TX '+(100*txM).toFixed(0)+'%, RX '+(100*rxM).toFixed(0)+'%.';
+    drawScene(s);drawAnalyzer(s);
+  }
+  function frame(ts){if(!last)last=ts;time+=Math.min(.05,(ts-last)/1000);last=ts;update();requestAnimationFrame(frame)}
+
+  root.querySelectorAll('[data-f]').forEach(btn=>btn.addEventListener('click',()=>{freq=+btn.dataset.f;root.querySelectorAll('[data-f]').forEach(b=>b.classList.toggle('active',b===btn))}));
+  root.getElementById('viewIso').addEventListener('click',()=>{camYaw=-.72;camPitch=.38;camZoom=1});
+  root.getElementById('viewTop').addEventListener('click',()=>{camYaw=-Math.PI/2;camPitch=1.45;camZoom=.95});
+  root.getElementById('viewSide').addEventListener('click',()=>{camYaw=0;camPitch=.03;camZoom=1});
+  scene.addEventListener('pointerdown',e=>{drag=true;lastX=e.clientX;lastY=e.clientY;scene.setPointerCapture(e.pointerId)});
+  scene.addEventListener('pointermove',e=>{if(!drag)return;camYaw+=(e.clientX-lastX)*.008;camPitch=Math.max(-1.35,Math.min(1.35,camPitch+(e.clientY-lastY)*.006));lastX=e.clientX;lastY=e.clientY});
+  scene.addEventListener('pointerup',()=>{drag=false});scene.addEventListener('pointercancel',()=>{drag=false});
+  scene.addEventListener('wheel',e=>{e.preventDefault();camZoom=Math.max(.55,Math.min(1.8,camZoom*(e.deltaY>0?.92:1.08)))},{passive:false});
+  window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
