@@ -89,9 +89,9 @@
       <div class="band-card"><canvas id="bandCanvas" aria-label="Silisyum enerji bant diyagramı"></canvas></div>
       <div class="metrics">
         <div class="metric"><strong id="photonVal">4.14×10⁻⁷ eV</strong><span>foton enerjisi hν</span></div>
-        <div class="metric"><strong id="gapVal">1.12 eV</strong><span>silisyum bant aralığı E<sub>g</sub></span></div>
+        <div class="metric"><strong id="gapVal">1.12 eV</strong><span>bant aralığı / elektronik eşik</span></div>
         <div class="metric"><strong id="ratioVal">3.7×10⁻⁷</strong><span>hν / E<sub>g</sub></span></div>
-        <div class="metric"><strong id="pairVal">Hayır</strong><span>tek fotonla e–h üretimi</span></div>
+        <div class="metric"><strong id="pairVal">Hayır</strong><span>tek fotonla Si e–h / elektronik uyarım</span></div>
         <div class="metric"><strong id="carrierVal">mevcut taşıyıcı</strong><span>baskın elektronik cevap</span></div>
         <div class="metric"><strong id="wavelengthVal">3.00 m</strong><span>vakumdaki dalga boyu λ</span></div>
         <div class="metric"><strong id="attenuationVal">—</strong><span>1/e güç zayıflama uzunluğu Lₚ</span></div>
@@ -123,7 +123,7 @@
       <label class="switch"><input id="showField" type="checkbox" checked> İç elektromanyetik alanı göster</label>
       <label class="switch"><input id="showBound" type="checkbox" checked> Bağlı elektron polarizasyonunu göster</label>
       <label class="switch"><input id="showCarriers" type="checkbox" checked> Serbest elektron / hol taşıyıcılarını göster</label>
-      <label class="switch"><input id="showGeneration" type="checkbox" checked> Foton soğurma / e–h üretim olaylarını göster</label>
+      <label class="switch"><input id="showGeneration" type="checkbox" checked> Foton soğurma / elektronik etkileşim olaylarını göster</label>
       <div class="actions"><button class="btn" id="pauseBtn" type="button">Duraklat</button><button class="btn alt" id="resetBtn" type="button">Sıfırla</button></div>
 
       <div class="status" id="statusText">RF foton enerjisi bant aralığından milyonlarca kat küçüktür. Alan yeni taşıyıcı üretmek yerine mevcut taşıyıcıları ileri–geri sürükler.</div>
@@ -143,7 +143,7 @@
     <article class="ex"><h3>RF · 100 MHz</h3><p>Silisyum için hν yaklaşık 4×10⁻⁷ eV’dir; 1.12 eV bant aralığından çok küçüktür. Yeni elektron–hol çifti oluşturmaz. Mevcut taşıyıcılar salınan alanla sürüklenir.</p></article>
     <article class="ex"><h3>Mikrodalga · 2.45 GHz</h3><p>Foton enerjisi yine bant aralığından çok küçüktür. Taşıyıcı hareketi ve dielektrik polarizasyon önemlidir; soğurma taşıyıcı saçılması ve kayıplardan gelir.</p></article>
     <article class="ex"><h3>Görünür · 550 nm</h3><p>Foton enerjisi yaklaşık 2.25 eV’dir ve Si bant aralığından büyüktür. Soğurulan foton valans bandından bir elektronu iletim bandına çıkarıp geride hol bırakabilir.</p></article>
-    <article class="ex"><h3>X-ışını · 10 keV</h3><p>Soğurulan X-ışını yüksek enerjili bir elektron oluşturabilir; bu elektron malzeme içinde enerji kaybederek çok sayıda ikincil elektron–hol çifti meydana getirebilir.</p></article>
+    <article class="ex"><h3>X-ışını · 10 keV</h3><p>X-ışını için klasik “alan aynı genlikle ilerliyor” resmi kullanılmaz. Foton akısı Beer–Lambert yasasına göre azalır. 10 keV’de 1/e güç uzunluğu yaklaşık Cu 5.2 µm, Si 127 µm, borosilikat 263 µm ve su 1.88 mm’dir.</p></article>
   </section>
 
   <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
@@ -203,8 +203,8 @@
           ctx.strokeStyle='rgba(173,141,255,'+(.12+.22*env)+')';ctx.beginPath();ctx.arc(p.x,p.y,10,0,Math.PI*2);ctx.stroke();
         }else{
           const off=Math.sin(phaseAt(p.frac))*4*(+root.getElementById('fieldAmp').value/100)*env;
-          ctx.strokeStyle='rgba(173,141,255,'+(.12+.28*env)+')';ctx.beginPath();ctx.arc(p.x,p.y,11+Math.abs(off),0,Math.PI*2);ctx.stroke();
-          ctx.fillStyle='rgba(111,197,255,'+(.25+.55*env)+')';ctx.beginPath();ctx.arc(p.x+off,p.y,3,0,Math.PI*2);ctx.fill();
+          ctx.strokeStyle='rgba(173,141,255,.28)';ctx.beginPath();ctx.arc(p.x,p.y,11+Math.abs(off),0,Math.PI*2);ctx.stroke();
+          ctx.fillStyle='rgba(111,197,255,.78)';ctx.beginPath();ctx.arc(p.x+off,p.y,3,0,Math.PI*2);ctx.fill();
         }
       }
       ctx.fillStyle='rgba(223,230,240,.75)';ctx.beginPath();ctx.arc(p.x,p.y,6,0,Math.PI*2);ctx.fill();
@@ -222,8 +222,8 @@
   function drawCarriers(w,h,left,right){
     if(!root.getElementById('showCarriers').checked)return;
     const c=carrierCounts(),amp=+root.getElementById('fieldAmp').value/100,span=right-left;
-    for(let i=0;i<c.e;i++){const baseX=left+35+((i*83)%Math.max(80,span-70)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=68+((i*61)%Math.max(80,h-120)),drift=band==='xray'?0:-E*14*amp*env;ctx.fillStyle='rgba(117,201,255,'+(.25+.75*env)+')';ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.sin(time*2+i)*3,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',baseX+drift-2,baseY+3)}
-    for(let i=0;i<c.h;i++){const baseX=left+58+((i*97)%Math.max(80,span-85)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=92+((i*73)%Math.max(80,h-145)),drift=band==='xray'?0:E*11*amp*env;ctx.strokeStyle='rgba(245,189,104,'+(.25+.75*env)+')';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.cos(time*2+i)*3,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',baseX+drift-2.5,baseY+3)}
+    for(let i=0;i<c.e;i++){const baseX=left+35+((i*83)%Math.max(80,span-70)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=68+((i*61)%Math.max(80,h-120)),drift=band==='xray'?0:-E*14*amp*env;ctx.fillStyle='rgba(117,201,255,.9)';ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.sin(time*2+i)*3,4,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,.8)';ctx.font='9px system-ui';ctx.fillText('−',baseX+drift-2,baseY+3)}
+    for(let i=0;i<c.h;i++){const baseX=left+58+((i*97)%Math.max(80,span-85)),frac=(baseX-left)/span,env=fieldEnvelope(frac),E=Math.sin(phaseAt(frac)),baseY=92+((i*73)%Math.max(80,h-145)),drift=band==='xray'?0:E*11*amp*env;ctx.strokeStyle='rgba(245,189,104,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(baseX+drift,baseY+Math.cos(time*2+i)*3,5,0,Math.PI*2);ctx.stroke();ctx.fillStyle='#f5bd68';ctx.font='9px system-ui';ctx.fillText('+',baseX+drift-2.5,baseY+3)}
   }
   function drawClassicalField(w,h,left,right){
     if(!root.getElementById('showField').checked)return;
@@ -283,6 +283,8 @@
     const D=viewDepth();ctx.strokeStyle='rgba(220,232,248,.28)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(left,h-24);ctx.lineTo(right,h-24);ctx.stroke();
     ctx.fillStyle='rgba(220,232,248,.62)';ctx.font='10px system-ui';
     ctx.fillText('0',left,h-9);ctx.fillText(fmtLen(D/2),left+(right-left)/2-18,h-9);ctx.fillText(fmtLen(D),right-42,h-9);
+    const lpX=left+(right-left)/depthFactor();
+    if(lpX<right){ctx.strokeStyle='rgba(245,189,104,.48)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(lpX,34);ctx.lineTo(lpX,h-28);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='rgba(245,189,104,.88)';ctx.fillText('Lₚ · güç %36.8',Math.min(right-88,lpX+5),h-34)}
   }
   function drawScene(){
     const r=nano.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),left=w*.27,right=w*.96;
