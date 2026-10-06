@@ -22,8 +22,17 @@
     .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:13px 15px;border-top:1px solid var(--line)}.metric{padding:10px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}.metric strong{display:block;font-size:.98rem}.metric span{font-size:.68rem;color:var(--muted)}
     .panel{padding:18px;box-shadow:none}.panel h2{font-size:1rem;margin:0 0 14px}.control{margin-bottom:14px}.control label{display:flex;justify-content:space-between;gap:10px;font-size:.8rem;font-weight:750;margin-bottom:6px}.control output{color:#526984}.control input[type=range]{width:100%;accent-color:var(--accent)}select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:#263a55}.switch{display:flex;align-items:center;gap:8px;font-size:.77rem;font-weight:750;margin:9px 0}.switch input{width:17px;height:17px;accent-color:var(--accent)}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{border:0;border-radius:10px;padding:8px 11px;background:#543c91;color:#fff;font-weight:800}.actions button.alt{background:#eef2f7;color:#39516e;border:1px solid var(--line)}.status{padding:11px 12px;border-radius:12px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.78rem;margin-top:12px}
     .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.step,.info{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px}.step b{display:inline-flex;width:25px;height:25px;align-items:center;justify-content:center;border-radius:50%;background:#152d52;color:#fff;font-size:.75rem;margin-bottom:8px}.step h3,.info h3{font-size:.92rem;margin:0 0 6px}.step p,.info p{font-size:.8rem;color:#586b82;margin:0}.formula{margin-top:9px;padding:8px 9px;border-radius:9px;background:#101f37;color:#dce7f5;font:600 .7rem "SFMono-Regular",Consolas,monospace}
-    .infos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.info ul{padding-left:18px;margin:8px 0 0;color:#586b82;font-size:.78rem}.note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.82rem}
-    @media(max-width:1000px){.intro,.layout{grid-template-columns:1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr}.flow{grid-template-columns:1fr 1fr}}
+    .infos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.info ul{padding-left:18px;margin:8px 0 0;color:#586b82;font-size:.78rem}
+    .data-section{margin-top:22px}.section-head{margin:0 0 10px}.section-head h2{font-size:1.16rem;margin:0 0 4px}.section-head p{margin:0;color:var(--muted);font-size:.84rem}
+    .data-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;margin-top:10px}.data-card h3{font-size:.92rem;margin:0 0 8px}.data-card p{font-size:.8rem;color:#586b82;margin:0 0 10px}
+    .csv-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.7rem;color:#586b82;margin:0 0 8px}.csv-legend span{display:flex;align-items:center;gap:5px}.csv-key{width:9px;height:9px;border-radius:3px;display:inline-block}.m{background:#75d4a6}.meta{background:#7db7ef}.target{background:#c8a4ef}.derived{background:#efbd72}
+    .csv-box{overflow:auto;border-radius:12px;background:#0b1729;border:1px solid #20324b;padding:12px}.csv-box pre{margin:0;color:#dce7f5;font:600 .72rem/1.65 "SFMono-Regular",Consolas,monospace;white-space:pre}.csv-box .h{color:#9fc8ff}.csv-box .mv{color:#8ee2b8}.csv-box .md{color:#9fc8ff}.csv-box .tg{color:#d9b6ff}.csv-box .dv{color:#ffd08a}
+    .table-wrap{overflow:auto}.data-table{width:100%;border-collapse:collapse;font-size:.76rem}.data-table th,.data-table td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.data-table th{background:#f5f8fc;color:#39506c;white-space:nowrap}.data-table code{font-size:.72rem}.type-measured{color:#167650;font-weight:800}.type-meta{color:#286aa6;font-weight:800}.type-target{color:#7a4ba1;font-weight:800}.type-derived{color:#99611c;font-weight:800}
+    .ml-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}.ml-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:14px}.ml-card h3{font-size:.88rem;margin:0 0 6px}.ml-card p,.ml-card li{font-size:.77rem;color:#586b82}.ml-card ul{padding-left:17px;margin:7px 0 0}
+    .pipeline{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:.74rem}.pipeline span{padding:7px 9px;border:1px solid var(--line);background:#f8fafc;border-radius:9px}.pipeline i{font-style:normal;color:#8594a7}
+    .tensor{font:700 .76rem "SFMono-Regular",Consolas,monospace;background:#eef4ff;color:#315b8c;border-radius:9px;padding:8px 10px;display:inline-block;margin-top:5px}
+    .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.82rem}
+    @media(max-width:1000px){.intro,.layout{grid-template-columns:1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr}.flow{grid-template-columns:1fr 1fr}.ml-grid{grid-template-columns:1fr}}
     @media(max-width:700px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.freqs,.metrics,.flow,.infos,.plots{grid-template-columns:1fr}.plot:first-child{border-right:0;border-bottom:1px solid var(--line)}}
   </style>
 </head>
@@ -90,6 +99,68 @@
   <section class="infos">
     <article class="info"><h3>CSI neden RSSI'den daha zengin?</h3><p>RSSI bütün kanal bilgisini tek güce indirger; CSI frekans eksenindeki yapıyı korur.</p><ul><li>alt taşıyıcı başına genlik</li><li>alt taşıyıcı başına faz</li><li>frekans-seçici fading</li><li>MIMO sistemlerde anten çifti başına H<sub>r,t,k</sub></li></ul></article>
     <article class="info"><h3>Ham CSI fazına neden dikkat?</h3><p>Ölçülen faz yalnız geometrik yayılım değildir. Paket/simge bazlı ortak faz dönüşü ve alt taşıyıcı indeksine göre yaklaşık lineer faz eğimi eklenebilir.</p><ul><li>residual CFO / common phase error → paket/simge ortak faz dönüşü</li><li>sampling/timing offset ve packet-detection delay → alt taşıyıcılar boyunca faz eğimi</li><li>SFO → bu eğimin paketler arasında değişmesine yol açabilir</li><li>RF zinciri sabit faz farkları</li><li>cihaz/driver'a özgü kalibrasyon</li></ul></article>
+  </section>
+
+
+  <section class="data-section">
+    <div class="section-head"><h2>Örnek CSI veri formatı</h2><p>CSI için en taşınabilir yaklaşım kompleks örneği korumaktır. Aşağıdaki long-format CSV’de bir satır, tek bir paket içindeki tek bir TX–RX zinciri ve tek bir alt taşıyıcıyı temsil eder.</p></div>
+    <article class="data-card">
+      <h3>CSV · bir satır = packet × TX chain × RX chain × subcarrier</h3>
+      <div class="csv-legend"><span><i class="csv-key m"></i>ölçülen / ham</span><span><i class="csv-key meta"></i>metadata</span><span><i class="csv-key derived"></i>türetilmiş</span><span><i class="csv-key target"></i>ground-truth / hedef</span></div>
+      <div class="csv-box"><pre><code><span class="h">timestamp_ns,packet_id,fc_mhz,bandwidth_mhz,subcarrier_idx,subcarrier_hz,tx_ant,rx_ant,csi_real,csi_imag,amp_db,phase_raw_rad,phase_cal_rad,rssi_dbm,noise_dbm,agc_db,label</span>
+<span class="md">1710000000000000,2201,5180,20,-28,5171250000,0,0,</span><span class="mv">0.812,-0.144,</span><span class="dv">-1.67,-0.176,-0.041,</span><span class="mv">-48.2,-93.1,</span><span class="md">31,</span><span class="tg">empty</span>
+<span class="md">1710000000000000,2201,5180,20,-27,5171562500,0,0,</span><span class="mv">0.744,-0.263,</span><span class="dv">-2.06,-0.340,-0.205,</span><span class="mv">-48.2,-93.1,</span><span class="md">31,</span><span class="tg">empty</span>
+<span class="md">1710000000080000,2202,5180,20,-28,5171250000,0,0,</span><span class="mv">0.681,-0.391,</span><span class="dv">-2.19,-0.521,-0.082,</span><span class="mv">-49.0,-93.0,</span><span class="md">31,</span><span class="tg">person_moving</span></code></pre></div>
+      <p><code>csi_real</code> ve <code>csi_imag</code> temel kompleks örnektir. <code>amp_db</code> ve faz sütunları bunlardan türetilebilir. Depolama alanı önemliyse türetilmiş sütunları tekrar saklamak zorunlu değildir.</p>
+    </article>
+    <article class="data-card">
+      <h3>Sütunlar ne anlama geliyor?</h3>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Sütun</th><th>Tür</th><th>Anlamı</th><th>ML / işleme notu</th></tr></thead>
+        <tbody>
+          <tr><td><code>timestamp_ns</code></td><td class="type-meta">metadata</td><td>Paket/CSI ölçüm zamanı.</td><td>Time-series hizalama, Doppler ve pencereleme için kritik; clock kaynağı da metadata’da tutulmalı.</td></tr>
+          <tr><td><code>packet_id</code></td><td class="type-meta">metadata</td><td>CSI snapshot kimliği.</td><td>Aynı pakete ait tüm alt taşıyıcıları tekrar tensor haline getirmek için kullanılır.</td></tr>
+          <tr><td><code>fc_mhz</code>, <code>bandwidth_mhz</code></td><td class="type-meta">metadata</td><td>Merkez frekansı ve nominal bant.</td><td>Farklı PHY/channel koşullarını birbirinden ayırır.</td></tr>
+          <tr><td><code>subcarrier_idx</code></td><td class="type-meta">metadata</td><td>OFDM alt taşıyıcı indeksi k.</td><td>Frekans eksenindeki sırayı korumak için şarttır.</td></tr>
+          <tr><td><code>subcarrier_hz</code></td><td class="type-derived">türetilmiş</td><td><code>f_c + kΔf</code> frekansı.</td><td>Farklı numerolojiler bir arada ise kullanışlıdır.</td></tr>
+          <tr><td><code>tx_ant</code>, <code>rx_ant</code></td><td class="type-meta">metadata</td><td>Hangi MIMO zincir çiftinin <code>H[r,t,k]</code> örneği olduğu.</td><td>AoA/spatial feature ve MIMO tensoru için korunmalıdır.</td></tr>
+          <tr><td><code>csi_real</code>, <code>csi_imag</code></td><td class="type-measured">ham CSI</td><td>Kompleks kanal tahmininin I/Q bileşenleri.</td><td>Faz wrapping’den kaçınmak için ML’ye real/imag vermek çoğu zaman iyi başlangıçtır.</td></tr>
+          <tr><td><code>amp_db</code></td><td class="type-derived">türetilmiş</td><td><code>20log10(|H|)</code>.</td><td>Fading yapısını görselleştirmek ve amplitude feature üretmek için.</td></tr>
+          <tr><td><code>phase_raw_rad</code></td><td class="type-derived">türetilmiş</td><td><code>atan2(Im,Re)</code> ham faz.</td><td>Doğrudan kullanılmadan önce unwrap ve donanım/timing etkileri değerlendirilmelidir.</td></tr>
+          <tr><td><code>phase_cal_rad</code></td><td class="type-derived">türetilmiş</td><td>Seçilen common-phase / linear-slope kalibrasyonundan sonraki faz.</td><td>Kalibrasyon yöntemi ve parametreleri ayrıca metadata olarak saklanmalıdır.</td></tr>
+          <tr><td><code>rssi_dbm</code>, <code>noise_dbm</code></td><td class="type-measured">ölçülen</td><td>Paket seviyesinde güç/noise metadata’sı; destek cihaz-bağımlıdır.</td><td>CSI ölçekleme, kalite filtresi ve SNR tahmini için kullanılabilir.</td></tr>
+          <tr><td><code>agc_db</code></td><td class="type-meta">receiver state</td><td>Alıcı kazanç durumu.</td><td>Ham amplitude farklı AGC seviyelerinde karşılaştırılacaksa önemlidir.</td></tr>
+          <tr><td><code>label</code></td><td class="type-target">hedef</td><td>Örn. empty / person_moving / gesture_A.</td><td>Sınıflandırma hedefidir; feature setine doğrudan verilmez.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Bir paket için veri doğal olarak çok boyutludur. ML öncesinde tipik gösterim:</p>
+      <div class="tensor">X ∈ ℝ[T × Nrx × Ntx × K × 2] &nbsp; → &nbsp; son boyut = real / imag</div>
+    </article>
+  </section>
+
+  <section class="data-section">
+    <div class="section-head"><h2>CSI verisiyle ML tarafında ne yapılabilir?</h2><p>CSI, zaman + frekans + anten uzayını birlikte taşıdığı için RSSI’den çok daha yüksek boyutlu ve daha zengin bir feature alanı sunar.</p></div>
+    <div class="ml-grid">
+      <article class="ml-card"><h3>Varlık / aktivite / gesture</h3><p>İnsan veya nesne hareketinin multipath üzerindeki küçük değişimlerini sınıflandırma.</p><ul><li>boş / dolu</li><li>hareket var / yok</li><li>yürüme / oturma gibi aktiviteler</li><li>gesture sınıflandırma</li><li>periyodik mikro-hareket analizi</li></ul></article>
+      <article class="ml-card"><h3>Konum / kanal geometrisi</h3><p>Frekans ve antenler arası yapıyı konum bilgisine çevirmek.</p><ul><li>oda / zone sınıflandırma</li><li>fingerprint tabanlı localization</li><li>kalibre MIMO’da AoA özellikleri</li><li>geniş bantta ToF / CIR özellikleri</li></ul></article>
+      <article class="ml-card"><h3>Anomali / kanal değişimi</h3><p>Etiket olmadan “normal” kanal manifoldundan sapmayı bulma.</p><ul><li>ortam düzeni değişikliği</li><li>yeni reflektör/engel</li><li>donanım/anten zinciri problemi</li><li>beklenmeyen fading paterni</li></ul></article>
+    </div>
+    <article class="data-card">
+      <h3>CSI için tipik preprocessing + ML pipeline</h3>
+      <div class="pipeline"><span>complex CSI</span><i>→</i><span>paket/anten/subcarrier hizalama</span><i>→</i><span>AGC / amplitude normalization</span><i>→</i><span>phase unwrap + common/slope calibration</span><i>→</i><span>windowing</span><i>→</i><span>feature / tensor</span><i>→</i><span>model</span></div>
+      <p>Feature tarafında doğrudan real/imag veya amplitude/kalibre phase; ayrıca CIR/IFFT, subcarrier covariance, PCA, STFT/Doppler ve antenler arası phase-difference kullanılabilir. Model seçimi probleme göre değişir.</p>
+      <div class="table-wrap"><table class="data-table">
+        <thead><tr><th>Girdi biçimi</th><th>Uygun başlangıç modeli</th><th>Ne yakalar?</th></tr></thead>
+        <tbody>
+          <tr><td>Pencere istatistikleri / PCA feature</td><td>Random Forest, XGBoost, SVM</td><td>Az veriyle kaba durum/aktivite ayrımı.</td></tr>
+          <tr><td>Time × subcarrier amplitude/phase haritası</td><td>2D-CNN</td><td>Frekans-zaman desenleri ve lokal yapılar.</td></tr>
+          <tr><td>Time × subcarrier × antenna tensoru</td><td>TCN, LSTM, Transformer, 3D-CNN</td><td>Zamansal dinamik + frekans + spatial/MIMO ilişkileri.</td></tr>
+          <tr><td>Etiketsiz normal kanal pencereleri</td><td>Autoencoder, one-class model</td><td>Anomali / ortam değişimi.</td></tr>
+        </tbody>
+      </table></div>
+    </article>
+    <div class="note"><strong>CSI ML’de en kritik risk:</strong> Aynı continuous recording içindeki ardışık paketleri rastgele train/test’e ayırmak modele neredeyse aynı kanal snapshot’larını iki tarafta da gösterebilir. Gerçek genelleme testi için <strong>recording/session, oda, cihaz, anten yerleşimi ve gerekiyorsa kişi</strong> bazında hold-out gerekir.</div>
+    <div class="note"><strong>Ham fazı körlemesine feature yapmayın:</strong> common phase, timing slope, RF-chain offset ve deep-fade faz gürültüsü modeli fizik yerine donanımı öğrenmeye yöneltebilir. Kalibrasyon yöntemini sabitlemek veya real/imag temsiliyle başlamak daha güvenlidir.</div>
   </section>
 
   <div class="note"><strong>Çözünürlük ve aliasing:</strong> İdeal, sürekli ve tam bant örneklemede gecikme ayırma ölçeği yaklaşık Δτ≈1/B’dir. 20 MHz için ~50 ns, 80 MHz için ~12.5 ns. Alt taşıyıcı aralığı ise gecikme alanının periyodunu belirler: T<sub>alias</sub>=1/Δf. Bu değer “kanal bu gecikmeye kadar sorunsuz çalışır” anlamına gelmez; gerçek OFDM’de cyclic prefix ve kanal kestiricisinin penceresi ayrı sınırlardır. Guard/DC/null taşıyıcılar ve pencereleme gerçek çözünürlüğü ideal 1/B’den kötüleştirebilir.</div>
