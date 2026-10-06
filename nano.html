@@ -52,7 +52,7 @@
     .reflection-canvas-wrap{position:relative;background:#071427}.reflection-canvas-wrap canvas{display:block;width:100%;height:500px}.reflection-overlay{position:absolute;left:12px;bottom:12px;right:12px;padding:8px 10px;border-radius:10px;background:rgba(7,20,39,.83);color:#e4edf8;font-size:.72rem;backdrop-filter:blur(4px)}
     .reflection-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:11px;border-top:1px solid var(--line)}.reflection-metric{padding:9px;border:1px solid var(--line);border-radius:11px;background:#f8fafc}.reflection-metric strong{display:block;font-size:.86rem}.reflection-metric span{font-size:.65rem;color:var(--muted)}
     .reflection-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:11px}.reflection-step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.reflection-step b{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;background:#173257;color:#fff;font-size:.7rem;margin-bottom:6px}.reflection-step h3{font-size:.84rem;margin:0 0 5px}.reflection-step p{font-size:.75rem;color:#586b82;margin:0}.reflection-eq{margin-top:7px;padding:7px;border-radius:8px;background:#101f37;color:#dce7f5;font:600 .67rem "SFMono-Regular",Consolas,monospace;overflow:auto}
-    .reflection-panel .control{margin-bottom:13px}.reflection-panel .control label{display:flex;justify-content:space-between;gap:8px;font-size:.77rem;font-weight:750;margin-bottom:5px}.reflection-panel .control input[type=range]{width:100%;accent-color:#6845c6}.reflection-panel .switch{display:flex;gap:8px;align-items:center;font-size:.75rem;font-weight:750;margin:9px 0}.reflection-panel .switch input{width:16px;height:16px;accent-color:#6845c6}.reflection-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 13px}.reflection-presets button{border:1px solid var(--line);background:#f8fafc;color:#465d78;border-radius:9px;padding:7px 5px;font-size:.67rem;font-weight:800}.reflection-presets button:hover{background:#eef3fa}.reflection-status{padding:10px 11px;border-radius:11px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.75rem;margin-top:10px}
+    .reflection-panel .control{margin-bottom:13px}.reflection-panel .control label{display:flex;justify-content:space-between;gap:8px;font-size:.77rem;font-weight:750;margin-bottom:5px}.reflection-panel .control input[type=range]{width:100%;accent-color:#6845c6}.reflection-panel .switch{display:flex;gap:8px;align-items:center;font-size:.75rem;font-weight:750;margin:9px 0}.reflection-panel .switch input{width:16px;height:16px;accent-color:#6845c6}.reflection-mode{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}.reflection-mode button{border:1px solid var(--line);background:#f8fafc;color:#465d78;border-radius:10px;padding:8px 7px;font-size:.69rem;font-weight:850}.reflection-mode button.active{background:#173257;color:#fff;border-color:#173257}.reflection-huygens-only{display:none}.reflection-mode-note{font-size:.68rem;line-height:1.45;color:var(--muted);margin:-3px 0 12px}.reflection-presets{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 13px}.reflection-presets button{border:1px solid var(--line);background:#f8fafc;color:#465d78;border-radius:9px;padding:7px 5px;font-size:.67rem;font-weight:800}.reflection-presets button:hover{background:#eef3fa}.reflection-status{padding:10px 11px;border-radius:11px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.75rem;margin-top:10px}
     .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.83rem}
     @media(max-width:1000px){.intro,.layout,.reflection-layout{grid-template-columns:1fr}.bands{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr 1fr}.explain,.reflection-steps{grid-template-columns:1fr 1fr}.reflection-metrics{grid-template-columns:1fr 1fr 1fr}}
     @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.bands{grid-template-columns:1fr}.canvas-wrap canvas{height:440px}.metrics,.reflection-metrics{grid-template-columns:1fr 1fr}.explain,.reflection-steps{grid-template-columns:1fr}.reflection-canvas-wrap canvas{height:560px}}
@@ -197,11 +197,19 @@
       </article>
       <aside class="reflection-panel">
         <h3>Yakınlaştırılmış elektron cevabı</h3>
+        <div class="reflection-mode"><button id="reflectionSteadyBtn" class="active" type="button">Sürekli alan</button><button id="reflectionHuygensBtn" type="button">Dalga çeperi / Huygens</button></div>
+        <div class="reflection-mode-note" id="reflectionModeNote">Sürekli alan: Eᵢ, Eᵣ, Eₜ, dipol/akım cevabı ve fazörler birlikte gösterilir.</div>
         <div class="reflection-presets"><button id="atomicGlassBtn" type="button">Cam · 550 nm</button><button id="atomicSiBtn" type="button">Si · 550 nm</button><button id="atomicCuBtn" type="button">Cu · 550 nm</button></div>
-        <div class="control"><label>Gösterilen atom/dipol katmanı <output id="reflectionLayersOut">8</output></label><input id="reflectionLayers" type="range" min="3" max="14" step="1" value="8"></div>
+        <div class="control reflection-steady-only"><label>Gösterilen atom/dipol katmanı <output id="reflectionLayersOut">8</output></label><input id="reflectionLayers" type="range" min="3" max="14" step="1" value="8"></div>
         <div class="control"><label>Elektron hareketi · yalnız görsel büyütme <output id="reflectionMotionOut">1.0×</output></label><input id="reflectionMotion" type="range" min="40" max="220" step="10" value="100"></div>
-        <label class="switch"><input id="reflectionSecondary" type="checkbox" checked> İkincil yayılan alanları göster</label>
-        <label class="switch"><input id="reflectionPhasors" type="checkbox" checked> Alan fazörlerini göster</label>
+        <label class="switch reflection-steady-only"><input id="reflectionSecondary" type="checkbox" checked> İkincil yayılan alanları göster</label>
+        <label class="switch reflection-steady-only"><input id="reflectionPhasors" type="checkbox" checked> Alan fazörlerini göster</label>
+        <div class="reflection-huygens-only">
+          <div class="control"><label>Eşdeğer yüzey kaynakları <output id="huygensSourcesOut">17</output></label><input id="huygensSources" type="range" min="9" max="29" step="2" value="17"></div>
+          <label class="switch"><input id="huygensWavelets" type="checkbox" checked> İkincil Huygens dalgacıklarını göster</label>
+          <label class="switch"><input id="huygensEnvelope" type="checkbox" checked> Koherent yansıyan/geçen zarfı göster</label>
+          <label class="switch"><input id="huygensActiveLayer" type="checkbox" checked> Etkin yüzey bölgesini göster</label>
+        </div>
         <label class="switch"><input id="reflectionLabels" type="checkbox" checked> Mekanizma etiketlerini göster</label>
         <div class="reflection-status" id="reflectionStatus">—</div>
       </aside>
@@ -234,6 +242,7 @@
   const nano=$('nanoCanvas'),ctx=nano.getContext('2d'),bandCanvas=$('bandCanvas'),bctx=bandCanvas.getContext('2d'),reflectionCanvas=$('reflectionCanvas'),rctx=reflectionCanvas.getContext('2d');
   const dpr=Math.min(window.devicePixelRatio||1,2),hEV=4.135667696e-15,c0=299792458,eps0=8.8541878128e-12,qe=1.602176634e-19,me=9.1093837015e-31,EgSi=1.12,WehSi=3.6;
   let band='rf',polarization='avg',running=true,time=0,last=0,O=null,G=null,W=null;
+  let reflectionMode='steady';
   const bands={
     rf:{label:'RF',f:1e8,lambda:c0/1e8},
     micro:{label:'Mikrodalga',f:2.45e9,lambda:c0/2.45e9},
