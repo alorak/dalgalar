@@ -691,7 +691,7 @@
     const len=rr*Math.min(1.25,Math.max(.08,mag)),dx=len*Math.cos(phase),dy=-len*Math.sin(phase);rArrow(cx,cy,dx,dy,color,1,2.2);
     rctx.fillStyle='#dce7f5';rctx.font='700 10px system-ui';rctx.fillText(label,cx-24,cy+rr+17);rctx.fillStyle='rgba(220,231,245,.65)';rctx.font='9px system-ui';rctx.fillText('|·|='+mag.toFixed(mag<.1?3:2),cx-24,cy+rr+29);rctx.restore();
   }
-  function drawReflectionMechanism(){
+  function drawReflectionSteady(){
     const r=reflectionCanvas.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),resp=reflectionResponse(),layers=+$('reflectionLayers').value,motion=+$('reflectionMotion').value/100;
     rctx.clearRect(0,0,w,h);rctx.fillStyle='#071427';rctx.fillRect(0,0,w,h);
     const bx=w*.31,topH=158,atomTop=185,atomBottom=Math.min(h-125,370),matSpan=w-bx;
@@ -777,6 +777,141 @@
     else status='Bağlı elektron bulutu E alanıyla yer değiştirir; atomik/moleküler dipoller ikincil alan yayar. Yüzey boyunca çok sayıda katkının geri yöndeki koherent toplamı Fresnel Eᵣ alanını verir.';
     $('reflectionStatus').textContent=status;
     $('reflectionOverlay').innerHTML='<strong>'+bnd().label+' · '+m.label+':</strong> P/E fazı argχ='+wrapPhaseDeg(resp.chiArg).toFixed(0)+'°. Basit elektronik dipolde negatif elektron bulutu bunun ters yönünde hareket eder (x/E≈'+wrapPhaseDeg(resp.electronPhase).toFixed(0)+'°). Yakınlaştırılmış malzeme penceresi ≈'+fmtLen(zMax)+'; katman fazı gerçek k_z ile, genlik e^(−z/2L⊥) ile hesaplanıyor. Geri alanın sonucu |r|='+Math.sqrt(Math.max(0,O.R)).toFixed(3)+', arg(r)='+wrapPhaseDeg(O.rArg).toFixed(1)+'°. <strong>R='+fmtPct(O.R)+'</strong>.';
+  }
+
+
+  function rPlaneFront(kx,ky,q,x0,y0,x1,y1,color,width,alpha,dash){
+    const L=Math.max(reflectionCanvas.getBoundingClientRect().width,reflectionCanvas.getBoundingClientRect().height)*3;
+    const px=kx*q,py=ky*q,tx=-ky,ty=kx;
+    rctx.save();rctx.beginPath();rctx.rect(x0,y0,x1-x0,y1-y0);rctx.clip();
+    rctx.strokeStyle=color;rctx.globalAlpha=alpha;rctx.lineWidth=width||2;if(dash)rctx.setLineDash(dash);
+    rctx.beginPath();rctx.moveTo(px-tx*L,py-ty*L);rctx.lineTo(px+tx*L,py+ty*L);rctx.stroke();rctx.restore();
+  }
+  function rHuygensWavelet(cx,cy,radius,side,color,alpha,width){
+    if(radius<2)return;
+    const w=reflectionCanvas.getBoundingClientRect().width,h=reflectionCanvas.getBoundingClientRect().height;
+    rctx.save();rctx.beginPath();
+    if(side==='left')rctx.rect(0,0,cx+1,h);else rctx.rect(cx-1,0,w-cx+1,h);
+    rctx.clip();rctx.strokeStyle=color;rctx.globalAlpha=alpha;rctx.lineWidth=width||1;
+    rctx.beginPath();rctx.arc(cx,cy,radius,0,Math.PI*2);rctx.stroke();rctx.restore();
+  }
+  function updateReflectionModeUI(){
+    const huygens=reflectionMode==='huygens';
+    root.querySelectorAll('.reflection-steady-only').forEach(el=>el.style.display=huygens?'none':'');
+    root.querySelectorAll('.reflection-huygens-only').forEach(el=>el.style.display=huygens?'block':'none');
+    $('reflectionSteadyBtn').classList.toggle('active',!huygens);
+    $('reflectionHuygensBtn').classList.toggle('active',huygens);
+    $('reflectionModeNote').textContent=huygens
+      ?'Dalga çeperi / Huygens: yüzey boyunca faz uyumlu eşdeğer kaynakların ikincil alanları ve bunların koherent zarfı gösterilir.'
+      :'Sürekli alan: Eᵢ, Eᵣ, Eₜ, dipol/akım cevabı ve fazörler birlikte gösterilir.';
+  }
+  function drawReflectionHuygens(){
+    const r=reflectionCanvas.getBoundingClientRect(),w=r.width,h=r.height,m=mat(),resp=reflectionResponse(),motion=+$('reflectionMotion').value/100;
+    const count=+$('huygensSources').value,showWavelets=$('huygensWavelets').checked,showEnvelope=$('huygensEnvelope').checked,showLayer=$('huygensActiveLayer').checked,labels=$('reflectionLabels').checked;
+    rctx.clearRect(0,0,w,h);rctx.fillStyle='#071427';rctx.fillRect(0,0,w,h);
+
+    const bx=w*.46,top=62,bottom=h-82,cy=(top+bottom)/2,spanY=bottom-top;
+    const theta=O.thetaI,ci=Math.cos(theta),si=Math.sin(theta),ki={x:ci,y:-si},kr={x:-ci,y:-si};
+    const thetaT=Math.max(-Math.PI/2,Math.min(Math.PI/2,O.thetaT)),kt={x:Math.cos(thetaT),y:-Math.sin(thetaT)};
+    const nPhase=Math.max(.25,Math.abs(O.N.re)),surfaceSweep=Math.abs(ki.y)*spanY/2;
+    const pre=135+surfaceSweep,post=Math.max(250,w*.34)+surfaceSweep,progress=(time*.22)%1,s=-pre+progress*(pre+post);
+    const q0=ki.x*bx+ki.y*cy,qInc=q0+s;
+
+    // Regions and equivalent-source layer.
+    rctx.fillStyle='rgba(96,125,164,.13)';rctx.fillRect(bx,0,w-bx,h);
+    if(showLayer){
+      const layerW=m.type==='metal'?16:25,grad=rctx.createLinearGradient(bx,0,bx+layerW,0);
+      grad.addColorStop(0,'rgba(244,196,108,.18)');grad.addColorStop(1,'rgba(244,196,108,0)');
+      rctx.fillStyle=grad;rctx.fillRect(bx,top-16,layerW,spanY+32);
+    }
+    rctx.strokeStyle='rgba(220,232,248,.55)';rctx.lineWidth=1.1;rctx.beginPath();rctx.moveTo(bx,28);rctx.lineTo(bx,h-25);rctx.stroke();
+    rctx.fillStyle='rgba(225,235,247,.78)';rctx.font='11px system-ui';rctx.fillText('vakum / hava',14,21);rctx.fillText(m.label+' · kolektif cevap',bx+12,21);
+
+    // Incident wavefront: highlighted front + two preceding phase fronts.
+    rPlaneFront(ki.x,ki.y,qInc,8,32,bx-1,h-35,'#82d5ff',3,.95);
+    rPlaneFront(ki.x,ki.y,qInc-82,8,32,bx-1,h-35,'#82d5ff',1,.23);
+    rPlaneFront(ki.x,ki.y,qInc-164,8,32,bx-1,h-35,'#82d5ff',1,.12);
+
+    const emitters=[],dy=count>1?spanY/(count-1):0;
+    let active=0;
+    const responseAmp=Math.min(1.35,.28+.23*Math.log10(1+Math.max(0,resp.chiMag)));
+    for(let i=0;i<count;i++){
+      const y=top+i*dy,offset=ki.y*(y-cy),age=s-offset,on=age>=0;
+      if(on)active++;
+      const hitGlow=on?Math.exp(-Math.pow(age/30,2)):0;
+      const surfacePhase=-time*3+(2*Math.PI/82)*ki.y*(y-cy)+O.tArg;
+      const disp=8*motion*responseAmp*Math.sin(surfacePhase+resp.electronPhase);
+      emitters.push({x:bx,y:y,age:age,glow:hitGlow,disp:disp});
+
+      if(showLayer&&hitGlow>.02){
+        rctx.fillStyle='rgba(244,196,108,'+(0.08+.30*hitGlow)+')';rctx.fillRect(bx-5,y-dy*.43,20,Math.max(5,dy*.86));
+      }
+
+      // Equivalent source marker: positive center + displaced electron cloud.
+      rctx.strokeStyle='rgba(168,145,222,'+(on?.58:.23)+')';rctx.lineWidth=1;rctx.beginPath();rctx.arc(bx+8,y,8,0,Math.PI*2);rctx.stroke();
+      rctx.fillStyle='#f1c66e';rctx.globalAlpha=on?.95:.42;rctx.beginPath();rctx.arc(bx+6,y,2.8,0,Math.PI*2);rctx.fill();
+      rctx.fillStyle='#75c9ff';rctx.globalAlpha=on?.90:.30;rctx.beginPath();rctx.arc(bx+10,y+disp,3.1,0,Math.PI*2);rctx.fill();rctx.globalAlpha=1;
+
+      if(showWavelets&&on){
+        const rv=Math.min(Math.hypot(w,h),age),rt=Math.min(Math.hypot(w,h),age/nPhase);
+        const backAlpha=(.045+.15*Math.sqrt(Math.max(O.R,.002)))*(1-Math.min(.6,age/(w+h)));
+        rHuygensWavelet(bx,y,rv,'left','#f4c46c',Math.max(.025,backAlpha),1);
+        if(!O.evanescent){
+          const fwdAlpha=(.035+.11*Math.min(1,O.tAbs))*(1-Math.min(.55,age/(w+h)));
+          rHuygensWavelet(bx,y,rt,'right','#80e0b2',Math.max(.02,fwdAlpha),1);
+        }
+      }
+    }
+
+    // Analytic coherent envelope corresponding to the Huygens construction.
+    const activeFrac=count?active/count:0;
+    if(showEnvelope&&activeFrac>0){
+      const qR=kr.x*bx+kr.y*cy+Math.max(0,s);
+      rPlaneFront(kr.x,kr.y,qR,8,32,bx,h-35,'#f4c46c',3,.18+.77*Math.sqrt(Math.max(0,O.R))*activeFrac);
+      if(!O.evanescent){
+        const dT=Math.max(0,s)/nPhase,qT=kt.x*bx+kt.y*cy+dT;
+        rPlaneFront(kt.x,kt.y,qT,bx,32,w-8,h-35,'#80e0b2',3,.16+.70*Math.min(1,O.tAbs)*activeFrac);
+      }else{
+        const evW=Math.min(90,Math.max(18,w*.09)),eg=rctx.createLinearGradient(bx,0,bx+evW,0);
+        eg.addColorStop(0,'rgba(128,224,178,'+(0.18+.42*activeFrac)+')');eg.addColorStop(1,'rgba(128,224,178,0)');
+        rctx.fillStyle=eg;rctx.fillRect(bx,top-8,evW,spanY+16);
+      }
+    }
+
+    // Direction arrows and angle interpretation.
+    const arr=58;
+    rArrow(bx-92,cy+75,ki.x*arr,ki.y*arr,'#82d5ff',.95,2);
+    rArrow(bx-12,cy-12,kr.x*arr,kr.y*arr,'#f4c46c',.95,2);
+    if(!O.evanescent)rArrow(bx+17,cy+52,kt.x*arr,kt.y*arr,'#80e0b2',.95,2);
+
+    if(labels){
+      rctx.font='700 10px system-ui';rctx.fillStyle='#82d5ff';rctx.fillText('gelen dalga cephesi',18,43);
+      rctx.fillStyle='#f4c46c';rctx.fillText('koherent zarf = yansıyan çeper',18,h-48);
+      rctx.fillStyle='#80e0b2';rctx.fillText(O.evanescent?'evanescent iç alan':'kırılan / geçen çeper',bx+22,h-48);
+      rctx.fillStyle='rgba(229,237,248,.72)';rctx.font='9px system-ui';
+      rctx.fillText('eşdeğer yüzey kaynakları',Math.min(w-150,bx+18),43);
+      rctx.fillText('θᵢ='+incidenceDeg().toFixed(1)+'° · θᵣ='+incidenceDeg().toFixed(1)+'°'+(O.evanescent?' · propagasyonlu θₜ yok':' · θₜ≈'+(O.thetaT*180/Math.PI).toFixed(1)+'°'),18,h-26);
+    }
+
+    $('huygensSourcesOut').value=count;
+    $('reflectionMotionOut').value=motion.toFixed(1)+'×';
+    $('atomicNVal').textContent=fmtComplex(O.N,Math.abs(O.N.im)<.01?3:2);
+    $('atomicChiVal').textContent=fmtComplex(resp.chi,Math.abs(resp.chi.im)<.01?3:2);
+    $('atomicResponseVal').textContent=wrapPhaseDeg(resp.chiArg).toFixed(0)+'° · '+resp.mode;
+    $('atomicRVal').textContent=fmtPct(O.R);
+    $('atomicRPhaseVal').textContent=wrapPhaseDeg(O.rArg).toFixed(1)+'°';
+    $('atomicTVal').textContent=fmtPct(O.T);
+
+    const angleText=O.evanescent
+      ?'X-ışını total external reflection bölgesi: içeride propagasyonlu bir geçen çeper yerine yüzeye bağlı evanescent alan oluşur.'
+      :'Faz eşleşmesi yüzey boyunca korunur: θᵣ=θᵢ; iç ortam yönü mevcut kompleks Snell/Fresnel modelindeki θₜ ile gösterilir.';
+    $('reflectionStatus').textContent=angleText+' Noktalar gerçek tek-atom kaynakları değil, yüzeydeki kolektif polarizasyon/akımı temsil eden eşdeğer Huygens kaynaklarıdır.';
+    $('reflectionOverlay').innerHTML='<strong>Huygens modu:</strong> mavi çeper yüzeyi geliş açısına göre tarar; '+active+'/'+count+' eşdeğer yüzey kaynağı aktive oldu. Küçük ikincil dalgacıkların geri yöndeki faz uyumlu toplamı sarı zarfı üretir. <strong>R='+fmtPct(O.R)+'</strong>; yansıyan zarfın açısı θᵣ=θᵢ='+incidenceDeg().toFixed(1)+'°. Animasyon zamanı fiziksel optik periyot değildir; faz/geometri ilişkisini yavaşlatılmış olarak gösterir.';
+  }
+  function drawReflectionMechanism(){
+    updateReflectionModeUI();
+    if(reflectionMode==='huygens')drawReflectionHuygens();
+    else drawReflectionSteady();
   }
 
   function updateUI(){
