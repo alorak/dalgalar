@@ -47,9 +47,15 @@
     .flow{padding:11px 12px;border-radius:12px;background:#0f1f37;color:#dce8f7;font-size:.77rem;line-height:1.65}.flow strong{color:#fff}
     .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px}.mini{padding:10px;border:1px solid var(--line);border-radius:11px;background:#f8fafc}.mini strong{display:block;font-size:.92rem}.mini span{font-size:.69rem;color:var(--muted)}
     .explain{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.ex{background:#fff;border:1px solid var(--line);border-radius:17px;padding:16px}.ex h3{font-size:.96rem;margin:0 0 8px}.ex p{margin:0;color:#566980;font-size:.83rem}
+    .reflection-section{margin-top:24px}.reflection-head{margin:0 0 12px}.reflection-head h2{font-size:1.18rem;margin:0 0 5px}.reflection-head p{margin:0;color:var(--muted);font-size:.86rem;max-width:980px}
+    .reflection-layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:16px;align-items:start}.reflection-card,.reflection-panel{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}.reflection-panel{padding:16px;overflow:visible}.reflection-panel h3{font-size:.94rem;margin:0 0 12px}
+    .reflection-canvas-wrap{position:relative;background:#071427}.reflection-canvas-wrap canvas{display:block;width:100%;height:500px}.reflection-overlay{position:absolute;left:12px;bottom:12px;right:12px;padding:8px 10px;border-radius:10px;background:rgba(7,20,39,.83);color:#e4edf8;font-size:.72rem;backdrop-filter:blur(4px)}
+    .reflection-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:11px;border-top:1px solid var(--line)}.reflection-metric{padding:9px;border:1px solid var(--line);border-radius:11px;background:#f8fafc}.reflection-metric strong{display:block;font-size:.86rem}.reflection-metric span{font-size:.65rem;color:var(--muted)}
+    .reflection-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:11px}.reflection-step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.reflection-step b{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;background:#173257;color:#fff;font-size:.7rem;margin-bottom:6px}.reflection-step h3{font-size:.84rem;margin:0 0 5px}.reflection-step p{font-size:.75rem;color:#586b82;margin:0}.reflection-eq{margin-top:7px;padding:7px;border-radius:8px;background:#101f37;color:#dce7f5;font:600 .67rem "SFMono-Regular",Consolas,monospace;overflow:auto}
+    .reflection-panel .control{margin-bottom:13px}.reflection-panel .control label{display:flex;justify-content:space-between;gap:8px;font-size:.77rem;font-weight:750;margin-bottom:5px}.reflection-panel .control input[type=range]{width:100%;accent-color:#6845c6}.reflection-panel .switch{display:flex;gap:8px;align-items:center;font-size:.75rem;font-weight:750;margin:9px 0}.reflection-panel .switch input{width:16px;height:16px;accent-color:#6845c6}.reflection-status{padding:10px 11px;border-radius:11px;background:#f1effc;border:1px solid #ddd5f6;color:#4f3d7d;font-size:.75rem;margin-top:10px}
     .note{margin-top:16px;padding:13px 15px;border-left:4px solid #d18c31;background:#fff8e8;border-radius:0 12px 12px 0;color:#71490f;font-size:.83rem}
-    @media(max-width:1000px){.intro,.layout{grid-template-columns:1fr}.bands{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr 1fr}.explain{grid-template-columns:1fr 1fr}}
-    @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.bands{grid-template-columns:1fr}.canvas-wrap canvas{height:440px}.metrics{grid-template-columns:1fr 1fr}.explain{grid-template-columns:1fr}}
+    @media(max-width:1000px){.intro,.layout,.reflection-layout{grid-template-columns:1fr}.bands{grid-template-columns:1fr 1fr}.panel{order:-1}.metrics{grid-template-columns:1fr 1fr 1fr}.explain,.reflection-steps{grid-template-columns:1fr 1fr}.reflection-metrics{grid-template-columns:1fr 1fr 1fr}}
+    @media(max-width:620px){.topbar-inner{align-items:flex-start;flex-direction:column;gap:5px}main{padding:18px 12px 40px}.bands{grid-template-columns:1fr}.canvas-wrap canvas{height:440px}.metrics,.reflection-metrics{grid-template-columns:1fr 1fr}.explain,.reflection-steps{grid-template-columns:1fr}.reflection-canvas-wrap canvas{height:560px}}
   </style>
 </head>
 <body>
@@ -167,6 +173,46 @@
     <article class="ex"><h3>Mikrodalga · 2.45 GHz</h3><p>Foton enerjisi yine bant aralığından çok küçüktür. Taşıyıcı hareketi ve dielektrik polarizasyon önemlidir. Suda dipoller alanı ≈7° gecikmeyle izler (Debye, ωτ≈0.13); bu faz gecikmesi mikrodalga ısınmasının kaynağıdır.</p></article>
     <article class="ex"><h3>Görünür · 550 nm</h3><p>Foton enerjisi yaklaşık 2.25 eV’dir ve Si bant aralığından büyüktür. Soğurulan foton valans bandından bir elektronu iletim bandına çıkarıp geride hol bırakabilir. Bakırda ise ≈2.1 eV eşikli 3d → 4s/p bant-arası geçiş başlar.</p></article>
     <article class="ex"><h3>X-ışını · 10 keV</h3><p>Zayıflama yine kompleks kırılma indisiyle (n=1−δ+iβ) aynı üstel yasaya uyar; fark, foton enerjisinin bağlanma enerjilerinden çok büyük olmasıdır. Bu yüzden etkileşimler ayrık foton olayları (fotoelektrik, saçılma) olarak gösterilir. 10 keV’de 1/e güç uzunluğu yaklaşık Cu 5.2 µm, Si 127 µm, borosilikat 263 µm ve su 1.88 mm’dir.</p></article>
+  </section>
+
+  <section class="reflection-section">
+    <div class="reflection-head">
+      <h2>Yansıma atomik ölçekte nasıl oluşuyor?</h2>
+      <p>Bu yakınlaştırılmış görünüm üstte seçilen frekans ve malzemeyi kullanır. Amaç tek bir “yansıtan elektron” aramak değil; gelen elektrik alanın yükleri sürmesi, oluşan dipollerin/akımların ikincil elektromanyetik alan üretmesi ve bu alanların yüzeyde koherent biçimde toplanmasını göstermektir.</p>
+    </div>
+    <div class="reflection-layout">
+      <article class="reflection-card">
+        <div class="reflection-canvas-wrap">
+          <canvas id="reflectionCanvas" aria-label="Atomik ölçekte elektromanyetik yansıma mekanizması simülasyonu"></canvas>
+          <div class="reflection-overlay" id="reflectionOverlay">—</div>
+        </div>
+        <div class="reflection-metrics">
+          <div class="reflection-metric"><strong id="atomicNVal">—</strong><span>kompleks kırılma indisi N=n+iκ</span></div>
+          <div class="reflection-metric"><strong id="atomicChiVal">—</strong><span>etkin χ=N²−1</span></div>
+          <div class="reflection-metric"><strong id="atomicResponseVal">—</strong><span>yük cevabı / E fazı</span></div>
+          <div class="reflection-metric"><strong id="atomicRVal">—</strong><span>Fresnel güç yansıması R</span></div>
+          <div class="reflection-metric"><strong id="atomicRPhaseVal">—</strong><span>yansıyan E alanı fazı arg(r)</span></div>
+          <div class="reflection-metric"><strong id="atomicTVal">—</strong><span>malzemeye giren güç T</span></div>
+        </div>
+      </article>
+      <aside class="reflection-panel">
+        <h3>Yakınlaştırılmış elektron cevabı</h3>
+        <div class="control"><label>Gösterilen atom/dipol katmanı <output id="reflectionLayersOut">8</output></label><input id="reflectionLayers" type="range" min="3" max="14" step="1" value="8"></div>
+        <div class="control"><label>Elektron hareketi · yalnız görsel büyütme <output id="reflectionMotionOut">1.0×</output></label><input id="reflectionMotion" type="range" min="40" max="220" step="10" value="100"></div>
+        <label class="switch"><input id="reflectionSecondary" type="checkbox" checked> İkincil yayılan alanları göster</label>
+        <label class="switch"><input id="reflectionPhasors" type="checkbox" checked> Alan fazörlerini göster</label>
+        <label class="switch"><input id="reflectionLabels" type="checkbox" checked> Mekanizma etiketlerini göster</label>
+        <div class="reflection-status" id="reflectionStatus">—</div>
+      </aside>
+    </div>
+    <div class="reflection-steps">
+      <article class="reflection-step"><b>1</b><h3>Gelen E alanı yükü sürer</h3><p>Bağlı elektron için klasik yerel model Lorentz osilatörüdür. Elektronun kuvveti alanın ters yönündedir.</p><div class="reflection-eq">m(x¨+γx˙+ω₀²x)=−eE(t)</div></article>
+      <article class="reflection-step"><b>2</b><h3>Polarizasyon oluşur</h3><p>Atom/molekül başına dipol momentlerinin toplamı malzemenin kompleks elektrik duyarlılığını oluşturur.</p><div class="reflection-eq">P(ω)=ε₀χ(ω)E(ω)</div></article>
+      <article class="reflection-step"><b>3</b><h3>İvmelenen yükler yeniden alan yayar</h3><p>Her dipol ikincil EM alan üretir. Tek bir atom her yöne saçabilir; yüzeydeki çok sayıda katkının faz ilişkisi belirleyicidir.</p><div class="reflection-eq">E_sec ∝ p¨ · (faz + geometri)</div></article>
+      <article class="reflection-step"><b>4</b><h3>Koherent toplam → yansıma</h3><p>Geri yöndeki ikincil alanlar makroskopik yansıyan dalgayı; ileri yöndekiler gelen alanla birleşerek kırılan/geçen alanı oluşturur.</p><div class="reflection-eq">E_r=rE_i · E_t=tE_i</div></article>
+    </div>
+    <div class="note"><strong>“Foton nereden yansıyor?”</strong> Klasik/koherent yansıma için tek bir atom veya tek bir elektron seçilemez. Yansıyan alan, yüzey yakınındaki çok sayıda yükün kolektif cevabıdır. Tek-foton kuantum tanımında da yansıma genliği alternatif etkileşim yollarının koherent toplamıdır; “şu elektrona çarptı ve geri döndü” resmi genel olarak doğru değildir.</div>
+    <div class="note"><strong>Bu alt simülasyonun seviyesi:</strong> Elektron bulutu hareketi, kompleks <em>etkin</em> duyarlılık χ ve üstteki Fresnel sonucu birbirine bağlanır. Atom sembolleri gerçek örgü aralığında değildir ve tek tek atomların ab-initio polarizabilitesi hesaplanmaz. Katmanlardan çıkan küçük ikincil alan işaretleri Huygens/Lorentz sezgisidir; toplam yansıma genliği üstteki fiziksel kompleks kırılma indisi ve Fresnel katsayısından alınır.</div>
   </section>
 
   <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
