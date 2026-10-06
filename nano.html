@@ -1045,6 +1045,8 @@
   $('polAvg').addEventListener('click',()=>{polarization='avg'});
   $('polS').addEventListener('click',()=>{polarization='s'});
   $('polP').addEventListener('click',()=>{polarization='p'});
+  $('reflectionSteadyBtn').addEventListener('click',()=>{reflectionMode='steady';updateReflectionModeUI()});
+  $('reflectionHuygensBtn').addEventListener('click',()=>{reflectionMode='huygens';updateReflectionModeUI()});
   function atomicPreset(material){
     band='visible';$('material').value=material;$('angle').value=0;
     root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='visible'));
@@ -1057,11 +1059,11 @@
     band='rf';polarization='avg';$('material').value='silicon';$('doping').value='intrinsic';$('dopingLevel').value='1e15';
     $('fieldAmp').value=100;$('density').value=10;$('depthFactor').value=40;$('speed').value=10;
     $('angle').value=0;$('xrayFine').value=10;
-    ['showField','showBound','showCarriers','showGeneration','reflectionSecondary','reflectionPhasors','reflectionLabels'].forEach(id=>$(id).checked=true);
-    $('reflectionLayers').value=8;$('reflectionMotion').value=100;
+    ['showField','showBound','showCarriers','showGeneration','reflectionSecondary','reflectionPhasors','reflectionLabels','huygensWavelets','huygensEnvelope','huygensActiveLayer'].forEach(id=>$(id).checked=true);
+    $('reflectionLayers').value=8;$('reflectionMotion').value=100;$('huygensSources').value=17;reflectionMode='steady';updateReflectionModeUI();
     root.querySelectorAll('[data-band]').forEach(b=>b.classList.toggle('active',b.dataset.band==='rf'));time=0;
   });
-  window.addEventListener('resize',resize);resize();requestAnimationFrame(frame);
+  window.addEventListener('resize',resize);resize();updateReflectionModeUI();requestAnimationFrame(frame);
 })();
 </script>
 </body>
