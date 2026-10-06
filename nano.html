@@ -690,11 +690,12 @@
     rctx.fillStyle='rgba(225,235,247,.76)';rctx.font='11px system-ui';rctx.fillText('vakum / hava',14,20);rctx.fillText(m.label+' · etkin elektron cevabı',bx+12,20);
     rctx.fillStyle='rgba(225,235,247,.56)';rctx.font='10px system-ui';rctx.fillText('yüzey sınırı',Math.max(4,bx-34),37);
 
-    const vacPeriod=82,nEff=Math.max(.55,Math.abs(O.N.re)),matPeriod=Math.max(30,Math.min(115,vacPeriod/nEff));
-    const Ai=22,Ar=Ai*Math.sqrt(Math.max(0,O.R)),At=Ai*Math.min(1.45,O.tAbs);
+    const vacPeriod=82,lambdaNormal=bnd().lambda/Math.max(Math.abs(O.kz.re),1e-9);
+    const zMax=Math.min(1.5*lambdaNormal,.75*O.Lperp),cyclesInside=Math.max(.12,zMax/Math.max(lambdaNormal,1e-30)),matPeriod=matSpan/cyclesInside;
+    const Ai=22,Ar=Ai*Math.sqrt(Math.max(0,O.R)),At=Ai*Math.min(1.45,O.tAbs),fieldDecay=zMax/(2*Math.max(O.Lperp,1e-30));
     rWave(20,bx-3,58,vacPeriod,Ai,1,0,'#82d5ff',.95,0);
     rWave(bx-3,20,106,vacPeriod,Ar,1,O.rArg,'#f4c46c',.95,0);
-    rWave(bx+3,w-18,82,matPeriod,At,1,O.tArg,'#80e0b2',.9,Math.min(2.2,matSpan/Math.max(O.Lperp,1e-30)*1e-6));
+    rWave(bx+3,w-18,82,matPeriod,At,1,O.tArg,'#80e0b2',.9,fieldDecay);
     rArrow(48,33,62,0,'#82d5ff',.95,2);rArrow(bx-40,130,-62,0,'#f4c46c',.95,2);rArrow(bx+28,48,62,0,'#80e0b2',.95,2);
     if($('reflectionLabels').checked){
       rctx.font='700 10px system-ui';rctx.fillStyle='#82d5ff';rctx.fillText('gelen Eᵢ',44,50);rctx.fillStyle='#f4c46c';rctx.fillText('yansıyan Eᵣ',Math.max(15,bx-116),124);rctx.fillStyle='#80e0b2';rctx.fillText('iç alan Eₜ',bx+26,67);
@@ -703,7 +704,7 @@
     const rows=3,x0=bx+34,x1=w-30,dx=layers>1?(x1-x0)/(layers-1):0,eAmp=10*motion;
     const responseAmp=Math.min(1.35,.28+.23*Math.log10(1+Math.max(0,resp.chiMag)));
     for(let j=0;j<layers;j++){
-      const x=x0+j*dx,depth=(x-bx)/Math.max(1,x1-bx),env=Math.exp(-depth*.75),ph=2*Math.PI*(x-bx)/matPeriod-time*3+O.tArg;
+      const x=x0+j*dx,depth=(x-bx)/Math.max(1,x1-bx),z=depth*zMax,env=Math.exp(-z/(2*Math.max(O.Lperp,1e-30))),ph=2*Math.PI*z/Math.max(lambdaNormal,1e-30)-time*3+O.tArg;
       for(let rr=0;rr<rows;rr++){
         const y=atomTop+(atomBottom-atomTop)*(rr/(rows-1));
         const eDisp=eAmp*responseAmp*env*Math.sin(ph+resp.electronPhase);
@@ -753,7 +754,7 @@
     else if(m.type==='polar'&&lowFreq())status='Bu frekansta su gibi polar ortamda moleküler yönelim polarizasyonu da önemlidir; çizilen “elektron bulutu” toplam etkin χ cevabının şematik temsilidir.';
     else status='Bağlı elektron bulutu E alanıyla yer değiştirir; atomik/moleküler dipoller ikincil alan yayar. Yüzey boyunca çok sayıda katkının geri yöndeki koherent toplamı Fresnel Eᵣ alanını verir.';
     $('reflectionStatus').textContent=status;
-    $('reflectionOverlay').innerHTML='<strong>'+bnd().label+' · '+m.label+':</strong> elektron/etkin yük cevabı E’ye göre '+wrapPhaseDeg(resp.electronPhase).toFixed(0)+'° fazda. Geri alanın sonucu |r|='+Math.sqrt(Math.max(0,O.R)).toFixed(3)+', arg(r)='+wrapPhaseDeg(O.rArg).toFixed(1)+'°. <strong>R='+fmtPct(O.R)+'</strong>.';
+    $('reflectionOverlay').innerHTML='<strong>'+bnd().label+' · '+m.label+':</strong> elektron/etkin yük cevabı E’ye göre '+wrapPhaseDeg(resp.electronPhase).toFixed(0)+'° fazda. Yakınlaştırılmış malzeme penceresi ≈'+fmtLen(zMax)+'; katman fazı gerçek k_z ile, genlik e^(−z/2L⊥) ile hesaplanıyor. Geri alanın sonucu |r|='+Math.sqrt(Math.max(0,O.R)).toFixed(3)+', arg(r)='+wrapPhaseDeg(O.rArg).toFixed(1)+'°. <strong>R='+fmtPct(O.R)+'</strong>.';
   }
 
   function updateUI(){
