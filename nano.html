@@ -189,7 +189,7 @@
         <div class="reflection-metrics">
           <div class="reflection-metric"><strong id="atomicNVal">—</strong><span>kompleks kırılma indisi N=n+iκ</span></div>
           <div class="reflection-metric"><strong id="atomicChiVal">—</strong><span>etkin χ=N²−1</span></div>
-          <div class="reflection-metric"><strong id="atomicResponseVal">—</strong><span>yük cevabı / E fazı</span></div>
+          <div class="reflection-metric"><strong id="atomicResponseVal">—</strong><span>polarizasyon / E fazı arg χ</span></div>
           <div class="reflection-metric"><strong id="atomicRVal">—</strong><span>Fresnel güç yansıması R</span></div>
           <div class="reflection-metric"><strong id="atomicRPhaseVal">—</strong><span>yansıyan E alanı fazı arg(r)</span></div>
           <div class="reflection-metric"><strong id="atomicTVal">—</strong><span>malzemeye giren güç T</span></div>
@@ -207,7 +207,7 @@
     </div>
     <div class="reflection-steps">
       <article class="reflection-step"><b>1</b><h3>Gelen E alanı yükü sürer</h3><p>Bağlı elektron için klasik yerel model Lorentz osilatörüdür. Elektronun kuvveti alanın ters yönündedir.</p><div class="reflection-eq">m(x¨+γx˙+ω₀²x)=−eE(t)</div></article>
-      <article class="reflection-step"><b>2</b><h3>Polarizasyon oluşur</h3><p>Atom/molekül başına dipol momentlerinin toplamı malzemenin kompleks elektrik duyarlılığını oluşturur.</p><div class="reflection-eq">P(ω)=ε₀χ(ω)E(ω)</div></article>
+      <article class="reflection-step"><b>2</b><h3>Polarizasyon oluşur</h3><p>Basit bağlı-elektron resminde p=−ex’tir; çok sayıda mikroskobik dipolün ortalaması kompleks elektrik duyarlılığını oluşturur.</p><div class="reflection-eq">p=−ex · P(ω)=ε₀χ(ω)E(ω)</div></article>
       <article class="reflection-step"><b>3</b><h3>İvmelenen yükler yeniden alan yayar</h3><p>Her dipol ikincil EM alan üretir. Tek bir atom her yöne saçabilir; yüzeydeki çok sayıda katkının faz ilişkisi belirleyicidir.</p><div class="reflection-eq">E_sec ∝ p¨ · (faz + geometri)</div></article>
       <article class="reflection-step"><b>4</b><h3>Koherent toplam → yansıma</h3><p>Geri yöndeki ikincil alanlar makroskopik yansıyan dalgayı; ileri yöndekiler gelen alanla birleşerek kırılan/geçen alanı oluşturur.</p><div class="reflection-eq">E_r=rE_i · E_t=tE_i</div></article>
     </div>
@@ -703,6 +703,18 @@
 
     const rows=3,x0=bx+34,x1=w-30,dx=layers>1?(x1-x0)/(layers-1):0,eAmp=10*motion;
     const responseAmp=Math.min(1.35,.28+.23*Math.log10(1+Math.max(0,resp.chiMag)));
+
+    // Tek temsilî yük cevabını büyüten şematik inset.
+    const icx=bx*.50,icy=270,iph=-time*3+O.tArg,idisp=24*motion*responseAmp*Math.sin(iph+resp.electronPhase),iE=28*Math.sin(iph);
+    rctx.save();rctx.strokeStyle='rgba(188,205,227,.24)';rctx.setLineDash([4,4]);rctx.strokeRect(16,178,Math.max(110,bx-32),180);rctx.setLineDash([]);
+    rctx.fillStyle='rgba(225,235,247,.76)';rctx.font='700 10px system-ui';rctx.fillText('tek temsilî atom / yük cevabı',25,195);
+    rctx.strokeStyle='rgba(142,124,215,.45)';rctx.beginPath();rctx.arc(icx,icy,31,0,Math.PI*2);rctx.stroke();
+    rctx.fillStyle='#f1c66e';rctx.beginPath();rctx.arc(icx,icy,7,0,Math.PI*2);rctx.fill();
+    rctx.fillStyle='rgba(117,201,255,.20)';rctx.beginPath();rctx.arc(icx,icy+idisp,18,0,Math.PI*2);rctx.fill();rctx.strokeStyle='#75c9ff';rctx.lineWidth=1.5;rctx.beginPath();rctx.arc(icx,icy+idisp,7,0,Math.PI*2);rctx.stroke();
+    rArrow(icx-42,icy,0,-iE,'#80e0b2',.9,1.7);
+    const pdy=-idisp*.75;rArrow(icx+42,icy,0,pdy,'#d5a9ff',.85,1.5);
+    if($('reflectionLabels').checked){rctx.fillStyle='#80e0b2';rctx.font='9px system-ui';rctx.fillText('E(t)',icx-58,icy-40);rctx.fillStyle='#d5a9ff';rctx.fillText('p(t)',icx+34,icy-40);rctx.fillStyle='#75c9ff';rctx.fillText('−e',icx+9,icy+idisp-8);rctx.fillStyle='#f1c66e';rctx.fillText('+',icx-3,icy+3)}
+    rctx.restore();
     for(let j=0;j<layers;j++){
       const x=x0+j*dx,depth=(x-bx)/Math.max(1,x1-bx),z=depth*zMax,env=Math.exp(-z/(2*Math.max(O.Lperp,1e-30))),ph=2*Math.PI*z/Math.max(lambdaNormal,1e-30)-time*3+O.tArg;
       for(let rr=0;rr<rows;rr++){
@@ -742,7 +754,7 @@
     $('reflectionMotionOut').value=motion.toFixed(1)+'×';
     $('atomicNVal').textContent=fmtComplex(O.N,Math.abs(O.N.im)<.01?3:2);
     $('atomicChiVal').textContent=fmtComplex(resp.chi,Math.abs(resp.chi.im)<.01?3:2);
-    $('atomicResponseVal').textContent=wrapPhaseDeg(resp.electronPhase).toFixed(0)+'° · '+resp.mode;
+    $('atomicResponseVal').textContent=wrapPhaseDeg(resp.chiArg).toFixed(0)+'° · '+resp.mode;
     $('atomicRVal').textContent=fmtPct(O.R);
     $('atomicRPhaseVal').textContent=wrapPhaseDeg(O.rArg).toFixed(1)+'°';
     $('atomicTVal').textContent=fmtPct(O.T);
@@ -754,7 +766,7 @@
     else if(m.type==='polar'&&lowFreq())status='Bu frekansta su gibi polar ortamda moleküler yönelim polarizasyonu da önemlidir; çizilen “elektron bulutu” toplam etkin χ cevabının şematik temsilidir.';
     else status='Bağlı elektron bulutu E alanıyla yer değiştirir; atomik/moleküler dipoller ikincil alan yayar. Yüzey boyunca çok sayıda katkının geri yöndeki koherent toplamı Fresnel Eᵣ alanını verir.';
     $('reflectionStatus').textContent=status;
-    $('reflectionOverlay').innerHTML='<strong>'+bnd().label+' · '+m.label+':</strong> elektron/etkin yük cevabı E’ye göre '+wrapPhaseDeg(resp.electronPhase).toFixed(0)+'° fazda. Yakınlaştırılmış malzeme penceresi ≈'+fmtLen(zMax)+'; katman fazı gerçek k_z ile, genlik e^(−z/2L⊥) ile hesaplanıyor. Geri alanın sonucu |r|='+Math.sqrt(Math.max(0,O.R)).toFixed(3)+', arg(r)='+wrapPhaseDeg(O.rArg).toFixed(1)+'°. <strong>R='+fmtPct(O.R)+'</strong>.';
+    $('reflectionOverlay').innerHTML='<strong>'+bnd().label+' · '+m.label+':</strong> P/E fazı argχ='+wrapPhaseDeg(resp.chiArg).toFixed(0)+'°. Basit elektronik dipolde negatif elektron bulutu bunun ters yönünde hareket eder (x/E≈'+wrapPhaseDeg(resp.electronPhase).toFixed(0)+'°). Yakınlaştırılmış malzeme penceresi ≈'+fmtLen(zMax)+'; katman fazı gerçek k_z ile, genlik e^(−z/2L⊥) ile hesaplanıyor. Geri alanın sonucu |r|='+Math.sqrt(Math.max(0,O.R)).toFixed(3)+', arg(r)='+wrapPhaseDeg(O.rArg).toFixed(1)+'°. <strong>R='+fmtPct(O.R)+'</strong>.';
   }
 
   function updateUI(){
