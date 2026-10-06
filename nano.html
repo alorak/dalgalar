@@ -222,6 +222,7 @@
     </div>
     <div class="note"><strong>“Foton nereden yansıyor?”</strong> Klasik/koherent yansıma için tek bir atom veya tek bir elektron seçilemez. Yansıyan alan, yüzey yakınındaki çok sayıda yükün kolektif cevabıdır. Tek-foton kuantum tanımında da yansıma genliği alternatif etkileşim yollarının koherent toplamıdır; “şu elektrona çarptı ve geri döndü” resmi genel olarak doğru değildir.</div>
     <div class="note"><strong>Bu alt simülasyonun seviyesi:</strong> Elektron bulutu hareketi, kompleks <em>etkin</em> duyarlılık χ ve üstteki Fresnel sonucu birbirine bağlanır. Atom sembolleri gerçek örgü aralığında değildir ve tek tek atomların ab-initio polarizabilitesi hesaplanmaz. Katmanlardan çıkan küçük ikincil alan işaretleri Huygens/Lorentz sezgisidir; toplam yansıma genliği üstteki fiziksel kompleks kırılma indisi ve Fresnel katsayısından alınır.</div>
+    <div class="note"><strong>Huygens modunu nasıl okumalı?</strong> Noktalar “yalnız yüzeydeki ilk atom katmanı ışık yayıyor” demek değildir. Bunlar, malzeme içindeki kolektif polarizasyon/akım cevabının sınırdaki alanlarını yeniden üreten <strong>eşdeğer yüzey kaynaklarıdır</strong>. Dalgacıkların geometrik zarfı yansıma yasasını gösterir: θ<sub>r</sub>=θ<sub>i</sub>. Geçen zarfın yönü kompleks Snell/Fresnel modelinden gelir; total external reflection durumunda propagasyonlu geçen zarf çizilmez.</div>
   </section>
 
   <div class="note"><strong>Hol nedir?</strong> Hol, atom içinde dolaşan ayrı bir pozitif parçacık değildir. Valans bandındaki eksik elektron durumunun kolektif olarak pozitif yük taşıyıcısı gibi davranan kuaziparçacık temsilidir.</div>
@@ -866,10 +867,10 @@
     // Analytic coherent envelope corresponding to the Huygens construction.
     const activeFrac=count?active/count:0;
     if(showEnvelope&&activeFrac>0){
-      const qR=kr.x*bx+kr.y*cy+Math.max(0,s);
+      const qR=kr.x*bx+kr.y*cy+s;
       rPlaneFront(kr.x,kr.y,qR,8,32,bx,h-35,'#f4c46c',3,.18+.77*Math.sqrt(Math.max(0,O.R))*activeFrac);
       if(!O.evanescent){
-        const dT=Math.max(0,s)/nPhase,qT=kt.x*bx+kt.y*cy+dT;
+        const dT=s/nPhase,qT=kt.x*bx+kt.y*cy+dT;
         rPlaneFront(kt.x,kt.y,qT,bx,32,w-8,h-35,'#80e0b2',3,.16+.70*Math.min(1,O.tAbs)*activeFrac);
       }else{
         const evW=Math.min(90,Math.max(18,w*.09)),eg=rctx.createLinearGradient(bx,0,bx+evW,0);
